@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Masterclass Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-zinc-900 h-screen flex overflow-hidden">
+    <aside class="hidden md:flex flex-col w-64 border-r border-zinc-200 bg-white">
+        <div class="h-16 flex items-center px-6 border-b border-zinc-200 font-bold text-lg"><i class="fa-solid fa-layer-group text-blue-600 mr-2"></i> PCB Masterclass</div>
+        <nav class="flex-1 py-4">
+            <ul class="space-y-1 px-3 text-sm text-zinc-600">
+                <li class="px-3 py-2 bg-blue-50 text-blue-600 rounded-md"><i class="fa-solid fa-book-open w-5"></i> Footprint Creation</li>
+            </ul>
+        </nav>
+    </aside>
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white">
+            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 border border-zinc-200"><i class="fa-solid fa-search text-zinc-400"></i><input type="text" placeholder="Search..." class="bg-transparent border-none outline-none ml-2 text-sm w-full"></div>
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">JD</div>
+        </header>
+        <div class="flex-1 overflow-y-auto p-8">
+            <h1 class="text-3xl font-bold mb-6">Footprint Creation (IPC-7351)</h1>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div class="xl:col-span-2">
+                    <div class="flex space-x-6 border-b border-zinc-200 mb-6 text-sm font-medium">
+                        <button class="pb-3 text-blue-600 border-b-2 border-blue-600">Design Rules</button>
+                    </div>
+                    <div class="bg-white border border-zinc-200 rounded-lg p-5">
+                        <h3 class="font-semibold mb-2">Pad Sizing Example</h3>
+                        <p class="text-zinc-600 text-sm">Density Level A: Toe Fillet 0.55mm, Heel Fillet 0.45mm</p>
+                    </div>
+                </div>
+                <div class="xl:col-span-1">
+                    <div class="bg-white border border-zinc-200 rounded-lg p-5">
+                        <h4 class="font-semibold mb-4">Quick Checklist</h4>
+                        <ul class="space-y-3 text-sm text-zinc-600" id="checklist">
+                            <li><i class="fa-regular fa-circle mr-2"></i> Loading checklist from server...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // This fetches the live data from your Node.js engine!
+        fetch('/api/checklist')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('checklist');
+                list.innerHTML = ''; // Clear loading text
+                data.forEach(item => {
+                    const icon = item.completed ? '<i class="fa-solid fa-circle-check text-emerald-500 mr-2"></i>' : '<i class="fa-regular fa-circle text-zinc-300 mr-2"></i>';
+                    list.innerHTML += `<li>${icon} ${item.task}</li>`;
+                });
+            });
+    </script>
+</body>
+</html>
