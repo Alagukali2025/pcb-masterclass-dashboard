@@ -1,11 +1,58 @@
-{
-  "name": "pcb-masterclass-dashboard",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
-}
+const db = {
+      "welcome": {
+        "title": "Welcome to PCB Masterclass",
+        "intro": "Your industrial guide to mastering Printed Circuit Board design. This platform bridges the gap between basic theory and real-world manufacturing standards.\n\n👈 Click 'Dashboard' in the sidebar to view all available learning modules."
+      },
+      "dashboard": {
+        "title": "Learning Dashboard",
+        "intro": "Select a topic below to begin your engineering journey.",
+        "modules": [
+          { "id": "footprint", "icon": "fa-microchip", "title": "Footprint Creation", "desc": "Master IPC-7351 standards and land patterns." },
+          { "id": "stackup", "icon": "fa-layer-group", "title": "Stackup Design", "desc": "Understand materials, prepreg, and cores." },
+          { "id": "diff_pair", "icon": "fa-code-merge", "title": "Differential Pair Routing", "desc": "Learn phase matching and coupling." },
+          { "id": "high_speed", "icon": "fa-bolt", "title": "High-Speed Routing", "desc": "Impedance control and length matching." },
+          { "id": "ddr", "icon": "fa-memory", "title": "DDR Routing", "desc": "Fly-by topology and byte lane routing." },
+          { "id": "emi_emc", "icon": "fa-shield-halved", "title": "EMI / EMC", "desc": "Mitigate radiation and ensure compliance." },
+          { "id": "dfm_dft", "icon": "fa-industry", "title": "DFM / DFT", "desc": "Design for manufacturing and testing." },
+          { "id": "si_pi", "icon": "fa-wave-square", "title": "SI/PI Calculation", "desc": "Signal and power integrity basics." }
+        ]
+      },
+      "footprint": {
+        "title": "Footprint Creation (IPC-7351)",
+        "intro": "A footprint (or land pattern) is the physical arrangement of copper pads on a PCB. Designing it incorrectly leads to tombstoning, solder bridges, and manufacturing failures.",
+        "sections": [
+          {
+            "heading": "The IPC-7351 Standard",
+            "content": "IPC-7351 is the global standard for surface mount design. It relies on mathematical models to calculate the exact pad size based on the component's leads and required solder fillets (Toe, Heel, and Side)."
+          },
+          {
+            "heading": "The 3 Density Levels",
+            "content": "Not all boards are the same. IPC defines three density levels to determine how much extra pad area you need:",
+            "cards": [
+              { "title": "Level A (Maximum)", "text": "For low-density boards or extreme environments (aerospace/military). Largest solder joints for maximum strength." },
+              { "title": "Level B (Nominal)", "text": "The standard for most desktop and consumer electronics. A perfect balance between size and reliability." },
+              { "title": "Level C (Least)", "text": "For high-density mobile devices (smartphones). Minimal solder joints to save maximum board space." }
+            ]
+          },
+          {
+            "heading": "Design Guidelines & Courtyard",
+            "content": "The **Courtyard** is the absolute minimum area required around a component. It includes the component body, the pads, and an extra 'excess' boundary to prevent placement machines from crashing components into each other."
+          },
+          {
+            "heading": "Common Mistakes to Avoid",
+            "list": [
+              "Placing silkscreen over exposed copper pads (causes soldering defects).",
+              "Forgetting to mark Pin 1 on both the Assembly and Silkscreen layers.",
+              "Ignoring manufacturing tolerances and making the courtyard too tight."
+            ]
+          }
+        ],
+        "checklist": [
+          "Verify datasheet dimensions and tolerances.",
+          "Calculate Toe, Heel, and Side fillets for Density Level B.",
+          "Ensure Silkscreen clearance is at least 0.1mm from pads.",
+          "Add Courtyard polygon on the correct mechanical layer.",
+          "Verify 3D STEP model aligns perfectly with pads."
+        ]
+      }
+    };
