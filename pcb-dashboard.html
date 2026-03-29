@@ -8,168 +8,217 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-slate-50 text-zinc-900 h-screen flex overflow-hidden">
     
-    <aside class="hidden md:flex flex-col w-64 border-r border-zinc-200 bg-white">
-        <div class="h-16 flex items-center px-6 border-b border-zinc-200 font-bold text-lg"><i class="fa-solid fa-layer-group text-blue-600 mr-2"></i> PCB Masterclass</div>
-        <nav class="flex-1 py-4">
-            <ul class="space-y-1 px-3 text-sm text-zinc-600 font-medium">
-                <li class="px-3 py-2 hover:bg-zinc-100 rounded-md cursor-pointer"><i class="fa-solid fa-chart-simple w-5"></i> Dashboard</li>
-                <li class="px-3 py-2 bg-blue-50 text-blue-600 rounded-md cursor-pointer"><i class="fa-solid fa-microchip w-5"></i> IPC-7351 Footprints</li>
-                <li class="px-3 py-2 hover:bg-zinc-100 rounded-md cursor-pointer"><i class="fa-solid fa-bolt w-5"></i> High-Speed Routing</li>
+    <aside class="hidden md:flex flex-col w-64 border-r border-zinc-200 bg-white z-20">
+        <div class="h-16 flex items-center px-6 border-b border-zinc-200 font-bold text-lg text-zinc-800 tracking-tight">
+            <i class="fa-solid fa-layer-group text-blue-600 mr-3"></i> PCB Masterclass
+        </div>
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <ul class="space-y-1 px-3 text-sm font-medium text-zinc-600" id="sidebar-menu">
+                <li data-page="home" class="nav-item px-3 py-2.5 rounded-md cursor-pointer transition-colors flex items-center gap-3">
+                    <i class="fa-solid fa-house w-4 text-center"></i> Home / Welcome
+                </li>
+                <li data-page="footprint" class="nav-item px-3 py-2.5 rounded-md cursor-pointer transition-colors flex items-center gap-3">
+                    <i class="fa-solid fa-microchip w-4 text-center"></i> Footprint Creation
+                </li>
+                <li data-page="comingSoon" class="nav-item px-3 py-2.5 rounded-md cursor-pointer transition-colors flex items-center gap-3 opacity-60">
+                    <i class="fa-solid fa-bolt w-4 text-center"></i> High-Speed Routing
+                </li>
             </ul>
         </nav>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white shadow-sm z-10">
-            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 md:w-96 border border-zinc-200 focus-within:border-blue-500">
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white z-10">
+            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 md:w-96 border border-zinc-200 focus-within:border-blue-500 transition-colors">
                 <i class="fa-solid fa-search text-zinc-400"></i>
-                <input type="text" placeholder="Search IPC standards, footprints..." class="bg-transparent border-none outline-none ml-2 text-sm w-full">
+                <input type="text" placeholder="Search guidelines, rules..." class="bg-transparent border-none outline-none ml-2 text-sm w-full text-zinc-700">
             </div>
-            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer">JD</div>
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer shadow-sm">JD</div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
-            <div class="mb-6">
-                <span class="text-xs font-semibold tracking-wider text-blue-600 uppercase">Library Management</span>
-                <h1 class="text-3xl font-bold mt-1 text-zinc-900">Surface Mount Footprint Design</h1>
-                <p class="text-zinc-500 mt-2 text-sm">Industrial standards based on IPC-7351 Generic Requirements for Surface Mount Design.</p>
+        <div id="main-content" class="flex-1 overflow-y-auto p-6 md:p-8 lg:px-12 bg-slate-50 w-full max-w-5xl mx-auto">
             </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                
-                <div class="xl:col-span-2 space-y-6">
-                    
-                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-zinc-200 bg-zinc-50 flex items-center">
-                            <i class="fa-solid fa-ruler-combined text-blue-600 mr-2"></i>
-                            <h3 class="font-semibold text-zinc-900">Pad Geometry & Density Levels</h3>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
-                                <thead class="bg-zinc-100 text-zinc-600 font-mono text-xs uppercase">
-                                    <tr>
-                                        <th class="px-5 py-3 border-b">Density Level</th>
-                                        <th class="px-5 py-3 border-b">Application</th>
-                                        <th class="px-5 py-3 border-b">Toe Fillet</th>
-                                        <th class="px-5 py-3 border-b">Heel Fillet</th>
-                                        <th class="px-5 py-3 border-b">Side Fillet</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="density-table" class="divide-y divide-zinc-200 text-zinc-700">
-                                    <tr><td colspan="5" class="px-5 py-4 text-center text-zinc-400">Loading IPC data from server...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="px-5 py-4 border-b border-zinc-200 bg-zinc-50 flex items-center">
-                            <i class="fa-solid fa-border-none text-blue-600 mr-2"></i>
-                            <h3 class="font-semibold text-zinc-900">Placement Courtyard Excess</h3>
-                        </div>
-                        <div class="p-5">
-                            <p class="text-sm text-zinc-600 mb-4">The courtyard includes the maximum component body extent plus the land pattern, plus an excess clearance to account for manufacturing tolerances.</p>
-                            <table class="w-full text-sm text-left border border-zinc-200">
-                                <thead class="bg-zinc-100 text-zinc-600 font-mono text-xs uppercase">
-                                    <tr>
-                                        <th class="px-5 py-3 border-b">Component Type / Size</th>
-                                        <th class="px-5 py-3 border-b">Minimum Excess Clearance</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="courtyard-table" class="divide-y divide-zinc-200 text-zinc-700">
-                                    </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="xl:col-span-1 space-y-6">
-                    
-                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm p-5">
-                        <h4 class="font-semibold text-zinc-900 mb-4 flex items-center">
-                            <i class="fa-solid fa-list-check text-emerald-600 mr-2"></i> Footprint DFM Checklist
-                        </h4>
-                        <ul class="space-y-3 text-sm text-zinc-600" id="checklist">
-                            <li><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading checklist...</li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
-                        <h4 class="font-semibold text-blue-900 mb-2 flex items-center">
-                            <i class="fa-solid fa-calculator text-blue-600 mr-2"></i> Standard Pad Calculation
-                        </h4>
-                        <p class="text-xs text-blue-800 mb-3">Overall pad width relies on maximum lead width plus side fillets.</p>
-                        <div class="bg-white p-3 rounded border border-blue-200 font-mono text-xs text-zinc-800 shadow-inner">
-                            Zmax = Lmax + 2(Jt) + <br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; √(Cl² + Ct² + F²)
-                        </div>
-                        <p class="text-[10px] text-blue-600 mt-2 uppercase tracking-wide">Where Jt = Toe Fillet, Cl = Fab Tolerance</p>
-                    </div>
-
-                </div>
-            </div>
-        </div>
     </main>
 
     <script>
-        // 1. Fetch IPC Data
-        fetch('/api/ipc-standards')
-            .then(res => res.json())
-            .then(data => {
-                // Populate Density Table
-                const densityTable = document.getElementById('density-table');
-                densityTable.innerHTML = '';
-                data.densityLevels.forEach(row => {
-                    densityTable.innerHTML += `
-                        <tr class="hover:bg-zinc-50 transition-colors">
-                            <td class="px-5 py-3 font-medium text-zinc-900">${row.level}</td>
-                            <td class="px-5 py-3 text-xs text-zinc-500">${row.condition}</td>
-                            <td class="px-5 py-3 font-mono text-blue-600">${row.toe}</td>
-                            <td class="px-5 py-3 font-mono text-blue-600">${row.heel}</td>
-                            <td class="px-5 py-3 font-mono text-blue-600">${row.side}</td>
-                        </tr>`;
+        // 1. The JSON Content Database
+        const contentDatabase = {
+            "home": {
+                title: "Welcome to PCB Masterclass Dashboard",
+                subtitle: "Your engineering hub for industrial PCB design standards.",
+                type: "welcome",
+                content: `
+                    <div class="bg-white p-8 rounded-xl border border-zinc-200 shadow-sm mt-6">
+                        <h2 class="text-xl font-semibold mb-4 text-zinc-800">Mastering the Art of Hardware Design</h2>
+                        <p class="text-zinc-600 mb-6 leading-relaxed">
+                            Designing a printed circuit board is more than just connecting lines between pins. It requires a deep understanding of manufacturing tolerances, physics, and industry standards. 
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                            <div class="p-5 bg-blue-50 border border-blue-100 rounded-lg">
+                                <i class="fa-solid fa-book-open text-blue-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-blue-900 mb-2">Learn the Standards</h3>
+                                <p class="text-sm text-blue-800/80">Access simplified guides on IPC-7351, DFM rules, and high-speed constraints.</p>
+                            </div>
+                            <div class="p-5 bg-emerald-50 border border-emerald-100 rounded-lg">
+                                <i class="fa-solid fa-list-check text-emerald-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-emerald-900 mb-2">Interactive Checklists</h3>
+                                <p class="text-sm text-emerald-800/80">Use industrial checklists to verify your footprints and routing before manufacturing.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            "footprint": {
+                title: "Footprint Creation (IPC-7351)",
+                subtitle: "Industrial standards for Surface Mount Design land patterns.",
+                type: "article",
+                sections: [
+                    {
+                        title: "1. Overview",
+                        icon: "fa-solid fa-circle-info text-blue-500",
+                        text: "Designing an accurate footprint (or land pattern) is the foundation of a reliable PCB. If the footprint dimensions are incorrect, the component may shift during reflow soldering, fail to adhere, or cause short circuits. A perfect footprint ensures high yield during assembly."
+                    },
+                    {
+                        title: "2. IPC-7351 Explanation",
+                        icon: "fa-solid fa-scale-balanced text-indigo-500",
+                        text: "The IPC-7351 standard provides a mathematical model for calculating optimal pad sizes. Instead of guessing, it uses the component's minimum and maximum tolerances, combined with fabrication and placement accuracy, to calculate the exact toe, heel, and side fillets needed for a strong solder joint."
+                    },
+                    {
+                        title: "3. Land Pattern Basics",
+                        icon: "fa-solid fa-layer-group text-amber-500",
+                        text: "A complete land pattern consists of more than just copper pads. It must include: <br><br> • <b>Copper Pads:</b> Where the component is soldered.<br> • <b>Solder Mask Expansion:</b> The cutout in the protective coating.<br> • <b>Paste Mask:</b> Where solder paste is applied via stencil.<br> • <b>Courtyard:</b> The physical keep-out area to prevent components from colliding."
+                    },
+                    {
+                        title: "4. Design Guidelines (Density Levels)",
+                        icon: "fa-solid fa-ruler-combined text-emerald-500",
+                        text: "IPC-7351 defines three density levels based on your product's environment:<br><br> • <b>Level A (Maximum):</b> Largest pads. Used for robust electronics exposed to high shock or vibration.<br> • <b>Level B (Nominal):</b> Standard pads. Used for typical desktop and consumer electronics.<br> • <b>Level C (Least):</b> Smallest pads. Used for high-density, miniature devices like smartphones where space is critical."
+                    },
+                    {
+                        title: "5. Common Mistakes",
+                        icon: "fa-solid fa-triangle-exclamation text-red-500",
+                        text: "Avoid these frequent beginner errors:<br> 1. Designing pads based on the <i>nominal</i> component size instead of the <i>maximum</i> tolerance limits.<br> 2. Placing silkscreen ink over exposed copper pads (causes soldering failure).<br> 3. Forgetting to add a clear Pin 1 indicator on both the Assembly and Silkscreen layers."
+                    }
+                ],
+                checklist: [
+                    "Verify manufacturer recommended land pattern in the datasheet.",
+                    "Select appropriate IPC Density Level (A, B, or C).",
+                    "Add component Courtyard boundary to prevent collisions.",
+                    "Ensure 1:1 Paste Mask to Pad ratio (Modify for large thermal pads).",
+                    "Add Pin 1 dot/marker to Silkscreen AND Assembly layers.",
+                    "Verify no silkscreen overlaps with exposed copper pads."
+                ]
+            },
+            "comingSoon": {
+                title: "High-Speed Routing",
+                subtitle: "Module currently under construction.",
+                type: "welcome",
+                content: `<div class="p-8 text-center text-zinc-500 mt-10"><i class="fa-solid fa-person-digging text-4xl mb-4 text-zinc-300"></i><p>This module is being written. Check back soon!</p></div>`
+            }
+        };
+
+        // 2. The Rendering Engine (Builds the HTML based on JSON)
+        const mainContentArea = document.getElementById('main-content');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function renderPage(pageId) {
+            const data = contentDatabase[pageId];
+            if (!data) return;
+
+            // Build Header
+            let html = `
+                <div class="mb-8 fade-in">
+                    <h1 class="text-3xl font-bold tracking-tight text-zinc-900">${data.title}</h1>
+                    <p class="text-zinc-500 mt-2 text-sm">${data.subtitle}</p>
+                </div>
+            `;
+
+            // Build Content based on Type
+            if (data.type === "welcome") {
+                html += `<div class="fade-in">${data.content}</div>`;
+            } 
+            else if (data.type === "article") {
+                html += `<div class="space-y-6 fade-in">`;
+                
+                // Render Sections (Cards)
+                data.sections.forEach(sec => {
+                    html += `
+                        <div class="bg-white border border-zinc-200 rounded-lg p-6 shadow-sm">
+                            <h3 class="text-lg font-semibold text-zinc-900 mb-3 flex items-center gap-2">
+                                <i class="${sec.icon}"></i> ${sec.title}
+                            </h3>
+                            <p class="text-zinc-600 text-sm leading-relaxed">${sec.text}</p>
+                        </div>
+                    `;
                 });
 
-                // Populate Courtyard Table
-                const courtyardTable = document.getElementById('courtyard-table');
-                courtyardTable.innerHTML = '';
-                data.courtyardExcess.forEach(row => {
-                    courtyardTable.innerHTML += `
-                        <tr class="hover:bg-zinc-50 transition-colors">
-                            <td class="px-5 py-3 font-medium text-zinc-900">${row.componentSize}</td>
-                            <td class="px-5 py-3 font-mono text-emerald-600">${row.excess}</td>
-                        </tr>`;
-                });
+                // Render Checklist at the Bottom
+                if (data.checklist) {
+                    html += `
+                        <div class="bg-slate-800 rounded-lg p-6 shadow-md mt-10 border border-slate-700 text-slate-100">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-400">
+                                <i class="fa-solid fa-list-check"></i> Final DFM Checklist
+                            </h3>
+                            <ul class="space-y-3 text-sm">
+                                ${data.checklist.map(item => `
+                                    <li class="flex items-start gap-3 p-2 hover:bg-slate-700/50 rounded-md transition-colors cursor-pointer" onclick="toggleCheck(this)">
+                                        <i class="fa-regular fa-square text-slate-400 mt-0.5 text-lg pointer-events-none"></i>
+                                        <span class="pointer-events-none leading-relaxed">${item}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            <p class="text-xs text-slate-400 mt-4 italic">Click items to check them off.</p>
+                        </div>
+                    `;
+                }
+                html += `</div>`;
+            }
+
+            // Inject into page
+            mainContentArea.innerHTML = html;
+
+            // Update Sidebar Active State
+            navItems.forEach(item => {
+                if (item.dataset.page === pageId) {
+                    item.classList.add('bg-blue-50', 'text-blue-600');
+                    item.classList.remove('hover:bg-zinc-100', 'text-zinc-600');
+                } else {
+                    item.classList.remove('bg-blue-50', 'text-blue-600');
+                    item.classList.add('hover:bg-zinc-100', 'text-zinc-600');
+                }
             });
+        }
 
-        // 2. Fetch Checklist Data
-        fetch('/api/checklist')
-            .then(res => res.json())
-            .then(data => {
-                const checklist = document.getElementById('checklist');
-                checklist.innerHTML = ''; 
-                data.forEach(item => {
-                    // If completed, make text green/strikethrough. If not, normal grey.
-                    const icon = item.completed 
-                        ? '<i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 text-base"></i>' 
-                        : '<i class="fa-regular fa-circle text-zinc-300 mt-0.5 text-base hover:text-zinc-400 cursor-pointer"></i>';
-                    
-                    const textClass = item.completed ? 'text-zinc-400 line-through' : 'text-zinc-700';
+        // 3. Interactive Checklist Logic (Helper function)
+        function toggleCheck(element) {
+            const icon = element.querySelector('i');
+            const text = element.querySelector('span');
+            
+            if (icon.classList.contains('fa-square')) {
+                icon.className = "fa-solid fa-square-check text-emerald-400 mt-0.5 text-lg pointer-events-none";
+                text.className = "pointer-events-none leading-relaxed text-slate-400 line-through";
+            } else {
+                icon.className = "fa-regular fa-square text-slate-400 mt-0.5 text-lg pointer-events-none";
+                text.className = "pointer-events-none leading-relaxed";
+            }
+        }
 
-                    checklist.innerHTML += `
-                        <li class="flex items-start gap-3 p-2 hover:bg-zinc-50 rounded-md transition-colors">
-                            ${icon} <span class="${textClass} leading-snug">${item.task}</span>
-                        </li>`;
-                });
+        // 4. Event Listeners for Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                renderPage(item.dataset.page);
             });
+        });
+
+        // 5. Initialize App (Load Welcome Page first)
+        renderPage('home');
+
     </script>
 </body>
 </html>
