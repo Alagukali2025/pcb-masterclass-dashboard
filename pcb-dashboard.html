@@ -8,56 +8,166 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body class="bg-slate-50 text-zinc-900 h-screen flex overflow-hidden">
+    
     <aside class="hidden md:flex flex-col w-64 border-r border-zinc-200 bg-white">
         <div class="h-16 flex items-center px-6 border-b border-zinc-200 font-bold text-lg"><i class="fa-solid fa-layer-group text-blue-600 mr-2"></i> PCB Masterclass</div>
         <nav class="flex-1 py-4">
-            <ul class="space-y-1 px-3 text-sm text-zinc-600">
-                <li class="px-3 py-2 bg-blue-50 text-blue-600 rounded-md"><i class="fa-solid fa-book-open w-5"></i> Footprint Creation</li>
+            <ul class="space-y-1 px-3 text-sm text-zinc-600 font-medium">
+                <li class="px-3 py-2 hover:bg-zinc-100 rounded-md cursor-pointer"><i class="fa-solid fa-chart-simple w-5"></i> Dashboard</li>
+                <li class="px-3 py-2 bg-blue-50 text-blue-600 rounded-md cursor-pointer"><i class="fa-solid fa-microchip w-5"></i> IPC-7351 Footprints</li>
+                <li class="px-3 py-2 hover:bg-zinc-100 rounded-md cursor-pointer"><i class="fa-solid fa-bolt w-5"></i> High-Speed Routing</li>
             </ul>
         </nav>
     </aside>
+
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white">
-            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 border border-zinc-200"><i class="fa-solid fa-search text-zinc-400"></i><input type="text" placeholder="Search..." class="bg-transparent border-none outline-none ml-2 text-sm w-full"></div>
-            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">JD</div>
+        <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white shadow-sm z-10">
+            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 md:w-96 border border-zinc-200 focus-within:border-blue-500">
+                <i class="fa-solid fa-search text-zinc-400"></i>
+                <input type="text" placeholder="Search IPC standards, footprints..." class="bg-transparent border-none outline-none ml-2 text-sm w-full">
+            </div>
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md cursor-pointer">JD</div>
         </header>
-        <div class="flex-1 overflow-y-auto p-8">
-            <h1 class="text-3xl font-bold mb-6">Footprint Creation (IPC-7351)</h1>
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div class="xl:col-span-2">
-                    <div class="flex space-x-6 border-b border-zinc-200 mb-6 text-sm font-medium">
-                        <button class="pb-3 text-blue-600 border-b-2 border-blue-600">Design Rules</button>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
+            <div class="mb-6">
+                <span class="text-xs font-semibold tracking-wider text-blue-600 uppercase">Library Management</span>
+                <h1 class="text-3xl font-bold mt-1 text-zinc-900">Surface Mount Footprint Design</h1>
+                <p class="text-zinc-500 mt-2 text-sm">Industrial standards based on IPC-7351 Generic Requirements for Surface Mount Design.</p>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                <div class="xl:col-span-2 space-y-6">
+                    
+                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-zinc-200 bg-zinc-50 flex items-center">
+                            <i class="fa-solid fa-ruler-combined text-blue-600 mr-2"></i>
+                            <h3 class="font-semibold text-zinc-900">Pad Geometry & Density Levels</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-zinc-100 text-zinc-600 font-mono text-xs uppercase">
+                                    <tr>
+                                        <th class="px-5 py-3 border-b">Density Level</th>
+                                        <th class="px-5 py-3 border-b">Application</th>
+                                        <th class="px-5 py-3 border-b">Toe Fillet</th>
+                                        <th class="px-5 py-3 border-b">Heel Fillet</th>
+                                        <th class="px-5 py-3 border-b">Side Fillet</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="density-table" class="divide-y divide-zinc-200 text-zinc-700">
+                                    <tr><td colspan="5" class="px-5 py-4 text-center text-zinc-400">Loading IPC data from server...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="bg-white border border-zinc-200 rounded-lg p-5">
-                        <h3 class="font-semibold mb-2">Pad Sizing Example</h3>
-                        <p class="text-zinc-600 text-sm">Density Level A: Toe Fillet 0.55mm, Heel Fillet 0.45mm</p>
+
+                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="px-5 py-4 border-b border-zinc-200 bg-zinc-50 flex items-center">
+                            <i class="fa-solid fa-border-none text-blue-600 mr-2"></i>
+                            <h3 class="font-semibold text-zinc-900">Placement Courtyard Excess</h3>
+                        </div>
+                        <div class="p-5">
+                            <p class="text-sm text-zinc-600 mb-4">The courtyard includes the maximum component body extent plus the land pattern, plus an excess clearance to account for manufacturing tolerances.</p>
+                            <table class="w-full text-sm text-left border border-zinc-200">
+                                <thead class="bg-zinc-100 text-zinc-600 font-mono text-xs uppercase">
+                                    <tr>
+                                        <th class="px-5 py-3 border-b">Component Type / Size</th>
+                                        <th class="px-5 py-3 border-b">Minimum Excess Clearance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courtyard-table" class="divide-y divide-zinc-200 text-zinc-700">
+                                    </tbody>
+                            </table>
+                        </div>
                     </div>
+
                 </div>
-                <div class="xl:col-span-1">
-                    <div class="bg-white border border-zinc-200 rounded-lg p-5">
-                        <h4 class="font-semibold mb-4">Quick Checklist</h4>
+
+                <div class="xl:col-span-1 space-y-6">
+                    
+                    <div class="bg-white border border-zinc-200 rounded-lg shadow-sm p-5">
+                        <h4 class="font-semibold text-zinc-900 mb-4 flex items-center">
+                            <i class="fa-solid fa-list-check text-emerald-600 mr-2"></i> Footprint DFM Checklist
+                        </h4>
                         <ul class="space-y-3 text-sm text-zinc-600" id="checklist">
-                            <li><i class="fa-regular fa-circle mr-2"></i> Loading checklist from server...</li>
+                            <li><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading checklist...</li>
                         </ul>
                     </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+                        <h4 class="font-semibold text-blue-900 mb-2 flex items-center">
+                            <i class="fa-solid fa-calculator text-blue-600 mr-2"></i> Standard Pad Calculation
+                        </h4>
+                        <p class="text-xs text-blue-800 mb-3">Overall pad width relies on maximum lead width plus side fillets.</p>
+                        <div class="bg-white p-3 rounded border border-blue-200 font-mono text-xs text-zinc-800 shadow-inner">
+                            Zmax = Lmax + 2(Jt) + <br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; √(Cl² + Ct² + F²)
+                        </div>
+                        <p class="text-[10px] text-blue-600 mt-2 uppercase tracking-wide">Where Jt = Toe Fillet, Cl = Fab Tolerance</p>
+                    </div>
+
                 </div>
             </div>
         </div>
     </main>
+
     <script>
-        // This fetches the live data from your Node.js engine!
-        fetch('/api/checklist')
-            .then(response => response.json())
+        // 1. Fetch IPC Data
+        fetch('/api/ipc-standards')
+            .then(res => res.json())
             .then(data => {
-                const list = document.getElementById('checklist');
-                list.innerHTML = ''; // Clear loading text
+                // Populate Density Table
+                const densityTable = document.getElementById('density-table');
+                densityTable.innerHTML = '';
+                data.densityLevels.forEach(row => {
+                    densityTable.innerHTML += `
+                        <tr class="hover:bg-zinc-50 transition-colors">
+                            <td class="px-5 py-3 font-medium text-zinc-900">${row.level}</td>
+                            <td class="px-5 py-3 text-xs text-zinc-500">${row.condition}</td>
+                            <td class="px-5 py-3 font-mono text-blue-600">${row.toe}</td>
+                            <td class="px-5 py-3 font-mono text-blue-600">${row.heel}</td>
+                            <td class="px-5 py-3 font-mono text-blue-600">${row.side}</td>
+                        </tr>`;
+                });
+
+                // Populate Courtyard Table
+                const courtyardTable = document.getElementById('courtyard-table');
+                courtyardTable.innerHTML = '';
+                data.courtyardExcess.forEach(row => {
+                    courtyardTable.innerHTML += `
+                        <tr class="hover:bg-zinc-50 transition-colors">
+                            <td class="px-5 py-3 font-medium text-zinc-900">${row.componentSize}</td>
+                            <td class="px-5 py-3 font-mono text-emerald-600">${row.excess}</td>
+                        </tr>`;
+                });
+            });
+
+        // 2. Fetch Checklist Data
+        fetch('/api/checklist')
+            .then(res => res.json())
+            .then(data => {
+                const checklist = document.getElementById('checklist');
+                checklist.innerHTML = ''; 
                 data.forEach(item => {
-                    const icon = item.completed ? '<i class="fa-solid fa-circle-check text-emerald-500 mr-2"></i>' : '<i class="fa-regular fa-circle text-zinc-300 mr-2"></i>';
-                    list.innerHTML += `<li>${icon} ${item.task}</li>`;
+                    // If completed, make text green/strikethrough. If not, normal grey.
+                    const icon = item.completed 
+                        ? '<i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 text-base"></i>' 
+                        : '<i class="fa-regular fa-circle text-zinc-300 mt-0.5 text-base hover:text-zinc-400 cursor-pointer"></i>';
+                    
+                    const textClass = item.completed ? 'text-zinc-400 line-through' : 'text-zinc-700';
+
+                    checklist.innerHTML += `
+                        <li class="flex items-start gap-3 p-2 hover:bg-zinc-50 rounded-md transition-colors">
+                            ${icon} <span class="${textClass} leading-snug">${item.task}</span>
+                        </li>`;
                 });
             });
     </script>
