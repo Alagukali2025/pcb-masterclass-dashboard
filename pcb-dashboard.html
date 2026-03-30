@@ -11,6 +11,10 @@
         body { font-family: 'Inter', sans-serif; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Style for tables added for the new content */
+        .content-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; }
+        .content-table th, .content-table td { border: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
+        .content-table th { background-color: #f8fafc; font-weight: 600; }
     </style>
 </head>
 <body class="bg-slate-50 text-zinc-900 h-screen flex overflow-hidden">
@@ -24,15 +28,23 @@
                 <li data-page="footprint" class="nav-item px-3 py-2.5 rounded-md cursor-pointer hover:bg-zinc-100 transition-colors flex items-center">
                     <i class="fa-solid fa-microchip w-6 text-center"></i> Footprint Creation
                 </li>
+                <li data-page="stackup" class="nav-item px-3 py-2.5 rounded-md cursor-pointer hover:bg-zinc-100 transition-colors flex items-center">
+                    <i class="fa-solid fa-layer-group w-6 text-center"></i> Stackup Design
+                </li>
             </ul>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden relative">
         <header class="h-16 flex items-center justify-between px-6 border-b border-zinc-200 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-            <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 md:w-96 border border-zinc-200 focus-within:border-blue-500 transition-colors">
-                <i class="fa-solid fa-search text-zinc-400"></i>
-                <input type="text" placeholder="Search rules, standards..." class="bg-transparent border-none outline-none ml-2 text-sm w-full">
+            <div class="flex items-center">
+                <button id="back-btn" class="hidden mr-4 p-2 hover:bg-zinc-100 rounded-full transition-colors text-zinc-600" title="Back to Dashboard">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </button>
+                <div class="flex items-center bg-zinc-100 rounded-md px-3 py-2 w-64 md:w-96 border border-zinc-200 focus-within:border-blue-500 transition-colors">
+                    <i class="fa-solid fa-search text-zinc-400"></i>
+                    <input type="text" placeholder="Search rules, standards..." class="bg-transparent border-none outline-none ml-2 text-sm w-full">
+                </div>
             </div>
             <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">JD</div>
         </header>
@@ -95,13 +107,65 @@
                     "Add Courtyard polygon on the correct mechanical layer.",
                     "Verify 3D STEP model aligns perfectly with pads."
                 ]
+            },
+            // Task: Content Integration from IPC_PCB_Stackup_Design.pdf
+            stackup: {
+                title: "PCB Stackup Design",
+                intro: "The ordered arrangement of copper layers, prepreg (B-stage resin), and core (C-stage) materials. It is the foundation for signal integrity, power delivery, and EMC compliance[cite: 5, 7].",
+                sections: [
+                    {
+                        heading: "Stackup Fundamentals & Materials",
+                        content: "IPC-2221B and IPC-4101C govern material selection and construction[cite: 8].",
+                        table: {
+                            headers: ["Term", "Definition", "Typical Value"],
+                            rows: [
+                                ["Core", "Fully cured (C-stage) dielectric with copper laminated on both sides [cite: 12].", "200-1200 μm [cite: 12]"],
+                                ["Prepreg", "Partially cured (B-stage) sheet. Bonds during lamination [cite: 12].", "75-200 μm [cite: 12]"],
+                                ["εr (Dk)", "Relative dielectric constant of insulating material [cite: 12].", "FR4: 4.0-4.8 [cite: 12]"],
+                                ["1 oz Cu", "Standard copper weight (35 µm thickness) [cite: 12].", "35 µm [cite: 12]"]
+                            ]
+                        }
+                    },
+                    {
+                        heading: "Core Stackup Principles",
+                        cards: [
+                            { title: "Symmetry Rule", text: "Stackups must be mirror-symmetric about the center to prevent board warpage during reflow (IPC-2221B)[cite: 43, 44]." },
+                            { title: "Reference Planes", text: "High-speed signals must have an adjacent solid reference plane to provide clear return current paths[cite: 26, 49]." },
+                            { title: "Orthogonal Routing", text: "Route adjacent signal layers orthogonally to minimize broadside coupling[cite: 35]." }
+                        ]
+                    },
+                    {
+                        heading: "Impedance Control (IPC-2141A)",
+                        content: "Controlled impedance prevents signal reflections that corrupt eye diagrams and cause bit errors[cite: 69, 73, 74].",
+                        list: [
+                            "Microstrip: Single-ended trace on an outer layer with one reference plane[cite: 75, 76].",
+                            "Stripline: Inner layer trace centered between two reference planes for better shielding[cite: 82, 83].",
+                            "Differential: Critical for USB (90Ω) and Ethernet/HDMI (100Ω)[cite: 88, 92]."
+                        ]
+                    }
+                ],
+                checklist: [
+                    "Verify mirror-symmetry about the board center plane[cite: 119].",
+                    "Ensure every high-speed layer has an uninterrupted reference plane[cite: 118].",
+                    "Place GND return vias within 250 mil of signal layer transitions[cite: 59, 119].",
+                    "Verify target impedance with manufacturer field solvers[cite: 93].",
+                    "No signal routing across reference plane splits or voids[cite: 51, 119]."
+                ]
             }
         };
 
         function loadPage(pageId) {
             const contentDiv = document.getElementById('app-content');
+            const backBtn = document.getElementById('back-btn');
             const data = db[pageId] || { title: "Module Coming Soon", intro: "This engineering module is currently under development." };
             
+            // Toggle Back Button (Task: Back Navigation Feature)
+            if (pageId === 'dashboard') {
+                backBtn.classList.add('hidden');
+            } else {
+                backBtn.classList.remove('hidden');
+            }
+
             contentDiv.classList.remove('fade-in');
             void contentDiv.offsetWidth; 
             contentDiv.classList.add('fade-in');
@@ -134,6 +198,20 @@
                 data.sections.forEach(sec => {
                     html += `<section><h2 class="text-xl font-bold text-zinc-900 mb-3 flex items-center"><i class="fa-solid fa-caret-right text-blue-500 mr-2 text-sm"></i> ${sec.heading}</h2>`;
                     if (sec.content) html += `<p class="text-zinc-700 leading-relaxed mb-4">${sec.content}</p>`;
+                    
+                    // Added support for tables in section content
+                    if (sec.table) {
+                        html += `<div class="overflow-x-auto"><table class="content-table"><thead><tr>`;
+                        sec.table.headers.forEach(h => html += `<th>${h}</th>`);
+                        html += `</tr></thead><tbody>`;
+                        sec.table.rows.forEach(row => {
+                            html += `<tr>`;
+                            row.forEach(cell => html += `<td>${cell}</td>`);
+                            html += `</tr>`;
+                        });
+                        html += `</tbody></table></div>`;
+                    }
+
                     if (sec.cards) {
                         html += `<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">`;
                         sec.cards.forEach(card => {
@@ -144,7 +222,7 @@
                     if (sec.list) {
                         html += `<ul class="space-y-3 mt-4">`;
                         sec.list.forEach(item => {
-                            html += `<li class="flex items-start bg-red-50 text-red-900 p-3 rounded-md border border-red-100"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-3 mt-0.5"></i> ${item}</li>`;
+                            html += `<li class="flex items-start bg-blue-50/50 text-zinc-800 p-3 rounded-md border border-blue-100"><i class="fa-solid fa-circle-info text-blue-500 mr-3 mt-1 text-xs"></i> ${item}</li>`;
                         });
                         html += `</ul>`;
                     }
@@ -156,7 +234,7 @@
             if (data.checklist) {
                 html += `
                     <div class="mt-12 bg-white border border-zinc-200 rounded-xl shadow-sm p-6 md:p-8">
-                        <h3 class="text-xl font-bold text-zinc-900 mb-4 flex items-center"><i class="fa-solid fa-list-check text-emerald-600 mr-3"></i> Final DFM Checklist</h3>
+                        <h3 class="text-xl font-bold text-zinc-900 mb-4 flex items-center"><i class="fa-solid fa-list-check text-emerald-600 mr-3"></i> Final Design Checklist</h3>
                         <ul class="space-y-3">
                 `;
                 data.checklist.forEach(item => {
@@ -189,6 +267,7 @@
             }
         }
 
+        // Event Listeners
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', () => {
@@ -197,6 +276,8 @@
         });
 
         document.getElementById('logo-btn').addEventListener('click', () => loadPage('dashboard'));
+        document.getElementById('back-btn').addEventListener('click', () => loadPage('dashboard'));
+        
         window.onload = () => loadPage('dashboard');
     </script>
 </body>
