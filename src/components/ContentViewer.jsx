@@ -166,6 +166,7 @@ export default function ContentViewer() {
 
                 {sec.table && (
                   <div className="table-wrapper slide-up">
+                    <div className="table-hint">Swipe to see more →</div>
                     <table className="content-table">
                       <thead>
                         <tr>
