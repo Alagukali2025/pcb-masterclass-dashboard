@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCB Stackup Design Masterclass — Beginner to Professional</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN SYSTEM ===== */
+:root {
+  --bg: #0a0e14;
+  --bg2: #111820;
+  --bg3: #16202c;
+  --bg4: #1c2a38;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --copper: #e8943a;
+  --copper2: #f5b865;
+  --copper-glow: rgba(232,148,58,0.2);
+  --green-pcb: #2ecc71;
+  --green-dim: #1a7a44;
+  --green-glow: rgba(46,204,113,0.15);
+  --blue: #4fc3f7;
+  --blue2: #0288d1;
+  --gold: #ffd54f;
+  --red: #ef5350;
+  --purple: #ab47bc;
+  --text: #e8edf3;
+  --text2: #8fa3b8;
+  --text3: #4a6070;
+  --mono: 'Space Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ===== BACKGROUND GRID ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(78,195,247,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,195,247,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== LAYOUT ===== */
+.page-wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 80px 0 60px;
+  text-align: center;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse at center, rgba(232,148,58,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--copper);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--copper);
+  opacity: 0.5;
+}
+.hero h1 {
+  font-family: var(--sans);
+  font-size: clamp(32px, 5vw, 58px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--copper); }
+.hero p {
+  color: var(--text2);
+  font-size: 17px;
+  max-width: 580px;
+  margin: 0 auto 36px;
+}
+.hero-badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.05em;
+}
+.badge-copper { color: var(--copper2); border-color: rgba(232,148,58,0.4); background: rgba(232,148,58,0.08); }
+.badge-green { color: var(--green-pcb); border-color: rgba(46,204,113,0.4); background: rgba(46,204,113,0.08); }
+.badge-blue { color: var(--blue); border-color: rgba(79,195,247,0.4); background: rgba(79,195,247,0.08); }
+
+/* ===== BEGINNER CALLOUT ===== */
+.beginner-banner {
+  background: linear-gradient(135deg, rgba(46,204,113,0.08), rgba(79,195,247,0.08));
+  border: 1px solid rgba(46,204,113,0.25);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 48px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.beginner-banner .icon { font-size: 32px; flex-shrink: 0; }
+.beginner-banner h3 { color: var(--green-pcb); font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.beginner-banner p { color: var(--text2); font-size: 14px; line-height: 1.6; }
+
+/* ===== NAV ===== */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,14,20,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  margin: 0 -24px 48px;
+}
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.03em;
+}
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { color: var(--copper); border-bottom-color: var(--copper); }
+
+/* ===== SECTION ===== */
+.section { margin-bottom: 64px; opacity: 0; transform: translateY(24px); transition: all 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+.section-header { margin-bottom: 28px; }
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--copper);
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+.section-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.section-sub {
+  color: var(--text2);
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border2); }
+.card-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ===== STACKUP VISUAL ===== */
+.stackup-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  margin-bottom: 24px;
+}
+.stackup-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.stackup-board {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+}
+.sl {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  border-radius: 5px;
+  padding: 0 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: visible;
+}
+.sl:hover { filter: brightness(1.2); transform: translateX(4px); }
+.sl-tag {
+  font-size: 9px;
+  color: var(--text3);
+  min-width: 80px;
+  letter-spacing: 0.06em;
+}
+.sl-name { font-weight: 700; flex: 1; }
+.sl-dim { font-size: 9px; opacity: 0.7; margin-left: auto; }
+.sl-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%; transform: translateY(-50%);
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--text);
+  width: 220px;
+  z-index: 10;
+  display: none;
+  font-family: var(--sans);
+  line-height: 1.5;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.sl:hover .sl-tooltip { display: block; }
+
+/* Layer colors */
+.sl-soldermask { background: rgba(100,180,100,0.12); border: 1px solid rgba(100,180,100,0.3); color: #6db86d; }
+.sl-copper-outer { background: rgba(232,148,58,0.18); border: 1px solid rgba(232,148,58,0.5); color: var(--copper2); }
+.sl-copper-inner { background: rgba(232,148,58,0.10); border: 1px solid rgba(232,148,58,0.3); color: var(--copper); }
+.sl-copper-plane { background: rgba(232,148,58,0.14); border: 1px solid rgba(232,148,58,0.4); color: #d4863a; }
+.sl-prepreg { background: rgba(46,180,100,0.08); border: 1px solid rgba(46,180,100,0.25); color: #4caf76; }
+.sl-core { background: rgba(46,120,70,0.14); border: 1px solid rgba(46,120,70,0.35); color: #3a8c5a; }
+.sl-midplane { background: none; border: 1px dashed rgba(79,195,247,0.25); color: var(--blue); font-size: 9px; justify-content: center; letter-spacing: 0.2em; }
+.sl-silk { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); color: var(--text3); }
+
+/* ===== BEGINNER EXPLAINER CARDS ===== */
+.explain-card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.explain-card .eq {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.explain-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.explain-card p {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.explain-card .analogy {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(79,195,247,0.07);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: var(--blue);
+  font-style: italic;
+}
+
+/* ===== MATERIAL TABLE ===== */
+.mat-table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.03em;
+}
+.pill-g { background: rgba(46,204,113,0.15); color: var(--green-pcb); border: 1px solid rgba(46,204,113,0.3); }
+.pill-a { background: rgba(255,213,79,0.15); color: var(--gold); border: 1px solid rgba(255,213,79,0.3); }
+.pill-r { background: rgba(239,83,80,0.15); color: var(--red); border: 1px solid rgba(239,83,80,0.3); }
+.pill-b { background: rgba(79,195,247,0.15); color: var(--blue); border: 1px solid rgba(79,195,247,0.3); }
+
+/* ===== IMPEDANCE CALC ===== */
+.calc-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.mode-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--bg3); padding: 4px; border-radius: var(--radius-sm); width: fit-content; }
+.mode-tab {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.mode-tab.active { background: var(--copper); color: #000; font-weight: 700; }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.inp-grp { display: flex; flex-direction: column; gap: 14px; }
+.inp-row label {
+  display: block;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text2);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+.inp-row input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.inp-row input:focus { border-color: var(--copper); }
+.result-panel {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.res-item { display: flex; flex-direction: column; gap: 4px; }
+.res-lbl { font-size: 10px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+.res-val { font-size: 38px; font-weight: 800; font-family: var(--mono); color: var(--copper2); line-height: 1; }
+.res-status { font-size: 12px; margin-top: 2px; }
+.res-extra { font-size: 11px; font-family: var(--mono); color: var(--text3); line-height: 2; background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
+
+/* ===== FORMULA BLOCK ===== */
+.formula-block {
+  background: var(--bg3);
+  border-left: 3px solid var(--copper);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  line-height: 2.2;
+  margin: 12px 0;
+}
+.formula-block em { color: var(--copper2); font-style: normal; }
+.formula-block .cm { color: var(--text3); }
+
+/* ===== VIA VISUALS ===== */
+.via-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.via-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.via-card:hover { border-color: var(--copper); background: var(--bg3); transform: translateY(-3px); }
+.via-card svg { width: 100%; height: 80px; margin-bottom: 10px; }
+.via-card h4 { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--copper2); font-family: var(--mono); }
+.via-card p { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ===== IPC CARDS ===== */
+.ipc-grid { display: flex; flex-direction: column; gap: 10px; }
+.ipc-card {
+  display: flex;
+  gap: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  transition: border-color 0.2s;
+}
+.ipc-card:hover { border-color: rgba(232,148,58,0.35); }
+.ipc-id-box {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--copper2);
+  background: rgba(232,148,58,0.1);
+  border: 1px solid rgba(232,148,58,0.25);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  white-space: nowrap;
+  height: fit-content;
+  align-self: flex-start;
+  margin-top: 3px;
+  letter-spacing: 0.05em;
+}
+.ipc-content h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.ipc-content p { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* ===== GLASS STYLE CARDS ===== */
+.glass-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.glass-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.glass-card .gnum { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--copper); margin-bottom: 6px; }
+.glass-card .gbar-wrap { height: 6px; background: var(--bg3); border-radius: 3px; margin: 10px 0 4px; overflow: hidden; }
+.glass-card .gbar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green-dim), var(--green-pcb)); transition: width 0.8s ease; }
+.glass-card small { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+
+/* ===== SSOT FLOW ===== */
+.ssot-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.ssot-step {
+  flex: 1;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative;
+}
+.ssot-step::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--copper);
+  font-size: 18px;
+  z-index: 1;
+}
+.ssot-step:last-child::after { display: none; }
+.ssot-step .icon { font-size: 24px; margin-bottom: 8px; }
+.ssot-step h4 { font-size: 12px; font-weight: 700; color: var(--copper2); margin-bottom: 4px; }
+.ssot-step p { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ===== STEP GUIDE ===== */
+.step-guide { display: flex; flex-direction: column; gap: 0; }
+.step-item {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  padding-bottom: 28px;
+}
+.step-item:last-child { padding-bottom: 0; }
+.step-item::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 42px;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--copper), transparent);
+}
+.step-item:last-child::before { display: none; }
+.step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(232,148,58,0.15);
+  border: 1px solid rgba(232,148,58,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--copper);
+  flex-shrink: 0;
+}
+.step-body h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; padding-top: 8px; }
+.step-body p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.step-body .tip {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(46,204,113,0.07);
+  border-left: 2px solid var(--green-pcb);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: var(--green-pcb);
+}
+
+/* ===== INFO BOX ===== */
+.info-box {
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.info-warn { background: rgba(255,213,79,0.07); border: 1px solid rgba(255,213,79,0.25); color: var(--gold); }
+.info-ok { background: rgba(46,204,113,0.07); border: 1px solid rgba(46,204,113,0.25); color: var(--green-pcb); }
+.info-info { background: rgba(79,195,247,0.07); border: 1px solid rgba(79,195,247,0.25); color: var(--blue); }
+.info-danger { background: rgba(239,83,80,0.07); border: 1px solid rgba(239,83,80,0.25); color: var(--red); }
+
+/* ===== REFERENCE PLANE VIS ===== */
+.plane-vis {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.plane-layer { height: 28px; border-radius: 4px; display: flex; align-items: center; padding: 0 14px; font-family: var(--mono); font-size: 11px; margin-bottom: 4px; }
+
+/* ===== SYMMETRY VIS ===== */
+.sym-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.sym-box { border-radius: var(--radius); overflow: hidden; border: 1px solid; }
+.sym-box.good { border-color: rgba(46,204,113,0.35); }
+.sym-box.bad { border-color: rgba(239,83,80,0.35); }
+.sym-header { padding: 10px 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+.sym-box.good .sym-header { background: rgba(46,204,113,0.12); color: var(--green-pcb); }
+.sym-box.bad .sym-header { background: rgba(239,83,80,0.12); color: var(--red); }
+.sym-layers { padding: 12px; background: var(--bg2); display: flex; flex-direction: column; gap: 3px; }
+
+/* ===== COPPER CURRENT TABLE ===== */
+.copper-bars { display: flex; flex-direction: column; gap: 12px; }
+.copper-row { display: flex; align-items: center; gap: 14px; }
+.copper-label { font-family: var(--mono); font-size: 12px; color: var(--copper2); min-width: 60px; }
+.copper-bar-wrap { flex: 1; height: 20px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.copper-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, rgba(232,148,58,0.5), var(--copper2)); display: flex; align-items: center; padding-left: 8px; }
+.copper-bar span { font-size: 10px; font-family: var(--mono); color: #000; font-weight: 700; }
+.copper-info { font-size: 11px; color: var(--text3); min-width: 90px; font-family: var(--mono); text-align: right; }
+
+/* ===== CODE BLOCK ===== */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  line-height: 2;
+  overflow-x: auto;
+}
+.kw { color: #79c0ff; }
+.fn { color: #7ee787; }
+.cm { color: #5a6e84; }
+.str { color: #f5b865; }
+.num { color: #ff9e64; }
+.op { color: #79c0ff; }
+
+/* ===== PREPREG GUIDE ===== */
+.prepreg-vis { display: flex; flex-direction: column; gap: 3px; }
+.pp-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+.pp-style { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--copper2); min-width: 40px; }
+.pp-fill-wrap { flex: 1; height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; }
+.pp-fill { height: 100%; border-radius: 6px; }
+.pp-meta { font-size: 11px; font-family: var(--mono); color: var(--text3); min-width: 160px; text-align: right; }
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  text-align: center;
+  margin-top: 48px;
+}
+footer p { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+footer span { color: var(--copper); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+.hero { animation: fadeUp 0.8s ease both; }
+.hero-eyebrow { animation: fadeUp 0.6s ease both; }
+.hero h1 { animation: fadeUp 0.7s 0.1s ease both; }
+.hero p { animation: fadeUp 0.7s 0.2s ease both; }
+.hero-badges { animation: fadeUp 0.7s 0.3s ease both; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .via-grid { grid-template-columns: 1fr 1fr; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .sym-compare { grid-template-columns: 1fr; }
+  .ssot-flow { flex-direction: column; }
+  .ssot-step::after { display: none; }
+  .glass-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">PCB Masterclass · Senior Engineering Reference</div>
+    <h1>PCB Stackup Design<br><span>From Beginner to Pro</span></h1>
+    <p>A complete guide to PCB layer stackup using Single Source of Truth (SSOT) methodology — written so a beginner can understand, designed so a professional can use it.</p>
+    <div class="hero-badges">
+      <span class="badge badge-copper">IPC-2221B Compliant</span>
+      <span class="badge badge-green">SSOT Methodology</span>
+      <span class="badge badge-blue">Live Impedance Calculator</span>
+      <span class="badge badge-copper">Beginner Friendly</span>
+    </div>
+  </div>
+
+  <!-- BEGINNER CALLOUT -->
+  <div class="beginner-banner">
+    <div class="icon">🎓</div>
+    <div>
+      <h3>New to PCB Design? Start Here.</h3>
+      <p>A PCB (Printed Circuit Board) is like a sandwich of copper and insulating layers that connects electronic components. Think of each layer as a "floor" in a building — some floors carry electrical signals (signal layers), some supply power (power planes), and some act as shielding (ground planes). This guide walks you through every layer, why it matters, and the engineering rules that keep your board working reliably.</p>
+    </div>
+  </div>
+
+  <!-- STICKY NAV -->
+  <nav class="sticky-nav">
+    <div class="nav-inner">
+      <button class="nav-btn active" onclick="scrollTo('ssot')">01 · SSOT</button>
+      <button class="nav-btn" onclick="scrollTo('anatomy')">02 · Anatomy</button>
+      <button class="nav-btn" onclick="scrollTo('materials')">03 · Materials</button>
+      <button class="nav-btn" onclick="scrollTo('impedance')">04 · Impedance</button>
+      <button class="nav-btn" onclick="scrollTo('symmetry')">05 · Symmetry</button>
+      <button class="nav-btn" onclick="scrollTo('planes')">06 · Ref Planes</button>
+      <button class="nav-btn" onclick="scrollTo('hdi')">07 · HDI & Vias</button>
+      <button class="nav-btn" onclick="scrollTo('ipc')">08 · IPC Standards</button>
+      <button class="nav-btn" onclick="scrollTo('calculator')">⚡ Calculator</button>
+    </div>
+  </nav>
+
+  <!-- ===== SECTION 1: SSOT ===== -->
+  <div class="section" id="ssot">
+    <div class="section-header">
+      <div class="section-num">01 · METHODOLOGY</div>
+      <div class="section-title">Single Source of Truth (SSOT)</div>
+      <div class="section-sub">One master stackup document that drives layout, simulation, and manufacturing — zero parameter drift between teams.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">What is SSOT and why does it matter?</div>
+      <p style="color:var(--text2);font-size:14px;line-height:1.8;margin-bottom:16px">In a real engineering team, the layout engineer, the SI (Signal Integrity) simulation engineer, and the PCB fabrication vendor often use <em>different</em> dielectric constants or copper thicknesses — causing the manufactured board to have completely different impedance than what was simulated. An SSOT stackup file fixes this by being the <strong style="color:var(--text)">single document that everyone reads from</strong>.</p>
+      <div class="ssot-flow">
+        <div class="ssot-step">
+          <div class="icon">📋</div>
+          <h4>SSOT File</h4>
+          <p>Master stackup definition (materials, Dk, Df, Cu weight, thickness)</p>
+        </div>
+        <div class="ssot-step">
+          <div class="icon">🔧</div>
+          <h4>Layout CAD</h4>
+          <p>EDA tool imports SSOT — trace width rules, via constraints auto-applied</p>
+        </div>
+        <div class="ssot-step">
+          <div class="icon">📡</div>
+          <h4>SI Simulation</h4>
+          <p>Hyperlynx / Ansys loads SSOT Dk/Df — simulation matches reality</p>
+        </div>
+        <div class="ssot-step">
+          <div class="icon">🏭</div>
+          <h4>Fabrication</h4>
+          <p>Fab house quotes from SSOT — no interpretation, no substitution</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-ok">
+      ✅ <strong>Beginner Rule:</strong> Before you route a single trace, lock down your stackup in writing — material name, every layer thickness, and target impedance. Changing the stackup after routing means re-routing everything.
+    </div>
+
+    <div style="margin-top:20px">
+      <div class="card-title" style="margin-bottom:14px">How to Build Your SSOT — Step-by-Step</div>
+      <div class="step-guide">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Choose your layer count</h4>
+            <p>Start with 4 layers for simple boards, 6–8 for mixed-signal, 10–12 for high-speed server boards. Always use an even number — this is required for stackup symmetry.</p>
+            <div class="tip">💡 Beginner tip: A 4-layer board (Signal / GND / Power / Signal) solves 90% of hobby and small commercial projects.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Select your base material (laminate)</h4>
+            <p>For most designs: FR4. For signals above 3 GHz: Isola FR408HR or Megtron 6. For mmWave RF: Rogers RO4350B. Your material choice locks in the dielectric constant (Dk).</p>
+            <div class="tip">💡 Dk is like the "slowness factor" for electricity — higher Dk = slower signal propagation and more compressed impedance.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Define copper weights per layer</h4>
+            <p>Outer layers: ½ oz (0.7 mil) for fine traces. Inner signal layers: ½ oz. Plane layers (GND/PWR): 1 oz (1.4 mil) for current capacity. Write the weight for every layer in your SSOT.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Set dielectric thicknesses to hit target impedance</h4>
+            <p>Use an impedance calculator (like the one below) to pick dielectric heights (H) and trace widths (W) that produce 50Ω single-ended or 100Ω differential. Document the exact trace width and H for each layer.</p>
+            <div class="tip">💡 Thinner dielectric = narrower trace for same impedance. This is how you get fine-pitch routing on high-density boards.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Verify symmetry and lock the file</h4>
+            <p>Mirror your prepreg and core selections about the board midplane — identical glass style and thickness above and below. Then version-control the file (Git, PLM, or even a dated PDF). Any change requires a new revision with sign-off.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: ANATOMY ===== -->
+  <div class="section" id="anatomy">
+    <div class="section-header">
+      <div class="section-num">02 · STRUCTURE</div>
+      <div class="section-title">Anatomy of a PCB Stackup</div>
+      <div class="section-sub">Hover over each layer below to understand what it does. Every layer in a PCB has a specific job.</div>
+    </div>
+
+    <div class="stackup-container">
+      <div class="stackup-label">8-LAYER PROFESSIONAL STACKUP — IPC-4101C · 62 MIL NOMINAL</div>
+      <div class="stackup-board">
+
+        <div class="sl sl-silk">
+          <span class="sl-tag">TOP SILK</span>
+          <span class="sl-name">Silkscreen — Component Labels & Markings</span>
+          <span class="sl-dim">Ink, ~0.1 mil</span>
+          <div class="sl-tooltip">White or yellow ink printed on top of soldermask. Contains reference designators (R1, C4, U2), component outlines, and board labels. Has zero electrical function — purely for assembly and debug.</div>
+        </div>
+
+        <div class="sl sl-soldermask">
+          <span class="sl-tag">TOP SM</span>
+          <span class="sl-name">Soldermask — LPI Green Lacquer</span>
+          <span class="sl-dim">0.5–1.2 mil</span>
+          <div class="sl-tooltip">Liquid Photo-Imageable (LPI) coating that protects copper traces from oxidation and solder bridges. The green color of most PCBs comes from this layer. Openings (apertures) expose pads for soldering components.</div>
+        </div>
+
+        <div class="sl sl-copper-outer">
+          <span class="sl-tag">L1 — SIGNAL</span>
+          <span class="sl-name">½ oz Copper — Top Signal Layer (Microstrip)</span>
+          <span class="sl-dim">0.7 mil / 17.5 µm</span>
+          <div class="sl-tooltip">Outer signal layer. Traces here are microstrip geometry — copper on top of dielectric, with air above. Component pads, short traces, RF routing. ½ oz copper allows 3 mil minimum trace width for fine-pitch ICs.</div>
+        </div>
+
+        <div class="sl sl-prepreg">
+          <span class="sl-tag">DIELECTRIC</span>
+          <span class="sl-name">Prepreg 2116 — Dk 3.9, Df 0.020 (FR4)</span>
+          <span class="sl-dim">4.0 mil</span>
+          <div class="sl-tooltip">Pre-impregnated glass fiber + resin. Bonds L1 copper to the L2 core during lamination under heat and pressure. The "2116" refers to the glass weave style — medium density, good for impedance control. Dk 3.9 at 1 GHz.</div>
+        </div>
+
+        <div class="sl sl-copper-plane">
+          <span class="sl-tag">L2 — GND</span>
+          <span class="sl-name">1 oz Copper — Solid Ground Reference Plane</span>
+          <span class="sl-dim">1.4 mil / 35 µm</span>
+          <div class="sl-tooltip">Primary ground reference plane. Must be SOLID — no gaps, no slots. This layer provides the return current path for every signal on L1 and L3. It also defines the impedance of L1 microstrip traces by setting dielectric height H.</div>
+        </div>
+
+        <div class="sl sl-core">
+          <span class="sl-tag">CORE</span>
+          <span class="sl-name">FR4 Core — Dk 4.2, Tg 170°C</span>
+          <span class="sl-dim">10.0 mil</span>
+          <div class="sl-tooltip">Rigid glass-epoxy core. The structural backbone of the stackup. "Core" is pre-cured (hard) laminate, unlike prepreg (soft until laminated). Dk 4.2 at 1 GHz. Higher Tg (glass transition temp) means more heat resistance during reflow.</div>
+        </div>
+
+        <div class="sl sl-copper-inner">
+          <span class="sl-tag">L3 — SIGNAL</span>
+          <span class="sl-name">½ oz Copper — Inner Signal Layer (Stripline)</span>
+          <span class="sl-dim">0.7 mil / 17.5 µm</span>
+          <div class="sl-tooltip">Buried inner signal layer. Traces here are stripline geometry — fully enclosed in dielectric above and below. Better EMI shielding than microstrip. Use for high-speed differential pairs: PCIe, DDR, Ethernet. 100% surrounded by Dk material.</div>
+        </div>
+
+        <div class="sl sl-prepreg">
+          <span class="sl-tag">DIELECTRIC</span>
+          <span class="sl-name">Prepreg 1080 — Dk 3.8, Df 0.018 (FR4)</span>
+          <span class="sl-dim">3.0 mil</span>
+          <div class="sl-tooltip">Thinner "1080" glass style prepreg. Lower resin content than 2116. Used for tighter dielectric control. 3 mil height allows narrower trace widths for a given impedance target, enabling denser routing channels.</div>
+        </div>
+
+        <div class="sl sl-copper-plane">
+          <span class="sl-tag">L4 — PWR</span>
+          <span class="sl-name">1 oz Copper — Power Distribution Plane</span>
+          <span class="sl-dim">1.4 mil / 35 µm</span>
+          <div class="sl-tooltip">Power plane. Carries VCC, 1V8, 3V3, or other rails as solid copper pours. The tight spacing between L4 (power) and L5 (GND) creates a distributed capacitance that helps suppress power distribution noise (PDN decoupling).</div>
+        </div>
+
+        <div class="sl sl-midplane">
+          ← BOARD MIDPLANE — SYMMETRY AXIS →
+        </div>
+
+        <div class="sl sl-copper-plane">
+          <span class="sl-tag">L5 — GND</span>
+          <span class="sl-name">1 oz Copper — Secondary Ground Plane</span>
+          <span class="sl-dim">1.4 mil / 35 µm</span>
+          <div class="sl-tooltip">Secondary ground plane. Mirror of L4. Forms a tight GND-PWR pair with L4 for power integrity. Also acts as the lower reference plane for L6 stripline signals. Symmetric with L4 copper weight about the midplane.</div>
+        </div>
+
+        <div class="sl sl-prepreg">
+          <span class="sl-tag">DIELECTRIC</span>
+          <span class="sl-name">Prepreg 1080 — Dk 3.8 (Mirror of above)</span>
+          <span class="sl-dim">3.0 mil</span>
+          <div class="sl-tooltip">SYMMETRIC MIRROR: Must be identical glass style (1080) and thickness (3.0 mil) as the prepreg above midplane. Asymmetry here is the #1 cause of board warpage during reflow soldering.</div>
+        </div>
+
+        <div class="sl sl-copper-inner">
+          <span class="sl-tag">L6 — SIGNAL</span>
+          <span class="sl-name">½ oz Copper — Inner Signal (Best Shielded)</span>
+          <span class="sl-dim">0.7 mil / 17.5 µm</span>
+          <div class="sl-tooltip">Best-shielded inner signal layer — flanked by GND planes on both sides. Route your most sensitive high-speed signals here: DDR5 DQS strobe, PCIe Gen 4+ lanes, 10GbE. Maximum isolation from external EMI sources.</div>
+        </div>
+
+        <div class="sl sl-core">
+          <span class="sl-tag">CORE</span>
+          <span class="sl-name">FR4 Core — Dk 4.2, Tg 170°C (Mirror)</span>
+          <span class="sl-dim">10.0 mil</span>
+          <div class="sl-tooltip">SYMMETRIC MIRROR: Must be identical to the core above midplane (same material, same thickness). This is the other half of the structural sandwich. Equal CTE (Coefficient of Thermal Expansion) prevents differential stress during reflow.</div>
+        </div>
+
+        <div class="sl sl-copper-plane">
+          <span class="sl-tag">L7 — GND</span>
+          <span class="sl-name">1 oz Copper — Ground Reference Plane</span>
+          <span class="sl-dim">1.4 mil / 35 µm</span>
+          <div class="sl-tooltip">Reference plane for L8 (bottom microstrip). Mirror of L2. Provides return current path for bottom-side component signals. Connect to L2, L5 via stitching vias every λ/20 to suppress resonant cavity modes.</div>
+        </div>
+
+        <div class="sl sl-prepreg">
+          <span class="sl-tag">DIELECTRIC</span>
+          <span class="sl-name">Prepreg 2116 — Dk 3.9 (Mirror of top)</span>
+          <span class="sl-dim">4.0 mil</span>
+          <div class="sl-tooltip">SYMMETRIC MIRROR: Identical to top 2116 prepreg. Same thickness (4.0 mil) and same glass style. This ensures the board expansion behavior is identical top and bottom.</div>
+        </div>
+
+        <div class="sl sl-copper-outer">
+          <span class="sl-tag">L8 — SIGNAL</span>
+          <span class="sl-name">½ oz Copper — Bottom Signal Layer (Microstrip)</span>
+          <span class="sl-dim">0.7 mil / 17.5 µm</span>
+          <div class="sl-tooltip">Bottom outer signal layer. Microstrip geometry, mirror of L1. Typically used for power connector escapes, low-speed I/O, LED drive signals. Bottom-side SMT components solder to pads here.</div>
+        </div>
+
+        <div class="sl sl-soldermask">
+          <span class="sl-tag">BOT SM</span>
+          <span class="sl-name">Soldermask — LPI Green Lacquer (Bottom)</span>
+          <span class="sl-dim">0.5–1.2 mil</span>
+          <div class="sl-tooltip">Bottom soldermask. Same function as top — protects copper, prevents solder bridges. Some designs use different colors (red, blue) on bottom for visual identification during assembly.</div>
+        </div>
+
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:var(--text3);font-family:var(--mono)">
+        ↑ HOVER over any layer to see its function · Total board thickness: 62 mil ± 10% · IPC-6012E Class 2
+      </div>
+    </div>
+
+    <!-- Prepreg glass styles -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Prepreg Glass Style Guide — What Does "2116" Mean?</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px">The number (1080, 2116, 7628) is a standardized code for the glass fiber weave density and resin content. More resin = lower Dk, thinner achievable layers. More glass = higher Dk, more structural rigidity.</p>
+      <div class="prepreg-vis">
+        <div class="pp-bar">
+          <span class="pp-style">106</span>
+          <div class="pp-fill-wrap"><div class="pp-fill" style="width:75%;background:linear-gradient(90deg,#1a5c2e,#2ecc71)"></div></div>
+          <span class="pp-meta">1.0–1.8 mil · Dk 3.4–3.7 · HDI</span>
+        </div>
+        <div class="pp-bar">
+          <span class="pp-style">1080</span>
+          <div class="pp-fill-wrap"><div class="pp-fill" style="width:67%;background:linear-gradient(90deg,#1a5c2e,#2ecc71)"></div></div>
+          <span class="pp-meta">1.5–3.0 mil · Dk 3.5–3.9</span>
+        </div>
+        <div class="pp-bar">
+          <span class="pp-style">2116</span>
+          <div class="pp-fill-wrap"><div class="pp-fill" style="width:57%;background:linear-gradient(90deg,#1a5c2e,#2ecc71)"></div></div>
+          <span class="pp-meta">3.0–5.0 mil · Dk 3.8–4.1 · General</span>
+        </div>
+        <div class="pp-bar">
+          <span class="pp-style">7628</span>
+          <div class="pp-fill-wrap"><div class="pp-fill" style="width:45%;background:linear-gradient(90deg,#1a5c2e,#2ecc71)"></div></div>
+          <span class="pp-meta">6.0–9.0 mil · Dk 4.2–4.5 · Thick</span>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text3);font-family:var(--mono)">Bar width = resin content (higher = more resin, lower Dk, thinner achievable layer)</div>
+    </div>
+
+    <!-- Copper weight guide -->
+    <div class="card">
+      <div class="card-title">Copper Weight vs Current Capacity — IPC-2221B</div>
+      <div class="copper-bars" style="margin-top:8px">
+        <div class="copper-row">
+          <span class="copper-label">½ oz</span>
+          <div class="copper-bar-wrap"><div class="copper-bar" style="width:25%"><span>0.75 A</span></div></div>
+          <span class="copper-info">0.7 mil · 17.5µm</span>
+        </div>
+        <div class="copper-row">
+          <span class="copper-label">1 oz</span>
+          <div class="copper-bar-wrap"><div class="copper-bar" style="width:50%"><span>1.5 A</span></div></div>
+          <span class="copper-info">1.4 mil · 35µm</span>
+        </div>
+        <div class="copper-row">
+          <span class="copper-label">2 oz</span>
+          <div class="copper-bar-wrap"><div class="copper-bar" style="width:75%"><span>3.0 A</span></div></div>
+          <span class="copper-info">2.8 mil · 70µm</span>
+        </div>
+        <div class="copper-row">
+          <span class="copper-label">3 oz</span>
+          <div class="copper-bar-wrap"><div class="copper-bar" style="width:100%"><span>5.0 A (external)</span></div></div>
+          <span class="copper-info">4.2 mil · 105µm</span>
+        </div>
+      </div>
+      <div class="info-warn" style="margin-top:14px">⚠️ Inner layer copper carries ~20% less current than shown (reduced convective cooling). Derate accordingly in your power calculations.</div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: MATERIALS ===== -->
+  <div class="section" id="materials">
+    <div class="section-header">
+      <div class="section-num">03 · MATERIALS</div>
+      <div class="section-title">Material Selection — SI & PI Impact</div>
+      <div class="section-sub">Your choice of laminate determines signal loss, operating frequency limit, and cost. Choose wrong and no amount of clever routing can fix it.</div>
+    </div>
+
+    <div class="info-info" style="margin-bottom:20px">
+      📡 <strong>Beginner Concept: Dk and Df.</strong> Dk (Dielectric Constant) controls how fast signals travel. Df (Dissipation Factor / loss tangent) controls how much signal energy is absorbed by the material as heat. Lower Df = cleaner signals at high frequencies. FR4's Df is ~20× worse than Rogers at 10 GHz.
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">Material Comparison — Select Your Frequency Band</div>
+      <div class="mat-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th><th>Family</th><th>Dk (10GHz)</th><th>Df (10GHz)</th><th>Tg (°C)</th><th>Max Freq</th><th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>FR4 Standard</strong></td>
+              <td style="color:var(--text2);font-size:12px">Epoxy / Glass</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">4.2–4.5</td>
+              <td style="font-family:var(--mono);color:var(--red)">0.018–0.024</td>
+              <td style="font-family:var(--mono)">130–140</td>
+              <td><span class="pill pill-g">~3 GHz</span></td>
+              <td><span class="pill pill-g">Low</span></td>
+            </tr>
+            <tr>
+              <td><strong>FR4 High-Tg</strong></td>
+              <td style="color:var(--text2);font-size:12px">Epoxy / Glass</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">4.0–4.2</td>
+              <td style="font-family:var(--mono);color:var(--gold)">0.015–0.020</td>
+              <td style="font-family:var(--mono)">170–180</td>
+              <td><span class="pill pill-g">~5 GHz</span></td>
+              <td><span class="pill pill-g">Low+</span></td>
+            </tr>
+            <tr>
+              <td><strong>Isola FR408HR</strong></td>
+              <td style="color:var(--text2);font-size:12px">Low-Loss Epoxy</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">3.65</td>
+              <td style="font-family:var(--mono);color:var(--gold)">0.0093</td>
+              <td style="font-family:var(--mono)">185</td>
+              <td><span class="pill pill-a">~10 GHz</span></td>
+              <td><span class="pill pill-a">Medium</span></td>
+            </tr>
+            <tr>
+              <td><strong>Megtron 6</strong></td>
+              <td style="color:var(--text2);font-size:12px">Low-Loss PPE</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">3.65</td>
+              <td style="font-family:var(--mono);color:var(--green-pcb)">0.005</td>
+              <td style="font-family:var(--mono)">200</td>
+              <td><span class="pill pill-a">~25 GHz</span></td>
+              <td><span class="pill pill-a">Medium+</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rogers RO4350B</strong></td>
+              <td style="color:var(--text2);font-size:12px">Ceramic HC</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">3.48 ±0.05</td>
+              <td style="font-family:var(--mono);color:var(--green-pcb)">0.0037</td>
+              <td style="font-family:var(--mono)">280+</td>
+              <td><span class="pill pill-b">~40 GHz</span></td>
+              <td><span class="pill pill-r">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rogers RO3003</strong></td>
+              <td style="color:var(--text2);font-size:12px">PTFE Ceramic</td>
+              <td style="font-family:var(--mono);color:var(--copper2)">3.00 ±0.04</td>
+              <td style="font-family:var(--mono);color:var(--green-pcb)">0.0010</td>
+              <td style="font-family:var(--mono)">500+</td>
+              <td><span class="pill pill-b">~77 GHz+</span></td>
+              <td><span class="pill pill-r">Very High</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid3" style="margin-top:16px">
+      <div class="explain-card">
+        <div class="eq">🏡</div>
+        <h4>What is Dk?</h4>
+        <p>Dielectric Constant — how much the material slows down an electromagnetic wave compared to vacuum. Dk=4 means the signal travels at 50% the speed of light inside the material.</p>
+        <div class="analogy">Like running through water (Dk=4) vs. running on a track (vacuum, Dk=1).</div>
+      </div>
+      <div class="explain-card">
+        <div class="eq">🔥</div>
+        <h4>What is Df?</h4>
+        <p>Dissipation Factor (loss tangent) — how much signal energy the dielectric absorbs and converts to heat. At 10 GHz, FR4 (Df=0.02) absorbs 5× more than Megtron 6 (Df=0.004).</p>
+        <div class="analogy">Like speaking through cardboard (FR4) vs. through open air (Rogers).</div>
+      </div>
+      <div class="explain-card">
+        <div class="eq">🌡️</div>
+        <h4>What is Tg?</h4>
+        <p>Glass Transition Temperature — the point where the material softens from rigid to rubber. Lead-free reflow peaks at 260°C, so you need Tg > 150°C minimum. High-Tg FR4 (170°C) is the standard choice.</p>
+        <div class="analogy">Like chocolate — solid below its "Tg", soft and deformable above it.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: IMPEDANCE ===== -->
+  <div class="section" id="impedance">
+    <div class="section-header">
+      <div class="section-num">04 · ELECTRICAL</div>
+      <div class="section-title">Impedance Control</div>
+      <div class="section-sub">Characteristic impedance is the most important electrical property you design into a PCB trace. Mismatch causes signal reflections, data errors, and EMI.</div>
+    </div>
+
+    <div class="info-info" style="margin-bottom:20px">
+      ⚡ <strong>Beginner Concept: Why does 50Ω matter?</strong> When you plug headphones into a phone, impedance mismatch causes distortion. For high-speed digital signals (USB, PCIe, HDMI), impedance mismatch causes reflections — the signal bounces back along the trace and corrupts data. Controlling impedance to ±10% is how you prevent this.
+    </div>
+
+    <div class="grid2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">Microstrip — Surface Trace</div>
+        <svg viewBox="0 0 300 100" style="width:100%;height:80px;margin-bottom:12px">
+          <rect x="20" y="60" width="260" height="20" fill="rgba(46,120,70,0.3)" stroke="rgba(46,180,100,0.5)" stroke-width="1" rx="3"/>
+          <text x="150" y="74" text-anchor="middle" font-size="9" fill="#4caf76" font-family="monospace">GND Reference Plane (L2)</text>
+          <rect x="100" y="34" width="100" height="14" fill="rgba(232,148,58,0.3)" stroke="#e8943a" stroke-width="1.5" rx="2"/>
+          <text x="150" y="44" text-anchor="middle" font-size="8" fill="#f5b865" font-family="monospace">Trace W=5mil T=1.4mil</text>
+          <line x1="150" y1="48" x2="150" y2="60" stroke="#4a6070" stroke-width="0.8" stroke-dasharray="3,2"/>
+          <text x="162" y="57" font-size="8" fill="#4a6070" font-family="monospace">H=4mil</text>
+          <text x="150" y="20" text-anchor="middle" font-size="8" fill="#4a6070" font-family="monospace">Air (ε=1) above trace</text>
+          <path d="M40,28 Q60,12 90,20 Q120,28 150,20 Q180,12 210,20 Q240,28 260,16" fill="none" stroke="rgba(79,195,247,0.3)" stroke-width="1.5"/>
+          <text x="155" y="28" font-size="7" fill="rgba(79,195,247,0.5)" font-family="monospace">EM field (partial air)</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text2);line-height:1.6">Trace is on the outer surface. Electric field is partly in air (above) and partly in dielectric (below). This makes εr_eff &lt; εr. Faster propagation, easier to route, but more EMI exposure.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Stripline — Buried Trace</div>
+        <svg viewBox="0 0 300 100" style="width:100%;height:80px;margin-bottom:12px">
+          <rect x="20" y="10" width="260" height="16" fill="rgba(46,120,70,0.3)" stroke="rgba(46,180,100,0.5)" stroke-width="1" rx="3"/>
+          <text x="150" y="21" text-anchor="middle" font-size="8" fill="#4caf76" font-family="monospace">GND Plane (L2) — B1=4mil above</text>
+          <rect x="20" y="74" width="260" height="16" fill="rgba(46,120,70,0.3)" stroke="rgba(46,180,100,0.5)" stroke-width="1" rx="3"/>
+          <text x="150" y="85" text-anchor="middle" font-size="8" fill="#4caf76" font-family="monospace">GND Plane (L4) — B2=4mil below</text>
+          <rect x="30" y="26" width="240" height="48" fill="rgba(46,200,100,0.04)" stroke="none"/>
+          <rect x="100" y="42" width="100" height="14" fill="rgba(232,148,58,0.3)" stroke="#e8943a" stroke-width="1.5" rx="2"/>
+          <text x="150" y="52" text-anchor="middle" font-size="8" fill="#f5b865" font-family="monospace">Buried Trace — 100% εr</text>
+          <line x1="65" y1="26" x2="65" y2="42" stroke="#4a6070" stroke-width="0.8" stroke-dasharray="2,2"/>
+          <text x="20" y="38" font-size="7" fill="#4a6070" font-family="monospace">B1</text>
+          <line x1="65" y1="56" x2="65" y2="74" stroke="#4a6070" stroke-width="0.8" stroke-dasharray="2,2"/>
+          <text x="20" y="68" font-size="7" fill="#4a6070" font-family="monospace">B2</text>
+        </svg>
+        <p style="font-size:12px;color:var(--text2);line-height:1.6">Trace is completely inside the dielectric. εr_eff = εr (full material Dk). Better shielding, lower crosstalk, lower EMI emission. Slower propagation than microstrip. Best for critical signals.</p>
+      </div>
+    </div>
+
+    <!-- Formulas -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Impedance Formulas — Wadell / IPC-2141A</div>
+      <div style="margin-bottom:8px;font-size:12px;font-family:var(--mono);color:var(--text3);letter-spacing:0.06em">① MICROSTRIP (Surface Trace)</div>
+      <div class="formula-block">
+        W_eff = <em>W + (T/π) × ln(4e / √((T/H)² + (T/πW)²))</em><br>
+        Z₀ = <em>(87 / √(εr + 1.41)) × ln(5.98×H / (0.8×W_eff + T))</em>
+      </div>
+      <div style="margin:14px 0 8px;font-size:12px;font-family:var(--mono);color:var(--text3);letter-spacing:0.06em">② STRIPLINE (Dual Ref Plane)</div>
+      <div class="formula-block">
+        Z₀ = <em>(60 / √εr) × ln(4×b / (0.67×π×(0.8×W + T)))</em><br>
+        <span class="cm">where b = B1 + B2 (total dielectric between reference planes)</span>
+      </div>
+      <div style="margin:14px 0 8px;font-size:12px;font-family:var(--mono);color:var(--text3);letter-spacing:0.06em">③ DIFFERENTIAL MICROSTRIP (Edge-Coupled Pair)</div>
+      <div class="formula-block">
+        Zodd = <em>Z₀_single × (1 − 0.347 × e^(−2.9×S / (2×H)))</em><br>
+        Zdiff = <em>2 × Zodd</em>
+      </div>
+    </div>
+
+    <!-- Diff pair table -->
+    <div class="card">
+      <div class="card-title">Differential Pair Routing Rules by Protocol</div>
+      <div class="mat-table-wrap">
+        <table>
+          <thead><tr><th>Protocol</th><th>Zdiff Target</th><th>Spacing Rule</th><th>Length Match</th><th>Best Layer</th></tr></thead>
+          <tbody>
+            <tr><td><strong>USB 2.0</strong></td><td><span class="pill pill-a">90 Ω ±15%</span></td><td>2×W center-to-center</td><td>±100 mil</td><td>Surface microstrip</td></tr>
+            <tr><td><strong>USB 3.2 Gen2</strong></td><td><span class="pill pill-a">90 Ω ±10%</span></td><td>2×W, no stubs</td><td>±10 mil</td><td>Inner stripline</td></tr>
+            <tr><td><strong>PCIe Gen 4/5</strong></td><td><span class="pill pill-a">85 Ω ±10%</span></td><td>2×W, no via splits</td><td>±5 mil</td><td>Dedicated inner strip</td></tr>
+            <tr><td><strong>GbE / 10GbE</strong></td><td><span class="pill pill-b">100 Ω ±15%</span></td><td>3×W c-to-c</td><td>±50 mil</td><td>Surface or inner</td></tr>
+            <tr><td><strong>HDMI 2.1</strong></td><td><span class="pill pill-b">100 Ω ±15%</span></td><td>3×W c-to-c</td><td>±50 mil</td><td>Surface microstrip</td></tr>
+            <tr><td><strong>DDR5 DQS</strong></td><td><span class="pill pill-b">100 Ω ±10%</span></td><td>3×W c-to-c</td><td>±5 mil / byte lane</td><td>Inner stripline</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 5: SYMMETRY ===== -->
+  <div class="section" id="symmetry">
+    <div class="section-header">
+      <div class="section-num">05 · MECHANICAL</div>
+      <div class="section-title">Stackup Symmetry & Warpage</div>
+      <div class="section-sub">An asymmetric stackup will warp during reflow like a bimetallic strip. IPC-6012 permits max 0.75% bow/twist for standard boards.</div>
+    </div>
+
+    <div class="info-warn" style="margin-bottom:20px">
+      ⚠️ <strong>Beginner Warning:</strong> The #1 warpage cause in production is engineers who specify symmetric thicknesses but use different glass styles (e.g., 2116 above midplane, 7628 below). Glass style determines the CTE — even if total thickness matches, different glass styles expand differently during reflow. Always mirror the glass style number, not just the thickness.
+    </div>
+
+    <div class="sym-compare" style="margin-bottom:20px">
+      <div class="sym-box good">
+        <div class="sym-header">✅ CORRECT — Symmetric Stackup</div>
+        <div class="sym-layers">
+          <div class="sl sl-copper-outer" style="font-size:9px;height:24px">L1 ½oz Cu — Signal</div>
+          <div class="sl sl-prepreg" style="font-size:9px;height:24px">Prepreg 2116 — 4.0 mil</div>
+          <div class="sl sl-copper-plane" style="font-size:9px;height:24px">L2 1oz Cu — GND</div>
+          <div class="sl sl-core" style="font-size:9px;height:24px">Core FR4 — 10.0 mil</div>
+          <div class="sl sl-midplane" style="font-size:9px;height:18px">—— MIDPLANE ——</div>
+          <div class="sl sl-core" style="font-size:9px;height:24px">Core FR4 — 10.0 mil ✓ MIRROR</div>
+          <div class="sl sl-copper-plane" style="font-size:9px;height:24px">L3 1oz Cu — GND</div>
+          <div class="sl sl-prepreg" style="font-size:9px;height:24px">Prepreg 2116 — 4.0 mil ✓ MIRROR</div>
+          <div class="sl sl-copper-outer" style="font-size:9px;height:24px">L4 ½oz Cu — Signal</div>
+        </div>
+      </div>
+      <div class="sym-box bad">
+        <div class="sym-header">❌ DEFECT — Asymmetric Stackup (Will Warp)</div>
+        <div class="sym-layers">
+          <div class="sl sl-copper-outer" style="font-size:9px;height:24px">L1 ½oz Cu — Signal</div>
+          <div class="sl sl-prepreg" style="font-size:9px;height:24px">Prepreg 2116 — 4.0 mil</div>
+          <div class="sl sl-copper-plane" style="font-size:9px;height:24px">L2 1oz Cu — GND</div>
+          <div class="sl sl-core" style="font-size:9px;height:24px">Core FR4 — 10.0 mil</div>
+          <div class="sl sl-midplane" style="font-size:9px;height:18px">—— MIDPLANE ——</div>
+          <div class="sl" style="font-size:9px;height:36px;background:rgba(239,83,80,0.15);border:1px solid rgba(239,83,80,0.4);color:var(--red)">Core FR4 — 16.0 mil ✗ MISMATCH</div>
+          <div class="sl sl-copper-plane" style="font-size:9px;height:24px">L3 1oz Cu — GND</div>
+          <div class="sl" style="font-size:9px;height:16px;background:rgba(239,83,80,0.15);border:1px solid rgba(239,83,80,0.4);color:var(--red)">Prepreg 7628 — 1.5 mil ✗ WRONG STYLE</div>
+          <div class="sl sl-copper-outer" style="font-size:9px;height:24px">L4 ½oz Cu — Signal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Symmetry Checklist — SSOT Requirements</div>
+      <table>
+        <thead><tr><th>#</th><th>Rule</th><th>Root Cause if Violated</th></tr></thead>
+        <tbody>
+          <tr><td style="font-family:var(--mono);color:var(--copper)">1</td><td>Mirror prepreg <strong>glass style AND</strong> resin content about midplane</td><td>Unequal CTE → warpage during reflow</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--copper)">2</td><td>Mirror copper weights on each layer pair</td><td>Unequal volume copper per side → stress</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--copper)">3</td><td>Always use even layer count (4, 6, 8, 10…)</td><td>No true midplane axis on odd-layer boards</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--copper)">4</td><td>Specify ≥50% copper fill on plane layers</td><td>Sparse plane → uneven CTE stress</td></tr>
+          <tr><td style="font-family:var(--mono);color:var(--copper)">5</td><td>Bake board 125°C / 4 hrs before reflow (IPC-1601)</td><td>Moisture → steam → delamination at 260°C</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 6: REFERENCE PLANES ===== -->
+  <div class="section" id="planes">
+    <div class="section-header">
+      <div class="section-num">06 · SI & EMC</div>
+      <div class="section-title">Reference Planes</div>
+      <div class="section-sub">A solid, uninterrupted ground plane is the single most impactful SI and EMC decision in your entire stackup design.</div>
+    </div>
+
+    <div class="explain-card" style="margin-bottom:20px">
+      <div class="eq">🧲</div>
+      <h4>Why Return Currents Matter — The Key Concept</h4>
+      <p>Every signal current needs a return path. At DC, this return current spreads across the entire ground plane. But at high frequencies (>1 MHz), the return current concentrates directly beneath the signal trace — following the path of least inductance, not least resistance.</p>
+      <div class="analogy">If you cut a slot in the ground plane under a trace, the return current must detour around the slot — creating a large current loop, which radiates like an antenna and causes EMI failures. This is called "return current discontinuity" and it's responsible for the majority of first-article EMC test failures.</div>
+    </div>
+
+    <div class="plane-vis" style="margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:16px">8-Layer Layer Assignment — Best Practice</div>
+      <div class="plane-layer" style="background:rgba(232,148,58,0.12);border:1px solid rgba(232,148,58,0.3);color:var(--copper2)">L1 — Signal (Microstrip) · Short escapes, ICs, RF · Reference: L2 GND</div>
+      <div class="plane-layer" style="background:rgba(46,120,70,0.18);border:1px solid rgba(46,180,100,0.4);color:#4caf76">L2 — SOLID GND Reference · Primary return plane · MUST be uninterrupted</div>
+      <div class="plane-layer" style="background:rgba(232,148,58,0.08);border:1px solid rgba(232,148,58,0.2);color:var(--copper)">L3 — Signal (Stripline) · PCIe, DDR DQ, USB · Refs: L2 GND + L4 PWR</div>
+      <div class="plane-layer" style="background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.25);color:var(--blue)">L4 — Power Plane · 1V0 / 1V8 / 3V3 rails · Tight to L5 for PDN capacitance</div>
+      <div class="plane-layer" style="background:rgba(46,120,70,0.12);border:1px solid rgba(46,180,100,0.3);color:#4caf76">L5 — SOLID GND Reference · Secondary GND + PDN pair with L4</div>
+      <div class="plane-layer" style="background:rgba(232,148,58,0.08);border:1px solid rgba(232,148,58,0.2);color:var(--copper)">L6 — Signal (Stripline) · BEST SHIELDED · DDR5 DQS, PCIe Gen4+ · Refs: L5+L7 GND</div>
+      <div class="plane-layer" style="background:rgba(46,120,70,0.12);border:1px solid rgba(46,180,100,0.3);color:#4caf76">L7 — SOLID GND Reference · Mirror of L2</div>
+      <div class="plane-layer" style="background:rgba(232,148,58,0.12);border:1px solid rgba(232,148,58,0.3);color:var(--copper2)">L8 — Signal (Microstrip) · Power connectors, low-speed I/O · Reference: L7 GND</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reference Plane Rules — SSOT Requirements</div>
+      <table>
+        <thead><tr><th>Rule</th><th>Specification</th><th>Risk if Violated</th></tr></thead>
+        <tbody>
+          <tr><td>Adjacent Plane Requirement</td><td>Every high-speed layer must be adjacent to a solid GND plane</td><td>Impedance variation ±40%, EMI failure</td></tr>
+          <tr><td>No Slot Under Traces</td><td>No breaks within 3×H of any controlled-impedance trace</td><td>Resonant stub, EMI spike &gt;6 dB</td></tr>
+          <tr><td>GND-PWR Pair Spacing</td><td>L4 (PWR) to L5 (GND) ≤4 mil for embedded decoupling</td><td>High PDN impedance, PI failures at GHz</td></tr>
+          <tr><td>No Plane Split Crossing</td><td>Signal traces must never cross a power plane split boundary</td><td>Return current discontinuity, EMI hot spot</td></tr>
+          <tr><td>Stitching Via Pitch</td><td>GND stitching vias every λ/20 along plane boundaries</td><td>Resonant cavity modes, radiated EMI</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 7: HDI & VIAS ===== -->
+  <div class="section" id="hdi">
+    <div class="section-header">
+      <div class="section-num">07 · INTERCONNECT</div>
+      <div class="section-title">HDI & Via Types</div>
+      <div class="section-sub">Vias are how signals travel between layers. Choosing the wrong via type is one of the most expensive mistakes in PCB design — via changes require re-lamination.</div>
+    </div>
+
+    <div class="via-grid" style="margin-bottom:20px">
+      <div class="via-card">
+        <svg viewBox="0 0 80 80">
+          <rect x="10" y="6" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <text x="40" y="14" text-anchor="middle" font-size="6" fill="#f5b865" font-family="monospace">L1</text>
+          <rect x="10" y="22" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="36" width="60" height="8" fill="rgba(232,148,58,0.15)" stroke="rgba(232,148,58,0.3)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="50" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="64" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <text x="40" y="72" text-anchor="middle" font-size="6" fill="#f5b865" font-family="monospace">L4</text>
+          <rect x="33" y="6" width="14" height="68" fill="none" stroke="#4fc3f7" stroke-width="2" rx="3"/>
+          <line x1="40" y1="6" x2="40" y2="74" stroke="rgba(79,195,247,0.3)" stroke-width="1"/>
+        </svg>
+        <h4>Through-Hole Via</h4>
+        <p>Drills all layers top-to-bottom. Most common, lowest cost. Max aspect ratio 10:1. Stubs cause reflections above 6 Gbps — back-drill to remove.</p>
+      </div>
+      <div class="via-card">
+        <svg viewBox="0 0 80 80">
+          <rect x="10" y="6" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <text x="40" y="14" text-anchor="middle" font-size="6" fill="#f5b865" font-family="monospace">L1</text>
+          <rect x="10" y="22" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="36" width="60" height="8" fill="rgba(232,148,58,0.15)" stroke="rgba(232,148,58,0.3)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="50" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="64" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <rect x="33" y="6" width="14" height="38" fill="none" stroke="#e24b4a" stroke-width="2" rx="3"/>
+        </svg>
+        <h4>Blind Via</h4>
+        <p>Connects an outer layer to one or more inner layers without going all the way through. Laser-drilled for microvias. Required for 0.5mm pitch BGA escape.</p>
+      </div>
+      <div class="via-card">
+        <svg viewBox="0 0 80 80">
+          <rect x="10" y="6" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <rect x="10" y="22" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="36" width="60" height="8" fill="rgba(232,148,58,0.15)" stroke="rgba(232,148,58,0.3)" stroke-width="0.8" rx="1"/>
+          <text x="40" y="42" text-anchor="middle" font-size="6" fill="#f5b865" font-family="monospace">L3</text>
+          <rect x="10" y="50" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="64" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <rect x="33" y="22" width="14" height="36" fill="none" stroke="#1D9E75" stroke-width="2" rx="3"/>
+        </svg>
+        <h4>Buried Via</h4>
+        <p>Inner layers only — not visible from outer surface. Requires sequential lamination. High cost. Frees surface routing channels for densest BGA designs.</p>
+      </div>
+      <div class="via-card">
+        <svg viewBox="0 0 80 80">
+          <rect x="10" y="6" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <text x="40" y="14" text-anchor="middle" font-size="6" fill="#f5b865" font-family="monospace">L1</text>
+          <rect x="10" y="22" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <text x="40" y="29" text-anchor="middle" font-size="6" fill="#4caf76" font-family="monospace">L2</text>
+          <rect x="10" y="36" width="60" height="8" fill="rgba(232,148,58,0.15)" stroke="rgba(232,148,58,0.3)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="50" width="60" height="8" fill="rgba(46,120,70,0.2)" stroke="rgba(46,180,100,0.4)" stroke-width="0.8" rx="1"/>
+          <rect x="10" y="64" width="60" height="10" fill="rgba(232,148,58,0.25)" stroke="#e8943a" stroke-width="0.8" rx="2"/>
+          <rect x="35" y="6" width="10" height="24" fill="none" stroke="#BA7517" stroke-width="2" rx="5"/>
+        </svg>
+        <h4>Microvia (HDI)</h4>
+        <p>Laser-drilled, ≤6 mil diameter. Aspect ratio must be ≤0.75:1 (IPC-2226). Stackable (filled with copper). Required for 0.4mm BGA on any-layer HDI.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">HDI Build-Up Sequence — IPC-2226 Classification</div>
+      <table>
+        <thead><tr><th>HDI Class</th><th>Notation</th><th>Via Types</th><th>Min BGA Pitch</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Type I</strong></td><td style="font-family:var(--mono);color:var(--copper2)">1+N+1</td><td>Microvia L1↔L2 only</td><td>0.65 mm</td><td><span class="pill pill-g">Low+</span></td></tr>
+          <tr><td><strong>Type II</strong></td><td style="font-family:var(--mono);color:var(--copper2)">2+N+2</td><td>Stacked microvia L1↔L3</td><td>0.5 mm</td><td><span class="pill pill-a">Medium</span></td></tr>
+          <tr><td><strong>Type III</strong></td><td style="font-family:var(--mono);color:var(--copper2)">3+N+3</td><td>Stacked µvias + buried</td><td>0.4 mm</td><td><span class="pill pill-a">Medium+</span></td></tr>
+          <tr><td><strong>ELIC</strong></td><td style="font-family:var(--mono);color:var(--copper2)">Any-layer</td><td>Full any-layer interconnect</td><td>0.3 mm</td><td><span class="pill pill-r">Very High</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 8: IPC ===== -->
+  <div class="section" id="ipc">
+    <div class="section-header">
+      <div class="section-num">08 · STANDARDS</div>
+      <div class="section-title">IPC Standards Reference</div>
+      <div class="section-sub">IPC standards are the contractual language between designers, fabricators, and assemblers. Cite these in your SSOT document for zero-ambiguity manufacturing.</div>
+    </div>
+
+    <div class="ipc-grid">
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-2221B</div>
+        <div class="ipc-content">
+          <h4>Generic Standard on PCB Design</h4>
+          <p>Foundation standard for all PCB designs. Covers minimum conductor spacing, annular ring requirements, via aspect ratios, thermal relief pads, and electrical clearances for all voltage levels. Every PCB must comply with this document.</p>
+        </div>
+      </div>
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-4101C</div>
+        <div class="ipc-content">
+          <h4>Base Materials for Rigid PCBs</h4>
+          <p>Defines material grade "slash-sheet" designators: /21 = standard FR4, /24 = high-Tg FR4, /99 = halogen-free. Always specify laminate by IPC-4101 designator in your SSOT — never by brand name alone. Prevents unauthorized substitutions at the fab house.</p>
+        </div>
+      </div>
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-4562</div>
+        <div class="ipc-content">
+          <h4>Metal Foil for Printed Wiring Board</h4>
+          <p>Defines copper foil grades: ED (electrodeposited — standard), RA (rolled annealed — flexible circuits), VLP (Very Low Profile — mandatory for ≥10 GHz to minimize surface roughness conductor loss). Specify VLP copper in your SSOT for high-speed designs.</p>
+        </div>
+      </div>
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-2226</div>
+        <div class="ipc-content">
+          <h4>Sectional Design Standard for HDI</h4>
+          <p>Covers microvia design rules, build-up layer specifications, land pad sizing for stacked vs. staggered microvias, and capture pad annular ring requirements. Essential for any design with BGA pitch below 0.65mm.</p>
+        </div>
+      </div>
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-6012E</div>
+        <div class="ipc-content">
+          <h4>Qualification & Performance for Rigid PCBs</h4>
+          <p>Defines Class 1/2/3 acceptance criteria for bow/twist (&lt;0.75% Class 2, &lt;0.5% Class 3), annular ring minimum, hole wall quality, dielectric thickness tolerance, and copper plating thickness. Specify Class 3 for aerospace/medical, Class 2 for standard commercial.</p>
+        </div>
+      </div>
+      <div class="ipc-card">
+        <div class="ipc-id-box">IPC-1601</div>
+        <div class="ipc-content">
+          <h4>Printed Board Handling and Storage</h4>
+          <p>Mandates moisture bake-out (125°C for 4–8 hours minimum) before reflow soldering. Non-compliance is the primary cause of measling, delamination, and CAF (Conductive Anodic Filament) failures. Must be called out explicitly on your fab drawing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 9: CALCULATOR ===== -->
+  <div class="section" id="calculator">
+    <div class="section-header">
+      <div class="section-num">09 · TOOLS</div>
+      <div class="section-title">⚡ Live Impedance Calculator</div>
+      <div class="section-sub">Wadell / IPC-2141A equations. Enter your stackup parameters to calculate trace impedance and get pass/fail status against standard targets.</div>
+    </div>
+
+    <div class="calc-wrap">
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="setCalcMode('micro')">Microstrip</button>
+        <button class="mode-tab" onclick="setCalcMode('strip')">Stripline</button>
+        <button class="mode-tab" onclick="setCalcMode('diff')">Diff Microstrip</button>
+      </div>
+
+      <div class="calc-grid">
+        <div class="inp-grp">
+          <div class="inp-row">
+            <label>εr — Dielectric Constant (Dk)</label>
+            <input type="number" id="c-er" value="4.1" step="0.05" oninput="runCalc()"/>
+          </div>
+          <div class="inp-row">
+            <label>W — Trace Width (mil)</label>
+            <input type="number" id="c-w" value="5.0" step="0.1" oninput="runCalc()"/>
+          </div>
+          <div class="inp-row">
+            <label>T — Copper Thickness (mil)</label>
+            <input type="number" id="c-t" value="1.4" step="0.1" oninput="runCalc()"/>
+          </div>
+          <div class="inp-row">
+            <label>H — Dielectric Height above ref plane (mil)</label>
+            <input type="number" id="c-h" value="4.0" step="0.1" oninput="runCalc()"/>
+          </div>
+          <div class="inp-row" id="c-row-b2">
+            <label>B2 — Dielectric Height below ref plane — Stripline only (mil)</label>
+            <input type="number" id="c-b2" value="4.0" step="0.1" oninput="runCalc()"/>
+          </div>
+          <div class="inp-row" id="c-row-s">
+            <label>S — Trace-to-Trace Separation for Diff Pair (mil)</label>
+            <input type="number" id="c-s" value="5.0" step="0.1" oninput="runCalc()"/>
+          </div>
+          <div class="info-info" style="margin-top:8px;font-size:12px">
+            💡 <strong>Beginner tip:</strong> Start with H=4mil, W=5mil, T=1.4mil, Dk=4.1 on FR4 — this gives ~50Ω microstrip. Increase W to decrease impedance. Increase H to increase impedance.
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="result-panel">
+            <div class="res-item">
+              <div class="res-lbl" id="r-lbl1">Z₀ — Characteristic Impedance</div>
+              <div class="res-val" id="r-val1">—</div>
+              <div class="res-status" id="r-stat1"></div>
+            </div>
+          </div>
+          <div class="result-panel" id="r-panel2" style="display:none">
+            <div class="res-item">
+              <div class="res-lbl" id="r-lbl2">Zdiff — Differential Impedance</div>
+              <div class="res-val" id="r-val2">—</div>
+              <div class="res-status" id="r-stat2"></div>
+            </div>
+          </div>
+          <div class="res-extra" id="r-extra"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code block -->
+    <div style="margin-top:24px">
+      <div class="card-title" style="margin-bottom:14px">JavaScript Implementation — For Developers</div>
+      <div class="code-block">
+<span class="cm">// PCB Impedance Calculator — Wadell / IPC-2141A</span>
+<span class="cm">// All dimensions in mils. Output in Ohms.</span>
+
+<span class="kw">function</span> <span class="fn">calcMicrostrip</span>(er, W, T, H) {
+  <span class="kw">const</span> Weff = W + (T / Math.PI) *
+    Math.log(<span class="num">4</span> * Math.E / Math.sqrt(
+      Math.pow(T/H, <span class="num">2</span>) + Math.pow(T/(Math.PI*W), <span class="num">2</span>)
+    ));
+  <span class="kw">return</span> (<span class="num">87</span> / Math.sqrt(er + <span class="num">1.41</span>)) *
+    Math.log(<span class="num">5.98</span> * H / (<span class="num">0.8</span> * Weff + T));
+}
+
+<span class="kw">function</span> <span class="fn">calcStripline</span>(er, W, T, B1, B2) {
+  <span class="kw">const</span> b = B1 + B2; <span class="cm">// total dielectric between GND planes</span>
+  <span class="kw">return</span> (<span class="num">60</span> / Math.sqrt(er)) *
+    Math.log(<span class="num">4</span>*b / (<span class="num">0.67</span>*Math.PI*(<span class="num">0.8</span>*W + T)));
+}
+
+<span class="kw">function</span> <span class="fn">calcDiffMicrostrip</span>(er, W, T, H, S) {
+  <span class="kw">const</span> Z0 = <span class="fn">calcMicrostrip</span>(er, W, T, H);
+  <span class="kw">const</span> Zodd = Z0 * (<span class="num">1</span> - <span class="num">0.347</span> * Math.exp(-<span class="num">2.9</span>*S/(<span class="num">2</span>*H)));
+  <span class="kw">return</span> { Z0, Zodd, Zdiff: <span class="num">2</span> * Zodd };
+}
+
+<span class="cm">// Example: 50Ω microstrip on FR4</span>
+<span class="kw">const</span> Z = <span class="fn">calcMicrostrip</span>(<span class="num">4.1</span>, <span class="num">5.0</span>, <span class="num">1.4</span>, <span class="num">4.0</span>);
+console.log(<span class="str">`Z0 = ${Z.toFixed(1)} Ω`</span>); <span class="cm">// → ~50 Ω</span>
+
+<span class="cm">// Example: 100Ω diff pair on FR4</span>
+<span class="kw">const</span> d = <span class="fn">calcDiffMicrostrip</span>(<span class="num">4.1</span>, <span class="num">4.5</span>, <span class="num">1.4</span>, <span class="num">4.0</span>, <span class="num">5.0</span>);
+console.log(<span class="str">`Zdiff = ${d.Zdiff.toFixed(1)} Ω`</span>); <span class="cm">// → ~100 Ω</span>
+
+<span class="cm">// Tolerance check — IPC-2141A ±10%</span>
+<span class="kw">function</span> <span class="fn">checkTolerance</span>(Z0, target, tolerancePct = <span class="num">10</span>) {
+  <span class="kw">const</span> error = Math.abs(Z0 - target) / target * <span class="num">100</span>;
+  <span class="kw">return</span> {
+    pass: error &lt;= tolerancePct,
+    errorPct: error.toFixed(<span class="num">1</span>),
+    range: [target * (<span class="num">1</span>-tolerancePct/<span class="num">100</span>), target * (<span class="num">1</span>+tolerancePct/<span class="num">100</span>)]
+  };
+}</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>PCB Stackup Design Masterclass · <span>SSOT Methodology</span> · IPC-2221B · IPC-4101C · IPC-6012E</p>
+    <p style="margin-top:6px">Formulas based on Wadell's Transmission Line Design Handbook · IPC-2141A Appendix A</p>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ===== NAVIGATION =====
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Active nav on scroll
+const sections = ['ssot','anatomy','materials','impedance','symmetry','planes','hdi','ipc','calculator'];
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      if (idx >= 0) {
+        document.querySelectorAll('.nav-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+      }
+    }
+  });
+}, { rootMargin: '-40% 0px -40% 0px' });
+
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// ===== SECTION FADE-IN =====
+const secObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => secObs.observe(s));
+
+// ===== CALCULATOR =====
+let calcMode = 'micro';
+
+function setCalcMode(mode) {
+  calcMode = mode;
+  document.querySelectorAll('.mode-tab').forEach((b, i) => {
+    b.classList.toggle('active', ['micro','strip','diff'][i] === mode);
+  });
+  document.getElementById('c-row-b2').style.display = mode === 'strip' ? 'flex' : 'none';
+  document.getElementById('c-row-s').style.display = mode === 'diff' ? 'flex' : 'none';
+  document.getElementById('r-panel2').style.display = mode === 'diff' ? 'block' : 'none';
+  runCalc();
+}
+
+function calcMicrostrip(er, W, T, H) {
+  const Weff = W + (T / Math.PI) * Math.log(4 * Math.E / Math.sqrt(Math.pow(T/H,2) + Math.pow(T/(Math.PI*W),2)));
+  return (87 / Math.sqrt(er + 1.41)) * Math.log(5.98 * H / (0.8 * Weff + T));
+}
+function calcStripline(er, W, T, B1, B2) {
+  const b = B1 + B2;
+  return (60 / Math.sqrt(er)) * Math.log(4*b / (0.67*Math.PI*(0.8*W + T)));
+}
+function calcDiff(er, W, T, H, S) {
+  const Z0 = calcMicrostrip(er, W, T, H);
+  const Zodd = Z0 * (1 - 0.347 * Math.exp(-2.9 * S / (2 * H)));
+  return { Z0, Zodd, Zdiff: 2 * Zodd };
+}
+function statusHtml(Z, target, tol) {
+  const err = Math.abs(Z - target) / target * 100;
+  if (err <= tol) return `<span class="pill pill-g">✅ PASS — ±${err.toFixed(1)}% vs ${target}Ω target</span>`;
+  if (err <= tol * 1.5) return `<span class="pill pill-a">⚠️ MARGINAL — ±${err.toFixed(1)}% vs ${target}Ω</span>`;
+  return `<span class="pill pill-r">❌ FAIL — ±${err.toFixed(1)}% vs ${target}Ω</span>`;
+}
+
+function runCalc() {
+  const er = parseFloat(document.getElementById('c-er').value) || 4.1;
+  const W  = parseFloat(document.getElementById('c-w').value)  || 5;
+  const T  = parseFloat(document.getElementById('c-t').value)  || 1.4;
+  const H  = parseFloat(document.getElementById('c-h').value)  || 4;
+  const B2 = parseFloat(document.getElementById('c-b2').value) || 4;
+  const S  = parseFloat(document.getElementById('c-s').value)  || 5;
+
+  try {
+    if (calcMode === 'micro') {
+      const Z = calcMicrostrip(er, W, T, H);
+      const erEff = ((er+1)/2 + (er-1)/2 * Math.pow(1+12*H/W,-0.5));
+      document.getElementById('r-lbl1').textContent = 'Z₀ — Microstrip Impedance';
+      document.getElementById('r-val1').textContent = Z.toFixed(1) + ' Ω';
+      document.getElementById('r-stat1').innerHTML = statusHtml(Z, 50, 10);
+      document.getElementById('r-extra').innerHTML =
+        `εr_eff = ${erEff.toFixed(3)}<br>` +
+        `Propagation delay = ${(Math.sqrt(erEff)/30).toFixed(4)} ns/inch<br>` +
+        `Velocity = ${(30/Math.sqrt(erEff)).toFixed(2)} inch/ns<br>` +
+        `Acceptable range: ${(50*0.9).toFixed(0)}–${(50*1.1).toFixed(0)} Ω (±10%)`;
+    } else if (calcMode === 'strip') {
+      const Z = calcStripline(er, W, T, H, B2);
+      document.getElementById('r-lbl1').textContent = 'Z₀ — Stripline Impedance';
+      document.getElementById('r-val1').textContent = Z.toFixed(1) + ' Ω';
+      document.getElementById('r-stat1').innerHTML = statusHtml(Z, 50, 10);
+      document.getElementById('r-extra').innerHTML =
+        `b (total dielectric) = ${(H+B2).toFixed(1)} mil<br>` +
+        `εr_eff = ${er.toFixed(3)} (fully buried in εr)<br>` +
+        `Propagation delay = ${(Math.sqrt(er)/30).toFixed(4)} ns/inch<br>` +
+        `Acceptable range: ${(50*0.9).toFixed(0)}–${(50*1.1).toFixed(0)} Ω (±10%)`;
+    } else {
+      const r = calcDiff(er, W, T, H, S);
+      document.getElementById('r-lbl1').textContent = 'Z₀ — Single-Ended Reference';
+      document.getElementById('r-val1').textContent = r.Z0.toFixed(1) + ' Ω';
+      document.getElementById('r-stat1').innerHTML = statusHtml(r.Z0, 50, 10);
+      document.getElementById('r-lbl2').textContent = 'Zdiff — Differential Impedance';
+      document.getElementById('r-val2').textContent = r.Zdiff.toFixed(1) + ' Ω';
+      document.getElementById('r-stat2').innerHTML = statusHtml(r.Zdiff, 100, 10);
+      document.getElementById('r-extra').innerHTML =
+        `Zodd = ${r.Zodd.toFixed(2)} Ω<br>` +
+        `Zdiff = 2 × Zodd = ${r.Zdiff.toFixed(1)} Ω<br>` +
+        `S/H coupling ratio = ${(S/H).toFixed(3)}<br>` +
+        `Coupling factor = ${(0.347*Math.exp(-2.9*S/(2*H))).toFixed(5)}`;
+    }
+  } catch(e) {
+    document.getElementById('r-val1').textContent = 'Error';
+  }
+}
+
+// Init
+setCalcMode('micro');
+
+// ===== ANIMATE PREPREG BARS =====
+setTimeout(() => {
+  document.querySelectorAll('.pp-fill').forEach(b => {
+    const w = b.style.width;
+    b.style.width = '0';
+    setTimeout(() => b.style.width = w, 100);
+  });
+  document.querySelectorAll('.copper-bar').forEach(b => {
+    const w = b.style.width;
+    b.style.width = '0';
+    setTimeout(() => b.style.width = w, 100);
+  });
+}, 500);
+</script>
+</body>
+</html>
