@@ -379,11 +379,11 @@ a:hover {
 }
 
 .search-bar-toggle {
-  display: none; /* Auto-hidden on desktop/tablet where bar is visible */
+  display: none !important; /* Auto-hidden on desktop/tablet where bar is visible */
 }
 
 .mobile-search-close {
-  display: none;
+  display: none !important;
 }
 
 .header-actions {
@@ -1989,11 +1989,11 @@ a:hover {
   }
 
   .search-bar-toggle {
-    display: flex;
+    display: flex !important;
   }
 
   .mobile-search-close {
-    display: flex;
+    display: flex !important;
     margin-left: auto;
     background: transparent;
     border: none;
