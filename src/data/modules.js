@@ -412,8 +412,13 @@ export const modulesData = [
           ]
         },
         {
-          heading: "Visual 8-Layer Stackup Configuration",
-          content: "Modern high-speed designs (DDR4/5, PCIe Gen5) utilize 8 or more layers to provide isolation between high-speed signal groups and dedicated reference planes.",
+          heading: "Advanced Material Science — Laminate Database",
+          content: "Searchable, IPC-4101C referenced material database covering critical high-frequency parameters. Click column headers to sort by Df, Tg, Z-CTE, or Thermal Conductivity. Hover acronym headers for plain-English definitions.",
+          type: 'laminate-table'
+        },
+        {
+          heading: "Interactive Layer Stackup Generator",
+          content: "Toggle between 4, 6, 8, and 12-layer configurations to explore symmetric construction strategies. Visualizes solder mask, copper layers, prepreg vs. core, and drill span overlays in a real cross-section format.",
           type: 'visualizer'
         },
         {
@@ -509,9 +514,19 @@ export const modulesData = [
           ]
         },
         {
+          heading: "Real-Time DFM Rule Checker",
+          content: "Enter your board parameters to validate against IPC-2221B manufacturing limits. Three live rule engines check Aspect Ratio, Copper Weight vs. Trace Width, and Copper Density Balance simultaneously.",
+          type: 'dfm-checker'
+        },
+        {
           heading: "Via Technologies: Aspect Ratio & DFM",
           content: "Vias transition signals between layers. Each type carries different parasitic inductance and fabrication costs. Always calculate your Aspect Ratio to ensure plating reliability.",
           type: 'aspect-ratio-calc'
+        },
+        {
+          heading: "High-Speed Signal Integrity: Fiber Weave Skew",
+          content: "Glass fiber bundles in PCB laminates have a higher dielectric constant (Dk ~6.0) than the surrounding resin (~3.2). This periodic Dk variation causes differential pair traces to travel at different speeds — a phenomenon called fiber weave skew.",
+          type: 'fiber-weave'
         },
         {
           heading: "SSOT Intelligence & Export Formats",
@@ -527,6 +542,11 @@ export const modulesData = [
           alerts: [
             { type: 'info', text: "Exporting in IPC-2581 allows the fabricator to verify impedance targets against actual material Dk in their software automatically." }
           ]
+        },
+        {
+          heading: "Stackup Export Simulation (SSOT Download)",
+          content: "Simulate a professional stackup handover. Select your target format to see what data is included. Download a mock IPC-2581 or ODB++ JSON to understand the SSOT data structure expected by modern fabrication houses.",
+          type: 'stackup-export'
         },
         {
           heading: "IPC Standards Compliance",

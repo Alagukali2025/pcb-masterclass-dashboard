@@ -4,8 +4,12 @@ import { modulesData } from '../data/modules';
 import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator } from 'lucide-react';
 import IPCCalculator from './IPCCalculator';
 import StackupCalculator from './StackupCalculator';
-import StackupVisualizer from './StackupVisualizer';
+import StackupLayerToggle from './StackupLayerToggle';
 import AspectRatioCalculator from './AspectRatioCalculator';
+import LaminateTable from './LaminateTable';
+import DFMRuleChecker from './DFMRuleChecker';
+import FiberWeaveSkew from './FiberWeaveSkew';
+import StackupExport from './StackupExport';
 
 export default function ContentViewer() {
   const { id } = useParams();
@@ -267,9 +271,17 @@ export default function ContentViewer() {
                   id === 'footprint' ? <IPCCalculator /> : <StackupCalculator />
                 )}
 
-                {sec.type === 'visualizer' && <StackupVisualizer />}
-                
+                {sec.type === 'visualizer' && <StackupLayerToggle />}
+
                 {sec.type === 'aspect-ratio-calc' && <AspectRatioCalculator />}
+
+                {sec.type === 'laminate-table' && <LaminateTable />}
+
+                {sec.type === 'dfm-checker' && <DFMRuleChecker />}
+
+                {sec.type === 'fiber-weave' && <FiberWeaveSkew />}
+
+                {sec.type === 'stackup-export' && <StackupExport />}
 
                 {sec.filletGrid && (
                   <div className="fillet-grid slide-up">
