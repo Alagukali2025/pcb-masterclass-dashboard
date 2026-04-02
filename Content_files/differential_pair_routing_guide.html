@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Differential Pair Routing — Signal Integrity Engineering Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- KaTeX for LaTeX math rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+
+<style>
+/* ─── Design Tokens ─── */
+:root {
+  --ink:       #0a0c10;
+  --ink2:      #1c2030;
+  --ink3:      #2e3348;
+  --surface:   #f4f2ed;
+  --surface2:  #eae8e1;
+  --surface3:  #dedad0;
+  --accent:    #c8401a;
+  --accent2:   #e05c30;
+  --gold:      #b8860b;
+  --teal:      #1a6b6b;
+  --teal2:     #2a9090;
+  --mono:      'IBM Plex Mono', monospace;
+  --serif:     'Instrument Serif', Georgia, serif;
+  --sans:      'DM Sans', system-ui, sans-serif;
+  --border:    rgba(10,12,16,0.12);
+  --shadow-sm: 0 1px 4px rgba(10,12,16,0.08);
+  --shadow-md: 0 4px 20px rgba(10,12,16,0.10);
+  --shadow-lg: 0 12px 48px rgba(10,12,16,0.14);
+  --r:         6px;
+}
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  background: var(--surface);
+  overflow-x: hidden;
+}
+
+/* ─── Layout ─── */
+.page-wrapper {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--ink);
+  color: #c8cdd8;
+  padding: 0 0 2rem;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.sidebar-brand {
+  padding: 1.6rem 1.4rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 0.8rem;
+}
+.sidebar-brand .tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.sidebar-brand h2 {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: #f0ede6;
+  line-height: 1.35;
+}
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(200,205,216,0.45);
+  padding: 0.9rem 1.4rem 0.3rem;
+}
+.sidebar nav a {
+  display: block;
+  padding: 0.38rem 1.4rem 0.38rem 1.4rem;
+  color: rgba(200,205,216,0.75);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 400;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  color: #f0ede6;
+  border-left-color: var(--accent2);
+  background: rgba(255,255,255,0.04);
+  padding-left: 1.6rem;
+}
+.sidebar nav a.sub {
+  padding-left: 2.2rem;
+  font-size: 11.5px;
+  color: rgba(200,205,216,0.55);
+}
+.sidebar nav a.sub:hover { padding-left: 2.4rem; color: #f0ede6; }
+
+/* ─── Main Content ─── */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3.5rem 3rem 6rem;
+}
+
+/* ─── Hero ─── */
+.hero {
+  position: relative;
+  margin-bottom: 4rem;
+  padding: 3.5rem 3.5rem 3rem;
+  background: var(--ink2);
+  border-radius: 10px;
+  overflow: hidden;
+  color: #f0ede6;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(200,64,26,0.07) 0, rgba(200,64,26,0.07) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(0deg, rgba(200,64,26,0.05) 0, rgba(200,64,26,0.05) 1px, transparent 1px, transparent 40px);
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+.hero-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(224,92,48,0.35);
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 1.1rem;
+  position: relative;
+}
+.hero h1 em {
+  color: var(--accent2);
+  font-style: italic;
+}
+.hero p {
+  font-size: 14.5px;
+  color: rgba(240,237,230,0.72);
+  max-width: 580px;
+  position: relative;
+  line-height: 1.7;
+}
+.hero-meta {
+  display: flex;
+  gap: 1.4rem;
+  margin-top: 2rem;
+  position: relative;
+  flex-wrap: wrap;
+}
+.hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(200,64,26,0.4);
+  border-radius: 3px;
+  color: rgba(240,237,230,0.7);
+  background: rgba(200,64,26,0.08);
+}
+
+/* ─── Section Headings ─── */
+.section {
+  margin-bottom: 4rem;
+  scroll-margin-top: 2rem;
+}
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin-bottom: 1.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--border);
+}
+.section-number {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(200,64,26,0.08);
+  border: 1px solid rgba(200,64,26,0.2);
+  border-radius: 3px;
+  padding: 0.2rem 0.45rem;
+  margin-top: 0.35rem;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+.section h2 {
+  font-family: var(--serif);
+  font-size: 1.9rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.section h3 {
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink2);
+  margin: 2rem 0 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.section h3::before {
+  content: '';
+  width: 14px;
+  height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.section h4 {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 1.4rem 0 0.5rem;
+}
+.section p {
+  color: var(--ink2);
+  margin-bottom: 1rem;
+  font-size: 14.5px;
+}
+.section ul, .section ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.section li {
+  font-size: 14.5px;
+  color: var(--ink2);
+  margin-bottom: 0.45rem;
+}
+.section li strong { color: var(--ink); }
+
+/* ─── Callout Boxes ─── */
+.callout {
+  border-left: 3px solid;
+  padding: 1rem 1.3rem;
+  border-radius: 0 var(--r) var(--r) 0;
+  margin: 1.6rem 0;
+  font-size: 13.5px;
+}
+.callout.info  { border-color: var(--teal2); background: rgba(26,107,107,0.06); }
+.callout.warn  { border-color: var(--gold);  background: rgba(184,134,11,0.06); }
+.callout.critical { border-color: var(--accent); background: rgba(200,64,26,0.06); }
+.callout .callout-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.callout.info   .callout-title { color: var(--teal);  }
+.callout.warn   .callout-title { color: var(--gold);  }
+.callout.critical .callout-title { color: var(--accent); }
+
+/* ─── Math Blocks ─── */
+.math-block {
+  background: var(--ink);
+  color: #f0ede6;
+  border-radius: var(--r);
+  padding: 1.4rem 1.8rem;
+  margin: 1.6rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+.math-block .math-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 0.7rem;
+}
+.math-block .katex-display { color: #f0ede6; margin: 0; }
+.math-block .katex { color: #f0ede6; }
+
+/* ─── Diagram Placeholders ─── */
+.diagram-placeholder {
+  background: var(--surface2);
+  border: 1.5px dashed var(--surface3);
+  border-radius: var(--r);
+  padding: 2rem;
+  text-align: center;
+  margin: 1.6rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.diagram-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-diagonal-gradient;
+  opacity: 0.3;
+}
+.diagram-placeholder svg { margin-bottom: 0.8rem; opacity: 0.4; }
+.diagram-placeholder .diag-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+.diagram-placeholder p {
+  font-size: 13px;
+  color: rgba(10,12,16,0.55);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ─── Code / Mono ─── */
+code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(10,12,16,0.07);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
+  color: var(--accent);
+}
+
+/* ─── Reference Table ─── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1.6rem 0;
+  border-radius: var(--r);
+  box-shadow: var(--shadow-md);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: #fff;
+}
+thead {
+  background: var(--ink);
+  color: #f0ede6;
+}
+thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+}
+tbody tr:nth-child(even) { background: var(--surface2); }
+tbody tr:hover { background: rgba(200,64,26,0.05); }
+tbody td {
+  padding: 0.65rem 1rem;
+  color: var(--ink2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tbody td:first-child {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.badge-zdiff {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  background: rgba(200,64,26,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(200,64,26,0.2);
+}
+
+/* ─── Golden Rules List ─── */
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+.rule-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.1rem 1.2rem;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+}
+.rule-card:hover { box-shadow: var(--shadow-md); }
+.rule-card .rule-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.rule-card h4 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.rule-card p {
+  font-size: 12.5px;
+  color: var(--ink3);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Calculator ─── */
+.calculator {
+  background: var(--ink2);
+  border-radius: 10px;
+  padding: 2rem 2.2rem;
+  margin: 2rem 0;
+  color: #f0ede6;
+  box-shadow: var(--shadow-lg);
+}
+.calc-title {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.calc-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(224,92,48,0.25);
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.calc-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(240,237,230,0.55);
+  margin-bottom: 0.35rem;
+}
+.calc-field input, .calc-field select {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: #f0ede6;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 0.55rem 0.75rem;
+  outline: none;
+  transition: border 0.15s;
+}
+.calc-field input:focus, .calc-field select:focus {
+  border-color: var(--accent2);
+}
+.calc-field select option { background: var(--ink2); }
+.calc-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.65rem 1.6rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 0.2rem;
+}
+.calc-btn:hover { background: var(--accent2); }
+.calc-result {
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  display: none;
+}
+.calc-result.show { display: block; }
+.calc-result .result-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(240,237,230,0.45);
+  margin-bottom: 0.3rem;
+}
+.calc-result .result-value {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent2);
+  line-height: 1.1;
+}
+.calc-result .result-sub {
+  font-size: 11.5px;
+  color: rgba(240,237,230,0.5);
+  margin-top: 0.4rem;
+  font-family: var(--mono);
+}
+.calc-note {
+  font-size: 11px;
+  color: rgba(240,237,230,0.35);
+  margin-top: 1rem;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+
+/* ─── Inline Diagram SVG ─── */
+.inline-diagram {
+  margin: 1.6rem 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.inline-diagram .diag-caption {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(10,12,16,0.45);
+  padding: 0.55rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+/* ─── Audience Tags ─── */
+.audience-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border-radius: 2px;
+  font-weight: 600;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+.audience-tag.beginner {
+  background: rgba(26,107,107,0.1);
+  color: var(--teal);
+  border: 1px solid rgba(26,107,107,0.2);
+}
+.audience-tag.advanced {
+  background: rgba(200,64,26,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(200,64,26,0.2);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .page-wrapper { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  main { padding: 2rem 1.3rem 4rem; }
+  .rules-grid { grid-template-columns: 1fr; }
+  .calc-grid { grid-template-columns: 1fr; }
+  .hero { padding: 2rem; }
+  .hero h1 { font-size: 2rem; }
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(10,12,16,0.18); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+<!-- ─── Sidebar ─── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span class="tag">PCB Design Reference</span>
+    <h2>Differential Pair<br>Routing Guide</h2>
+  </div>
+
+  <span class="nav-section-label">Sections</span>
+  <nav>
+    <a href="#intro">1. Introduction</a>
+    <a href="#fundamentals" class="sub">Single-ended vs Differential</a>
+    <a href="#cmr" class="sub">Common-Mode Rejection</a>
+
+    <a href="#geometry">2. Geometry & Physics</a>
+    <a href="#trace-params" class="sub">Trace Parameters</a>
+    <a href="#impedance-calc" class="sub">Impedance Calculation</a>
+    <a href="#er-effect" class="sub">Dielectric Effects</a>
+
+    <a href="#calculator">3. Zdiff Calculator</a>
+
+    <a href="#routing-rules">4. Golden Routing Rules</a>
+    <a href="#length-match" class="sub">Length Matching</a>
+    <a href="#phase-skew" class="sub">Phase Skew</a>
+    <a href="#return-path" class="sub">Return Path Continuity</a>
+    <a href="#3w-rule" class="sub">3W / 20H Rules</a>
+
+    <a href="#advanced">5. Advanced High-Speed</a>
+    <a href="#via-stubs" class="sub">Via Stubs & Backdrilling</a>
+    <a href="#split-planes" class="sub">Split Plane Routing</a>
+    <a href="#fiber-weave" class="sub">Fiber Weave Effect</a>
+    <a href="#guard-trace" class="sub">Guard Traces</a>
+
+    <a href="#ref-table">6. Reference Table</a>
+    <a href="#glossary">7. Glossary</a>
+  </nav>
+</aside>
+
+<!-- ─── Main Content ─── -->
+<main>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <div class="hero-eyebrow">PCB Signal Integrity Engineering — Authoritative Reference</div>
+  <h1>Differential Pair<br><em>Routing</em></h1>
+  <p>A complete engineering reference covering the physics, geometry, routing rules, and advanced signal integrity techniques for high-speed differential pair design on PCBs.</p>
+  <div class="hero-meta">
+    <div class="hero-badge">▸ USB · Ethernet · HDMI · PCIe</div>
+    <div class="hero-badge">▸ Impedance Calculations</div>
+    <div class="hero-badge">▸ Interactive $Z_{diff}$ Calculator</div>
+    <div class="hero-badge">▸ Beginner → Advanced</div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────
+     SECTION 1: INTRODUCTION
+────────────────────────────────────────── -->
+<section class="section" id="intro">
+  <div class="section-header">
+    <span class="section-number">§ 01</span>
+    <h2>Introduction to Differential Signaling</h2>
+  </div>
+
+  <p>
+    As clock rates and data rates have moved from tens of megahertz into the multi-gigahertz regime, single-ended signaling has encountered fundamental physical limits: susceptibility to ground-referenced noise, radiated emissions, and reflections from impedance discontinuities. <strong>Differential signaling</strong> was adopted across virtually every modern high-speed interface standard precisely because it overcomes these constraints without requiring lower supply voltages alone.
+  </p>
+
+  <h3 id="fundamentals">Single-Ended vs. Differential Signaling</h3>
+  <span class="audience-tag beginner">Beginner</span>
+
+  <p>
+    In a <strong>single-ended</strong> topology, one conductor carries a signal voltage measured relative to a shared system ground. Any noise injected onto that conductor, or any ground-potential shift, corrupts the signal directly.
+  </p>
+  <p>
+    In a <strong>differential</strong> topology, data is encoded as the voltage <em>difference</em> between two complementary conductors, designated <strong>D+</strong> (non-inverting) and <strong>D−</strong> (inverting). When D+ swings to logic HIGH, D− simultaneously swings to logic LOW, and vice versa. The receiver responds only to the difference voltage $V_{diff} = V_{D+} - V_{D-}$, not to the absolute voltage of either conductor.
+  </p>
+
+  <div class="inline-diagram">
+    <svg viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;padding:1.5rem 2rem;">
+      <!-- D+ waveform -->
+      <text x="16" y="40" font-family="IBM Plex Mono,monospace" font-size="11" fill="#2a9090">D+ (non-inverting)</text>
+      <polyline points="70,70 130,70 130,30 190,30 190,70 250,70 250,30 310,30 310,70 370,70 370,30 430,30 430,70 490,70 490,30 550,30 550,70 610,70"
+        fill="none" stroke="#2a9090" stroke-width="2.2"/>
+      <!-- D- waveform -->
+      <text x="16" y="115" font-family="IBM Plex Mono,monospace" font-size="11" fill="#c8401a">D− (inverting)</text>
+      <polyline points="70,120 130,120 130,160 190,160 190,120 250,120 250,160 310,160 310,120 370,120 370,160 430,160 430,120 490,120 490,160 550,160 550,120 610,120"
+        fill="none" stroke="#c8401a" stroke-width="2.2"/>
+      <!-- noise annotation -->
+      <line x1="70" y1="180" x2="620" y2="180" stroke="#dedad0" stroke-width="1"/>
+      <text x="310" y="175" font-family="IBM Plex Mono,monospace" font-size="9" fill="#b8860b" text-anchor="middle">Common-mode noise cancels at receiver ✓</text>
+    </svg>
+    <div class="diag-caption">Fig 1.1 — Complementary D+ and D− waveforms; common-mode noise appears identically on both conductors and is rejected.</div>
+  </div>
+
+  <h3 id="cmr">Common-Mode Rejection (CMRR)</h3>
+  <span class="audience-tag beginner">Beginner</span>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    Any noise that appears <em>identically</em> on both conductors — EMI pickup from an adjacent aggressor, ground bounce, or power-supply ripple — is called <strong>common-mode noise</strong>. The differential receiver subtracts the two inputs, causing the common-mode component to cancel. The figure of merit that quantifies this cancellation is <strong>Common-Mode Rejection Ratio (CMRR)</strong>:
+  </p>
+
+  <div class="math-block">
+    <div class="math-label">Equation 1.1 — Common-Mode Rejection Ratio</div>
+    $$\text{CMRR} = 20 \log_{10}\!\left(\frac{A_{dm}}{A_{cm}}\right) \quad [\text{dB}]$$
+  </div>
+
+  <p>Where $A_{dm}$ is the differential-mode gain and $A_{cm}$ is the common-mode gain of the receiver. A well-matched pair routed with tight coupling can achieve CMRR values of 40 dB or greater, attenuating common-mode noise by a factor of 100× or more.</p>
+
+  <div class="callout info">
+    <div class="callout-title">Key Insight for Beginners</div>
+    The primary rule that enables CMRR in the PCB layout is <strong>symmetry</strong>. If both conductors of a differential pair travel the same length, over the same reference plane, with the same geometry, then any external interference is coupled equally to both — and cancelled at the receiver.
+  </div>
+
+  <h3>Why Differential Signaling Dominates High-Speed Interfaces</h3>
+  <p>Beyond noise immunity, differential signaling provides several advantages that are critical at high data rates:</p>
+  <ul>
+    <li><strong>Reduced EMI radiation:</strong> The electromagnetic fields from D+ and D− are nearly equal and opposite, causing them to partially cancel in the far field, reducing radiated emissions that would otherwise require costly board-level shielding.</li>
+    <li><strong>Higher data rates:</strong> Smaller voltage swings (e.g., 400 mV differential vs 3.3 V single-ended) reduce the energy required to charge trace capacitance, enabling faster edge rates and higher bandwidth.</li>
+    <li><strong>Ground independence:</strong> The signal is encoded as a voltage difference, making it immune to ground potential differences between a transmitter and receiver on different boards or power domains.</li>
+    <li><strong>Better noise margins:</strong> Differential receivers amplify the difference signal, providing inherently better noise margins than single-ended thresholds at comparable voltages.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 2: GEOMETRY & PHYSICS
+────────────────────────────────────────── -->
+<section class="section" id="geometry">
+  <div class="section-header">
+    <span class="section-number">§ 02</span>
+    <h2>Geometry & Physics of Differential Pairs</h2>
+  </div>
+
+  <p>
+    The electrical behaviour of a differential pair — its differential impedance, capacitance per unit length, and coupling coefficient — is entirely determined by the physical geometry of the traces and their relationship to the dielectric material and reference plane. There is no "tuning" after fabrication; the impedance is locked in by the stackup.
+  </p>
+
+  <h3 id="trace-params">Critical Trace Parameters</h3>
+  <span class="audience-tag beginner">Beginner</span>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>Three primary geometric parameters define a microstrip or stripline differential pair:</p>
+  <ul>
+    <li><strong>$W$ — Trace Width [mil or mm]:</strong> The width of each individual conductor. Increasing $W$ reduces characteristic impedance and increases current-carrying capacity.</li>
+    <li><strong>$S$ — Intra-pair Spacing [mil or mm]:</strong> The edge-to-edge gap between the two conductors of the pair. Reducing $S$ tightens electromagnetic coupling, lowers $Z_{diff}$, and improves CMRR — but increases the risk of manufacturing opens and aggravates the fiber weave effect.</li>
+    <li><strong>$H$ — Dielectric Height [mil or mm]:</strong> The distance from the trace to the nearest reference (ground or power) plane. $H$ has the strongest influence on impedance: halving $H$ approximately halves the impedance.</li>
+    <li><strong>$T$ — Copper Thickness [oz or mm]:</strong> Affects the effective width of the conductor due to etching undercut. Typically 0.5 oz (17.5 µm) or 1 oz (35 µm) for signal layers.</li>
+    <li><strong>$\varepsilon_r$ — Relative Permittivity (Dielectric Constant):</strong> A material property of the PCB laminate. Higher $\varepsilon_r$ slows signal propagation and lowers impedance. Standard FR-4 has $\varepsilon_r \approx 4.0$–$4.5$ at 1 GHz.</li>
+  </ul>
+
+  <div class="inline-diagram">
+    <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;padding:1.5rem 2rem;">
+      <!-- Ground plane -->
+      <rect x="50" y="170" width="600" height="18" fill="#2e3348" rx="2"/>
+      <text x="355" y="183" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" fill="#aab" letter-spacing="2">GND REFERENCE PLANE</text>
+      <!-- Dielectric -->
+      <rect x="50" y="100" width="600" height="70" fill="rgba(26,107,107,0.08)" stroke="rgba(26,107,107,0.2)" stroke-width="1"/>
+      <text x="30" y="140" font-family="IBM Plex Mono,monospace" font-size="10" fill="#2a9090">εr</text>
+      <!-- H arrow -->
+      <line x1="35" y1="100" x2="35" y2="168" stroke="#b8860b" stroke-width="1.5" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+      <text x="8" y="136" font-family="IBM Plex Mono,monospace" font-size="12" fill="#b8860b" font-weight="600">H</text>
+      <!-- Trace D+ -->
+      <rect x="215" y="82" width="100" height="20" fill="#2a9090" rx="2"/>
+      <text x="265" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#fff">D+</text>
+      <!-- Trace D- -->
+      <rect x="385" y="82" width="100" height="20" fill="#c8401a" rx="2"/>
+      <text x="435" y="96" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#fff">D−</text>
+      <!-- W arrow for D+ -->
+      <line x1="215" y1="68" x2="315" y2="68" stroke="#2a9090" stroke-width="1.5"/>
+      <text x="265" y="62" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#2a9090" font-weight="600">W</text>
+      <!-- S arrow -->
+      <line x1="315" y1="92" x2="385" y2="92" stroke="#b8860b" stroke-width="1.5"/>
+      <text x="350" y="88" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#b8860b" font-weight="600">S</text>
+      <!-- E-field lines suggestion -->
+      <path d="M265,102 Q307,130 350,102" fill="none" stroke="rgba(184,134,11,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+      <path d="M265,108 Q307,145 350,108" fill="none" stroke="rgba(184,134,11,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+      <!-- defs for arrowheads -->
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 z" fill="#b8860b"/>
+        </marker>
+        <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse">
+          <path d="M0,0 L0,6 L6,3 z" fill="#b8860b"/>
+        </marker>
+      </defs>
+      <text x="355" y="30" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#2e3348">Microstrip Differential Pair — Cross Section</text>
+    </svg>
+    <div class="diag-caption">Fig 2.1 — Microstrip differential pair cross-section showing W (trace width), S (intra-pair spacing), and H (dielectric height) relative to the reference plane.</div>
+  </div>
+
+  <h3 id="impedance-calc">Differential Impedance Calculation</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    Differential impedance $Z_{diff}$ is not simply $2 \times Z_0$ (twice the single-ended characteristic impedance). The mutual coupling between the two conductors — quantified by the coupling coefficient $k$ — reduces the effective impedance when traces are routed close together. The relationship is:
+  </p>
+
+  <div class="math-block">
+    <div class="math-label">Equation 2.1 — Differential Impedance from Odd-Mode</div>
+    $$Z_{diff} = 2 \times Z_{odd}$$
+  </div>
+
+  <div class="math-block">
+    <div class="math-label">Equation 2.2 — Microstrip Odd-Mode Impedance (IPC-2141A approximation)</div>
+    $$Z_{odd} = Z_0 \left[1 - 0.347 \cdot e^{-2.90 \, S/H}\right]$$
+  </div>
+
+  <div class="math-block">
+    <div class="math-label">Equation 2.3 — Microstrip Single-Ended Z₀ (Wheeler / Hammerstad approximation)</div>
+    $$Z_0 = \frac{87}{\sqrt{\varepsilon_r + 1.41}} \ln\!\left(\frac{5.98H}{0.8W + T}\right) \quad [\Omega]$$
+  </div>
+
+  <div class="math-block">
+    <div class="math-label">Equation 2.4 — Stripline (embedded) Single-Ended Z₀</div>
+    $$Z_0 = \frac{60}{\sqrt{\varepsilon_r}} \ln\!\left(\frac{4B}{0.67\pi(0.8W + T)}\right) \quad [\Omega]$$
+  </div>
+
+  <p>Where $B$ is the total dielectric thickness between the two reference planes in a stripline configuration.</p>
+
+  <div class="callout warn">
+    <div class="callout-title">Engineering Note</div>
+    These are analytical approximations valid within ±5% for $W/H$ ratios between 0.1 and 3.0. For final sign-off, always verify with a 2D electromagnetic field solver (e.g., Ansys SI2D, Polar Instruments Si9000, or Sonnet). Fabrication tolerances of ±10% on $W$ and ±15% on $H$ will produce $Z_{diff}$ tolerances of ±10–15 Ω on a 100 Ω target.
+  </div>
+
+  <h3 id="er-effect">Dielectric Material & Frequency Dependence</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    $\varepsilon_r$ is not constant with frequency — a phenomenon called <strong>dielectric dispersion</strong>. For standard FR-4, $\varepsilon_r$ may decrease from 4.5 at 1 MHz to 3.8 at 10 GHz. This affects signal propagation velocity and must be accounted for in high-speed designs above 5 Gbps. Key material parameters:
+  </p>
+  <ul>
+    <li><strong>Df (Dissipation Factor / Loss Tangent $\tan\delta$):</strong> Controls the dielectric insertion loss. Standard FR-4 has $\tan\delta \approx 0.02$ at 1 GHz; Low-loss laminates (Megtron 6, Rogers 4350B) achieve $\tan\delta \approx 0.003$–$0.005$.</li>
+    <li><strong>Propagation velocity:</strong> $v_p = c / \sqrt{\varepsilon_{eff}}$, where for microstrip $\varepsilon_{eff}$ lies between 1 and $\varepsilon_r$ due to the air above the trace.</li>
+    <li><strong>Propagation delay:</strong> $t_{pd} \approx 85 \cdot \sqrt{\varepsilon_{eff}}$ ps/inch for microstrip.</li>
+  </ul>
+
+  <div class="math-block">
+    <div class="math-label">Equation 2.5 — Dielectric (Conductor) Insertion Loss</div>
+    $$\text{IL}_{diel} = 2.3 \cdot \frac{\pi \cdot f \cdot \sqrt{\varepsilon_r} \cdot \tan\delta}{c} \cdot \ell \quad [\text{dB}]$$
+  </div>
+  <p>Where $f$ is frequency [Hz], $c$ is the speed of light, and $\ell$ is trace length [m]. This makes low-$\tan\delta$ laminate selection critical for PCIe Gen 4/5 and 25G/56G SerDes channels.</p>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 3: ZDIFF CALCULATOR
+────────────────────────────────────────── -->
+<section class="section" id="calculator">
+  <div class="section-header">
+    <span class="section-number">§ 03</span>
+    <h2>Interactive $Z_{diff}$ Calculator</h2>
+  </div>
+  <p>Enter your stackup parameters below to estimate differential impedance. Uses the IPC-2141A Wheeler/Hammerstad approximation for microstrip and the standard stripline formula. Validate all results with a 2D field solver before tape-out.</p>
+
+  <div class="calculator">
+    <div class="calc-title">Differential Impedance Estimator</div>
+
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Structure Type</label>
+        <select id="calc-type">
+          <option value="microstrip">Microstrip</option>
+          <option value="stripline">Stripline</option>
+        </select>
+      </div>
+      <div class="calc-field">
+        <label>Trace Width W (mil)</label>
+        <input type="number" id="calc-w" value="5" step="0.1" min="1">
+      </div>
+      <div class="calc-field">
+        <label>Spacing S (mil)</label>
+        <input type="number" id="calc-s" value="5" step="0.1" min="1">
+      </div>
+      <div class="calc-field">
+        <label>Dielectric Height H (mil)</label>
+        <input type="number" id="calc-h" value="4" step="0.1" min="0.5">
+      </div>
+      <div class="calc-field">
+        <label>Copper Thickness T (mil)</label>
+        <input type="number" id="calc-t" value="1.4" step="0.1" min="0.1">
+      </div>
+      <div class="calc-field">
+        <label>Dielectric Constant εr</label>
+        <input type="number" id="calc-er" value="4.2" step="0.05" min="1">
+      </div>
+    </div>
+    <div id="calc-stripline-b-wrap" style="display:none; margin-bottom:1rem;">
+      <div class="calc-field" style="max-width:200px;">
+        <label>Total Dielectric B (mil) [stripline only]</label>
+        <input type="number" id="calc-b" value="20" step="0.5" min="2">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcZdiff()">Calculate Z<sub>diff</sub></button>
+
+    <div class="calc-result" id="calc-result">
+      <div class="result-label">Estimated Differential Impedance</div>
+      <div class="result-value" id="calc-zdiff-out">—</div>
+      <div class="result-sub" id="calc-detail-out"></div>
+    </div>
+    <div class="calc-note">⚠ Approximation only. Tolerance ±5% for W/H ∈ [0.1, 3.0]. Validate with 2D EM field solver (Polar Si9000, Ansys, Sonnet).</div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 4: GOLDEN ROUTING RULES
+────────────────────────────────────────── -->
+<section class="section" id="routing-rules">
+  <div class="section-header">
+    <span class="section-number">§ 04</span>
+    <h2>Golden Rules for Differential Pair Routing</h2>
+  </div>
+
+  <p>These rules are the non-negotiable constraints for any differential pair layout. Violations directly degrade signal integrity at the receiver and increase EMI. Treat these as <em>design rules checks (DRCs)</em>, not guidelines.</p>
+
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-num">Rule 01</div>
+      <h4>Length Matching Within the Pair</h4>
+      <p>D+ and D− must be length-matched to within the tolerance specified by the interface standard. Length mismatch converts to phase skew (see Rule 02). Typical budgets: USB 2.0 &lt;200 mil, USB 3.x &lt;5 mil, PCIe Gen 4 &lt;5 mil, DDR4 &lt;25 mil per byte lane. Use meandering within the pair, never global routing adjustment.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 02</div>
+      <h4>Phase Skew Control</h4>
+      <p>Phase skew is the time delay difference between D+ and D−, directly proportional to length mismatch: $\Delta t = \Delta L \cdot t_{pd}$. Skew converts differential signal to common-mode, degrading CMRR. Meanders must be placed <em>within the coupled region</em> of the pair, using matched-length serpentine tuning, not at the end of the route.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 03</div>
+      <h4>Maintain Constant Spacing (Coupling)</h4>
+      <p>Route D+ and D− at the target intra-pair spacing $S$ for the entire length of the route. Spacing changes alter $Z_{diff}$ locally, creating impedance discontinuities that cause reflections. If you must change layers, maintain spacing through the via transition. Never fan out the pair before a connector or device and then re-converge — this is an impedance discontinuity cascade.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 04</div>
+      <h4>Return Path Continuity</h4>
+      <p>The high-frequency return current follows directly beneath the signal trace on the nearest reference plane. Any gap, slot, or split in that plane forces the return current to detour, creating a loop antenna, extra inductance, and a localized impedance discontinuity. <strong>Never route a differential pair across a split plane or over a plane void.</strong></p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 05</div>
+      <h4 id="3w-rule">3W Rule — Inter-Pair Isolation</h4>
+      <p>To prevent crosstalk between adjacent differential pairs, maintain an edge-to-edge spacing of at least 3× the trace width ($3W$) between pairs. For high-speed interfaces above 5 Gbps, increase this to 5W–7W. This maintains mutual coupling below −20 dB between pairs. The $3W$ rule applies to the outer edge of the differential pair, not each individual trace.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 06</div>
+      <h4>20H Rule — Plane Edge Keepout</h4>
+      <p>Keep signal traces at least 20× the dielectric height ($20H$) away from the edge of any reference plane. At the plane boundary, fringing fields cause impedance increases and radiated emissions. This rule is critical for EMC compliance in automotive (CISPR 25) and commercial (FCC Part 15) applications.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 07</div>
+      <h4>Via Placement Symmetry</h4>
+      <p>When a differential pair must change layers, use <strong>two vias</strong> — one for D+, one for D− — placed symmetrically, equidistant from the pair centerline. Asymmetric via placement introduces differential-to-common-mode conversion. Via pad diameter, drill size, and anti-pad geometry must be consistent between the two vias. Add stitching vias (GND) adjacent to the signal vias to maintain the return path.</p>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">Rule 08</div>
+      <h4>Layer Transitions — Minimize</h4>
+      <p>Every layer transition (via) is an impedance discontinuity and a stub. Minimize layer changes for high-speed differential pairs. When a layer change is unavoidable, ensure the reference plane is continuous through the transition and that GND stitching vias are placed within 2× the via diameter of the signal via. For PCIe Gen 3+, backrillling of via stubs is typically required (see §5).</p>
+    </div>
+  </div>
+
+  <h3 id="length-match">Length Matching — Intra-pair vs. Inter-pair</h3>
+  <span class="audience-tag advanced">Advanced</span>
+  <p>
+    There are two distinct length-matching requirements that are frequently confused:
+  </p>
+  <ul>
+    <li><strong>Intra-pair matching (D+ vs D−):</strong> Tightest constraint. Mismatch creates skew within the pair, degrading the differential signal directly. This must meet the per-interface standard tolerance (see §6 reference table).</li>
+    <li><strong>Inter-pair matching (Lane-to-Lane):</strong> In multi-lane interfaces (PCIe ×4/×8/×16, Ethernet XLAUI), all differential pairs in the same link may need to be matched to each other within a looser tolerance (e.g., PCIe specifies a per-lane skew budget of 20 ns de-skewable by the receiver, but tighter at the board level).</li>
+  </ul>
+
+  <div class="math-block">
+    <div class="math-label">Equation 4.1 — Intra-pair Skew from Length Mismatch</div>
+    $$\Delta t_{skew} = \frac{\Delta L \cdot \sqrt{\varepsilon_{eff}}}{c} \quad [\text{ps}]$$
+  </div>
+
+  <p>Example: For FR-4 microstrip with $\varepsilon_{eff} \approx 3.0$, a 10 mil (0.254 mm) length mismatch produces approximately 1.47 ps of skew. For USB 3.2 Gen 2 (10 Gbps), where the unit interval is 100 ps, this represents 1.47% UI of skew — exceeding the 1% UI budget if combined with connector and package skew.</p>
+
+  <h3 id="phase-skew">Serpentine Meander Constraints</h3>
+  <span class="audience-tag advanced">Advanced</span>
+  <p>When adding serpentine meanders for length matching within a pair, the following constraints must be respected to avoid creating additional problems:</p>
+  <ul>
+    <li><strong>Meander amplitude ≤ 3H:</strong> Keep meander peak-to-peak amplitude to less than 3× the dielectric height. Larger amplitudes allow the meander return segments to couple to each other, creating local impedance perturbations.</li>
+    <li><strong>Meander within coupled region:</strong> Place meanders while keeping D+ and D− at their standard spacing $S$. Do not open up the pair spacing to make room for the meander.</li>
+    <li><strong>Gap between meander segments ≥ 3W:</strong> Apply the 3W rule to meander-to-meander spacing within the same trace to prevent intra-trace coupling and crosstalk.</li>
+    <li><strong>Avoid meanders near components:</strong> Do not place meanders within 50 mil of component pads or connector pins, as the local impedance discontinuities compound.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 5: ADVANCED HIGH-SPEED DESIGN
+────────────────────────────────────────── -->
+<section class="section" id="advanced">
+  <div class="section-header">
+    <span class="section-number">§ 05</span>
+    <h2>Advanced High-Speed Design Considerations</h2>
+  </div>
+
+  <h3 id="via-stubs">Via Stubs, Resonance, and Backdrilling</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    When a signal via passes through a multilayer PCB but connects to an inner layer rather than exiting at the bottom copper layer, the unused portion of the via barrel below the connection point is called a <strong>via stub</strong>. This stub acts as a short-circuit transmission line stub, creating a resonant null in the insertion loss at a frequency given by:
+  </p>
+
+  <div class="math-block">
+    <div class="math-label">Equation 5.1 — Via Stub Resonant Frequency</div>
+    $$f_{res} = \frac{v_p}{4 \cdot L_{stub}} = \frac{c}{4 \cdot L_{stub} \cdot \sqrt{\varepsilon_r}} \quad [\text{Hz}]$$
+  </div>
+
+  <p>
+    Where $L_{stub}$ is the physical stub length. For a stub of 40 mil (1.016 mm) in FR-4 ($\varepsilon_r = 4.2$):
+    $f_{res} \approx \frac{3 \times 10^{11}}{4 \times 1.016 \times \sqrt{4.2}} \approx 36\,\text{GHz}$. However, the second harmonic and the effect of the pad capacitance can create nulls at lower frequencies. For PCIe Gen 3 (8 GT/s, fundamental at 4 GHz) on a 12-layer board with 120 mil thick dielectric, stub resonance begins to impact performance, making backdrilling required for Gen 4 and above.
+  </p>
+
+  <div class="callout critical">
+    <div class="callout-title">Critical Design Rule</div>
+    <strong>Backdrill (controlled-depth drilling)</strong> removes the unused via stub after the board is fabricated by drilling from the back side to a precisely controlled depth, leaving only a small residual stub (typically 5–10 mil). This eliminates the stub resonance and recovers the insertion loss. Backdrilling is specified in the fabrication notes and adds cost; consult your PCB fabricator's minimum backdrill accuracy (typically ±3 mil). For PCIe Gen 4 (16 GT/s) and Gen 5 (32 GT/s), backdrilling is nearly universally required on boards thicker than 60 mil.
+  </div>
+
+  <h4>Via Pad Stack Design for High-Speed Differential Pairs</h4>
+  <p>The via pad and anti-pad geometry form a capacitive discontinuity. Best practices:</p>
+  <ul>
+    <li><strong>Minimum anti-pad:</strong> Use the largest anti-pad allowed by the inner layer routing density to reduce pad capacitance. Elongated (oval) anti-pads oriented along the via-to-via axis can reduce coupling between pair vias.</li>
+    <li><strong>Back-to-back vias:</strong> Avoid placing two vias on the same differential pair in close proximity (less than 200 mil) as the combined capacitance creates a double-notch in insertion loss.</li>
+    <li><strong>Via-in-pad (VIP):</strong> For QFN and BGA packages, filled and planarized via-in-pad technology allows the via to be placed directly in the component pad, eliminating the stub and dogleg that would otherwise be required. Via-in-pad must be specified with conductive or non-conductive fill and copper plating over — confirm with your fabricator.</li>
+  </ul>
+
+  <h3 id="split-planes">Routing Across Split Planes</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    At high frequencies, the return current of a signal trace flows immediately below the trace on the nearest reference plane, in a path determined by the mutual inductance between the trace and the plane. When the trace crosses a gap, slot, or split in the reference plane, this return current path is interrupted. The current must detour around the gap — often a significant distance — creating:
+  </p>
+  <ul>
+    <li>A large current loop that radiates EMI proportional to the loop area and the signal frequency.</li>
+    <li>A local impedance discontinuity (inductive spike) at the crossing point.</li>
+    <li>Potential for ground bounce and inter-domain coupling if the split separates different voltage domains.</li>
+  </ul>
+
+  <div class="callout critical">
+    <div class="callout-title">Absolute Rule</div>
+    <strong>Never route a high-speed differential pair across a gap, slot, or split in a reference plane.</strong> Redesign the stackup, route around the gap, or bridge the gap with a 0 Ω link or stitching capacitor if no other option exists. For mixed-signal boards, the plane split between analog and digital ground must never be crossed by high-speed digital signals.
+  </div>
+
+  <p>If bridging is unavoidable, place a 0402 stitching capacitor (100 nF, rated for the voltage domain) directly across the gap, beneath the trace crossing, to provide a high-frequency return path. The effectiveness of this technique degrades above ~200 MHz due to the capacitor's self-resonance, so it is a mitigation measure, not a clean solution.</p>
+
+  <h3 id="fiber-weave">Fiber Weave Effect (FWE)</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    Standard PCB laminates are made from woven glass fiber (E-glass, $\varepsilon_r \approx 6.0$) embedded in an epoxy resin matrix ($\varepsilon_r \approx 3.3$). The weave pattern creates a spatially periodic variation in the local dielectric constant seen by any trace routed over it. If one conductor of a differential pair happens to run over glass bundles while the other runs over resin-rich areas, the two conductors experience different propagation velocities — producing <strong>systematic, deterministic skew</strong> that cannot be compensated by length matching.
+  </p>
+
+  <div class="math-block">
+    <div class="math-label">Equation 5.2 — Fiber Weave Induced Skew (worst case)</div>
+    $$\Delta t_{FWE} \approx \ell \cdot t_{pd,glass} - \ell \cdot t_{pd,resin} = \ell \cdot \frac{\sqrt{\varepsilon_{r,glass}} - \sqrt{\varepsilon_{r,resin}}}{c}$$
+  </div>
+
+  <p>This can produce skew on the order of 5–20 ps per inch, which is significant at 10 Gbps (UI = 100 ps) and above. Mitigation strategies:</p>
+
+  <ul>
+    <li><strong>Route at 0°, 45°, or custom angles:</strong> Routing at 45° to the weave pattern (typically aligned with the board X-axis) ensures that both traces of the pair traverse similar fractions of glass and resin, equalizing $\varepsilon_{eff}$.</li>
+    <li><strong>Low-skew / spread-weave laminates:</strong> Specify laminates with flattened weave (Panasonic Megtron 6, Isola Atera, or "low-skew" FR-4 variants). These use a spread-glass weave pattern that reduces the spatial $\varepsilon_r$ variation from ±0.5 to ±0.1.</li>
+    <li><strong>Flatten the weave:</strong> Some fabricators offer a mechanical flattening process that compresses the glass bundles, reducing the effective $\varepsilon_r$ variation.</li>
+    <li><strong>Avoid sensitive layers:</strong> Do not route critical high-speed pairs on a layer that is directly adjacent to the weave reference surface. Inner layers experience less variation than outer layers in some constructions.</li>
+  </ul>
+
+  <div class="callout warn">
+    <div class="callout-title">PCIe & High-Speed Note</div>
+    For PCIe Gen 4 (16 GT/s) and above, fiber weave effect must be explicitly addressed in the design plan. Most server and networking PCB design guidelines (Intel, AMD, Broadcom) require the use of spread-weave or low-skew laminates and specify trace angle requirements for all high-speed SerDes pairs.
+  </div>
+
+  <h3 id="guard-trace">Guard Traces and Isolation Structures</h3>
+  <span class="audience-tag advanced">Advanced</span>
+
+  <p>
+    Guard traces (or <em>ground fence traces</em>) are grounded conductors placed on either side of a sensitive differential pair to provide electromagnetic shielding. They are connected to ground at multiple points (at minimum, every λ/20 at the highest frequency of concern, or every 250–500 mil in practice).
+  </p>
+  <p>
+    Guard traces increase isolation between an aggressor and victim pair but also increase the capacitance of the guarded trace, lowering its impedance. This must be accounted for in the impedance calculation — the effective spacing $H_{eff}$ from the guard trace to the reference plane creates a distributed ground structure. Guard traces are most effective for frequencies below ~2 GHz; at higher frequencies, the inductance of the via connections to ground limits their effectiveness.
+  </p>
+
+  <div class="callout info">
+    <div class="callout-title">Design Guideline</div>
+    Guard trace spacing to the differential pair: minimum 3W (same as 3W rule). Guard trace width: same as signal trace width. Via stitching pitch: λ/20 at $f_{max}$, or every 200–400 mil for a 10 GHz target. Ensure guard traces do not violate any return path continuity rules themselves.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 6: REFERENCE TABLE
+────────────────────────────────────────── -->
+<section class="section" id="ref-table">
+  <div class="section-header">
+    <span class="section-number">§ 06</span>
+    <h2>Standard Interface Reference Table</h2>
+  </div>
+
+  <p>
+    The following table consolidates the electrical and layout specifications for the most widely used high-speed differential pair interfaces. All impedance values are as seen at the PCB trace (not the cable or connector). Consult the referenced specification documents for the complete, authoritative requirements.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Interface / Standard</th>
+          <th>Z<sub>diff</sub> Target</th>
+          <th>Data Rate</th>
+          <th>Intra-pair Length Match</th>
+          <th>Max Trace Length</th>
+          <th>Coupling Mode</th>
+          <th>Key Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>USB 2.0 (HS)</td>
+          <td><span class="badge-zdiff">90 Ω ±15%</span></td>
+          <td>480 Mbps</td>
+          <td>&lt;200 mil</td>
+          <td>Board-dependent (≤6 in typical)</td>
+          <td>Loosely coupled microstrip</td>
+          <td>Single-ended impedance of each trace: 45 Ω. Common-mode termination required at device.</td>
+        </tr>
+        <tr>
+          <td>USB 3.2 Gen 1 (SS)</td>
+          <td><span class="badge-zdiff">90 Ω ±10%</span></td>
+          <td>5 Gbps</td>
+          <td>&lt;10 mil</td>
+          <td>≤2 in (board); total channel loss &lt;5 dB @ Nyquist</td>
+          <td>Tightly coupled microstrip or stripline</td>
+          <td>Separate TX/RX pairs; coupling &lt;−20 dB. Via stubs critical above 1 in board length.</td>
+        </tr>
+        <tr>
+          <td>USB 3.2 Gen 2 (SS+)</td>
+          <td><span class="badge-zdiff">90 Ω ±10%</span></td>
+          <td>10 Gbps</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL &lt;8 dB @ 5 GHz</td>
+          <td>Tightly coupled stripline preferred</td>
+          <td>Low-loss laminate recommended. Backdrill may be required. SDD21 &gt;−8 dB.</td>
+        </tr>
+        <tr>
+          <td>USB4 / Thunderbolt 4</td>
+          <td><span class="badge-zdiff">90 Ω ±10%</span></td>
+          <td>20–40 Gbps</td>
+          <td>&lt;5 mil</td>
+          <td>Very short board traces; retimer typically required</td>
+          <td>Coupled stripline</td>
+          <td>Megtron 6 or equivalent laminate. FWE mitigation mandatory. Retimers standard for &gt;2 in.</td>
+        </tr>
+        <tr>
+          <td>100BASE-TX Ethernet</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>100 Mbps</td>
+          <td>&lt;500 mil</td>
+          <td>Up to 3 in (board to magnetics)</td>
+          <td>Loosely coupled microstrip</td>
+          <td>Route directly from PHY to transformer. Avoid crossing any plane slots.</td>
+        </tr>
+        <tr>
+          <td>1000BASE-T (GbE)</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>1 Gbps (4-pair)</td>
+          <td>&lt;200 mil</td>
+          <td>≤3 in (PHY to magnetics)</td>
+          <td>Loosely coupled microstrip</td>
+          <td>Keep magnetics within 50 mil of RJ-45. Discharge resistors 75 Ω common-mode on cable side.</td>
+        </tr>
+        <tr>
+          <td>10GBASE-KR (Backplane)</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>10.3125 Gbps</td>
+          <td>&lt;10 mil</td>
+          <td>Channel IL ≤25 dB (802.3ap)</td>
+          <td>Tightly coupled stripline</td>
+          <td>Low-loss laminate mandatory. Backplane vias must be backdrilled. Connector footprint SI-optimized.</td>
+        </tr>
+        <tr>
+          <td>25GBASE-CR / KR</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>25.78125 Gbps</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL ≤22 dB (IEEE 802.3by)</td>
+          <td>Tightly coupled stripline</td>
+          <td>Megtron 6 / Rogers 4350B. FWE control. Signal conditioning (EQ) at both ends.</td>
+        </tr>
+        <tr>
+          <td>HDMI 1.4 (TMDS)</td>
+          <td><span class="badge-zdiff">100 Ω ±15%</span></td>
+          <td>3.4 Gbps/lane</td>
+          <td>&lt;50 mil</td>
+          <td>≤4 in</td>
+          <td>Tightly coupled microstrip or stripline</td>
+          <td>3× TMDS data pairs + 1 clock pair. Length match data lanes to clock ±0.5 ns.</td>
+        </tr>
+        <tr>
+          <td>HDMI 2.1 (FRL)</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>12 Gbps/lane (FRL)</td>
+          <td>&lt;10 mil</td>
+          <td>≤2 in; channel loss &lt;10 dB</td>
+          <td>Tightly coupled stripline</td>
+          <td>Fixed Rate Link replaces TMDS. Low-loss laminate. Via stubs critical. Retimer for longer runs.</td>
+        </tr>
+        <tr>
+          <td>DisplayPort 1.4</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>8.1 Gbps/lane (HBR3)</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL ≤12 dB @ 4.05 GHz</td>
+          <td>Tightly coupled stripline</td>
+          <td>4 main link lanes + AUX pair (100 kbps, 1 MΩ, not impedance-controlled). Lanes need not match each other.</td>
+        </tr>
+        <tr>
+          <td>DisplayPort 2.1 (UHBR)</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>10/13.5/20 Gbps/lane</td>
+          <td>&lt;5 mil</td>
+          <td>Very short; EQ/retimer standard</td>
+          <td>Tightly coupled stripline</td>
+          <td>UHBR20 (20 Gbps/lane): Low-loss laminate, FWE control mandatory. Backdrill required.</td>
+        </tr>
+        <tr>
+          <td>PCIe Gen 3 (8 GT/s)</td>
+          <td><span class="badge-zdiff">85 Ω ±15%</span></td>
+          <td>8 GT/s (6.4 Gbps effective)</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL ≤20 dB @ Nyquist (4 GHz)</td>
+          <td>Tightly coupled stripline</td>
+          <td>$Z_{diff} = 85$ Ω per CEM spec (not 100 Ω). Backdrill for boards &gt;93 mil. AC coupling 75–200 nF.</td>
+        </tr>
+        <tr>
+          <td>PCIe Gen 4 (16 GT/s)</td>
+          <td><span class="badge-zdiff">85 Ω ±15%</span></td>
+          <td>16 GT/s (13 Gbps effective)</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL ≤28 dB @ Nyquist (8 GHz)</td>
+          <td>Tightly coupled stripline</td>
+          <td>Backdrill mandatory. Megtron 6 or equivalent. FWE mitigation. Eye width budget extremely tight.</td>
+        </tr>
+        <tr>
+          <td>PCIe Gen 5 (32 GT/s)</td>
+          <td><span class="badge-zdiff">85 Ω ±15%</span></td>
+          <td>32 GT/s (26 Gbps effective)</td>
+          <td>&lt;5 mil</td>
+          <td>Channel IL ≤36 dB @ Nyquist (16 GHz)</td>
+          <td>Tightly coupled stripline</td>
+          <td>Ultra-low-loss laminate mandatory. 2D EM simulation of every via required. Retimers on most add-in cards.</td>
+        </tr>
+        <tr>
+          <td>MIPI D-PHY v2.5</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>Up to 4.5 Gbps/lane</td>
+          <td>&lt;5 mil</td>
+          <td>&lt;4 in (board only)</td>
+          <td>Tightly coupled microstrip or stripline</td>
+          <td>Used in mobile/embedded camera and display. LP mode biasing: do not break pair with series resistors unless MIPI-specified.</td>
+        </tr>
+        <tr>
+          <td>LVDS (Generic)</td>
+          <td><span class="badge-zdiff">100 Ω ±10%</span></td>
+          <td>Up to ~3.125 Gbps</td>
+          <td>&lt;50 mil</td>
+          <td>Application-dependent</td>
+          <td>Tightly coupled microstrip or stripline</td>
+          <td>100 Ω termination resistor at receiver end, placed within 50 mil of receive pin. Drive strength 3.5 mA nominal.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Authoritative Sources</div>
+    Values in this table are derived from: USB-IF USB 3.2 Specification Rev 1.0; IEEE Std 802.3; HDMI 2.1 Specification (HDMI Forum); VESA DisplayPort Standard; PCI-SIG CEM Specification; MIPI Alliance D-PHY Specification. Always consult the current revision of the applicable specification. Impedance tolerances listed are for the PCB trace only; connector and via discontinuities are additional budgets.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     SECTION 7: GLOSSARY
+────────────────────────────────────────── -->
+<section class="section" id="glossary">
+  <div class="section-header">
+    <span class="section-number">§ 07</span>
+    <h2>Technical Glossary</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Term / Symbol</th>
+          <th>Definition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>$Z_{diff}$</td><td>Differential impedance; the impedance seen between the D+ and D− conductors of a differential pair. $Z_{diff} = 2 \times Z_{odd}$.</td></tr>
+        <tr><td>$Z_0$</td><td>Single-ended characteristic impedance of a transmission line referenced to ground.</td></tr>
+        <tr><td>$Z_{odd}$</td><td>Odd-mode impedance; the impedance of one conductor of a differential pair when driven with equal and opposite signals. $Z_{diff} = 2 \times Z_{odd}$.</td></tr>
+        <tr><td>$Z_{even}$</td><td>Even-mode impedance; the impedance of one conductor when both conductors are driven with the same signal (common-mode). $Z_{cm} = Z_{even}/2$.</td></tr>
+        <tr><td>$\varepsilon_r$</td><td>Relative permittivity (dielectric constant) of the PCB laminate. Determines propagation velocity and impedance.</td></tr>
+        <tr><td>$\tan\delta$ (Df)</td><td>Dissipation factor; a measure of dielectric loss. Lower values indicate less signal attenuation. Critical for high-speed laminates.</td></tr>
+        <tr><td>CMRR</td><td>Common-Mode Rejection Ratio; ratio of differential-mode gain to common-mode gain of a differential receiver, expressed in dB.</td></tr>
+        <tr><td>FWE</td><td>Fiber Weave Effect; skew introduced between the two conductors of a differential pair due to spatially varying dielectric constant in woven-glass laminates.</td></tr>
+        <tr><td>Via Stub</td><td>The unused portion of a signal via below the signal connection layer. Acts as a quarter-wave resonator, creating a notch in insertion loss.</td></tr>
+        <tr><td>Backdrilling</td><td>A controlled-depth drilling operation that removes via stubs after fabrication. Required for PCIe Gen 3+ on thick boards.</td></tr>
+        <tr><td>Intra-pair Skew</td><td>Time-delay difference between the D+ and D− conductors of a single differential pair. Degrades CMRR and differential eye diagram.</td></tr>
+        <tr><td>Inter-pair Skew</td><td>Time-delay difference between different differential pairs in a multi-lane interface (e.g., PCIe lanes, Ethernet pairs).</td></tr>
+        <tr><td>3W Rule</td><td>Design rule requiring a minimum edge-to-edge separation of 3× the trace width between adjacent differential pairs to limit crosstalk to &lt;−20 dB.</td></tr>
+        <tr><td>20H Rule</td><td>Design rule requiring signal traces to be routed at least 20× the dielectric height from the edge of any reference plane to reduce fringing fields and EMI.</td></tr>
+        <tr><td>Via-in-Pad (VIP)</td><td>A PCB technology where the signal via is placed directly in the component soldering pad, filled and planarized to allow SMT placement.</td></tr>
+        <tr><td>Propagation Delay ($t_{pd}$)</td><td>Time for a signal to travel a unit length of transmission line. For microstrip in FR-4: approximately 140–170 ps/inch.</td></tr>
+        <tr><td>Insertion Loss (IL / SDD21)</td><td>The reduction in signal power from transmitter to receiver due to conductor and dielectric losses. Expressed in dB. SDD21 is the differential-mode S-parameter equivalent.</td></tr>
+        <tr><td>Return Loss (RL / SDD11)</td><td>The ratio of reflected power to incident power at the input of a transmission line, indicating impedance matching quality. Expressed in dB; more negative is better.</td></tr>
+        <tr><td>Coupling Coefficient ($k$)</td><td>Measure of electromagnetic coupling between the two conductors of a differential pair. Higher coupling (smaller $S$) lowers $Z_{diff}$ and improves CMRR.</td></tr>
+        <tr><td>Stitching Via</td><td>A via connected to the reference (ground) plane, placed adjacent to signal vias to provide a continuous return current path through layer transitions.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── Footer ─── -->
+<div style="margin-top:4rem; padding-top:2rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <div style="font-family:var(--mono); font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(10,12,16,0.4); margin-bottom:0.3rem;">PCB Design Educational Reference</div>
+    <div style="font-family:var(--serif); font-size:1.1rem; color:var(--ink2);">Differential Pair Routing — Signal Integrity Guide</div>
+  </div>
+  <div style="font-family:var(--mono); font-size:10px; color:rgba(10,12,16,0.35); text-align:right; line-height:1.7;">
+    References: IPC-2141A · USB-IF · IEEE 802.3<br>
+    PCI-SIG CEM Spec · HDMI 2.1 · MIPI Alliance<br>
+    Formulas: Wheeler, Hammerstad, IPC approximations
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ─── Scripts ─── -->
+<script>
+/* ─── Sidebar active state on scroll ─── */
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => observer.observe(s));
+
+/* ─── Show/hide stripline B field ─── */
+document.getElementById('calc-type').addEventListener('change', function() {
+  document.getElementById('calc-stripline-b-wrap').style.display =
+    this.value === 'stripline' ? 'block' : 'none';
+});
+
+/* ─── Zdiff Calculator ─── */
+function calcZdiff() {
+  const type = document.getElementById('calc-type').value;
+  const W  = parseFloat(document.getElementById('calc-w').value);
+  const S  = parseFloat(document.getElementById('calc-s').value);
+  const H  = parseFloat(document.getElementById('calc-h').value);
+  const T  = parseFloat(document.getElementById('calc-t').value);
+  const er = parseFloat(document.getElementById('calc-er').value);
+  const B  = parseFloat(document.getElementById('calc-b').value) || 20;
+
+  if ([W,S,H,T,er].some(v => isNaN(v) || v <= 0)) {
+    alert('Please enter valid positive values for all fields.');
+    return;
+  }
+
+  let Z0, Zodd, Zdiff;
+
+  if (type === 'microstrip') {
+    // Wheeler/Hammerstad microstrip Z0
+    Z0 = (87 / Math.sqrt(er + 1.41)) * Math.log(5.98 * H / (0.8 * W + T));
+    // IPC-2141A odd-mode correction
+    Zodd = Z0 * (1 - 0.347 * Math.exp(-2.90 * S / H));
+  } else {
+    // Stripline Z0
+    if (B <= 0 || B <= T) {
+      alert('For stripline, B must be greater than T.');
+      return;
+    }
+    Z0 = (60 / Math.sqrt(er)) * Math.log((4 * B) / (0.67 * Math.PI * (0.8 * W + T)));
+    // Stripline odd-mode (Bogatin approximation)
+    Zodd = Z0 * (1 - 0.347 * Math.exp(-2.90 * S / H));
+  }
+
+  Zdiff = 2 * Zodd;
+
+  const resultEl = document.getElementById('calc-result');
+  document.getElementById('calc-zdiff-out').textContent = Zdiff.toFixed(1) + ' Ω';
+  document.getElementById('calc-detail-out').textContent =
+    `Z₀ = ${Z0.toFixed(1)} Ω  |  Zodd = ${Zodd.toFixed(1)} Ω  |  Structure: ${type}  |  εr = ${er}`;
+  resultEl.classList.add('show');
+
+  // Colour-code result proximity to common targets
+  const zdEl = document.getElementById('calc-zdiff-out');
+  const diff85 = Math.abs(Zdiff - 85);
+  const diff90 = Math.abs(Zdiff - 90);
+  const diff100 = Math.abs(Zdiff - 100);
+  const minDiff = Math.min(diff85, diff90, diff100);
+  if (minDiff <= 8) {
+    zdEl.style.color = '#2a9090';
+  } else if (minDiff <= 15) {
+    zdEl.style.color = '#b8860b';
+  } else {
+    zdEl.style.color = '#c8401a';
+  }
+}
+</script>
+
+</body>
+</html>
