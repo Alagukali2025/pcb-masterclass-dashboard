@@ -21,15 +21,20 @@ const AspectRatioCalculator = () => {
   const isHighRiskStub = resonantFreq < 15; // < 15 GHz is risky for modern high-speed
   
   return (
-    <div className="via-technology-card p-6 rounded-[2rem] bg-black-10 border border-white-05 shadow-2xl overflow-hidden relative group slide-up">
+    <div className="via-technology-card p-10 rounded-[2.5rem] bg-black-10 border border-white-05 shadow-2xl overflow-hidden relative group slide-up">
       <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-700 pointer-events-none">
         {mode === 'aspect' ? <Ruler className="w-48 h-48" /> : <Activity className="w-48 h-48" />}
       </div>
 
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
-        <div>
-          <h4 className="text-2xl font-black text-primary tracking-tighter uppercase mb-2">Via Technology Center</h4>
-          <p className="text-xs text-secondary font-bold italic opacity-80 uppercase tracking-widest">Manufacturing & Signal Integrity Risk Analysis</p>
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-lg shadow-blue-500/10">
+            {mode === 'aspect' ? <Ruler className="text-blue-500" /> : <Activity className="text-orange-500" />}
+          </div>
+          <div>
+            <h4 className="text-2xl font-black text-primary tracking-tighter uppercase leading-none mb-1">Via Technology Center</h4>
+            <p className="text-[10px] text-tertiary font-bold italic uppercase tracking-[0.2em] opacity-60">High-Speed Signal Integrity Lab</p>
+          </div>
         </div>
         
         <div className="vtc-tab-bar flex bg-black-40 p-1.5 rounded-2xl border border-white-05 shadow-inner w-full md:w-auto">
@@ -183,6 +188,10 @@ const AspectRatioCalculator = () => {
               isOptimalAspect ? 'bg-green-500/5 border-green-500/20' : 
               'bg-blue-500/5 border-blue-500/20'
             }`}>
+              {/* Added subtle drill-like background decoration for aspect ratio */}
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+                 <Ruler size={240} strokeWidth={0.5} />
+              </div>
               <div className="text-[10px] font-black text-tertiary uppercase tracking-[0.3em] mb-4 text-center">Calculated Ratio</div>
               <div className={`text-6xl md:text-7xl font-black tracking-tighter mb-2 ${
                 isHighRiskAspect ? 'text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 
@@ -197,17 +206,36 @@ const AspectRatioCalculator = () => {
             <div className={`vtc-result-panel p-8 rounded-[2rem] border shadow-2xl transition-all duration-700 h-full flex flex-col justify-center items-center relative overflow-hidden ${
               isHighRiskStub ? 'bg-orange-500/5 border-orange-500/20' : 'bg-blue-500/5 border-blue-500/20'
             }`}>
-              <div className="text-[10px] font-black text-tertiary uppercase tracking-[0.3em] mb-4 text-center">F_Res Frequency</div>
-              <div className={`text-6xl md:text-7xl font-black tracking-tighter mb-2 flex items-baseline ${
+              {/* Added Resonant Wave SVG Animation */}
+              <div className="absolute inset-0 opacity-10 pointer-events-none">
+                <svg viewBox="0 0 200 100" className="w-full h-full">
+                  <path d="M0,50 Q25,0 50,50 T100,50 T150,50 T200,50" 
+                    fill="none" 
+                    stroke={isHighRiskStub ? "#f97316" : "#3b82f6"} 
+                    strokeWidth="1"
+                    className="animate-wave"
+                  />
+                  <path d="M0,50 Q25,100 50,50 T100,50 T150,50 T200,50" 
+                    fill="none" 
+                    stroke={isHighRiskStub ? "#f97316" : "#3b82f6"} 
+                    strokeWidth="0.5"
+                    strokeOpacity="0.5"
+                    className="animate-wave-reverse"
+                  />
+                </svg>
+              </div>
+
+              <div className="text-[10px] font-black text-tertiary uppercase tracking-[0.3em] mb-4 text-center relative z-10">F_Res Frequency</div>
+              <div className={`text-6xl md:text-7xl font-black tracking-tighter mb-2 flex items-baseline relative z-10 ${
                 isHighRiskStub ? 'text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]' : 'text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]'
               }`}>
                 {resonantFreq}
               </div>
-              <div className={`text-lg font-black uppercase tracking-widest ${isHighRiskStub ? 'text-orange-500/70' : 'text-blue-500/70'}`}>
+              <div className={`text-lg font-black uppercase tracking-widest relative z-10 ${isHighRiskStub ? 'text-orange-500/70' : 'text-blue-500/70'}`}>
                 GHz
               </div>
-              <div className="vtc-divider w-16 h-1 mt-6 rounded-full bg-white-10" />
-              <button className="mt-6 flex items-center gap-2 text-[9px] uppercase font-black tracking-widest text-tertiary hover:text-white transition-colors group">
+              <div className="vtc-divider w-16 h-1 mt-6 rounded-full bg-white-10 relative z-10" />
+              <button className="mt-6 flex items-center gap-2 text-[9px] uppercase font-black tracking-widest text-tertiary hover:text-white transition-colors group relative z-10">
                 <Info size={14} className="group-hover:text-blue-500 transition-colors" />
                 Eq = 75 / (L * √Dk)
               </button>

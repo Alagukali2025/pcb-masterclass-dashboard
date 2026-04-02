@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { modulesData } from '../data/modules';
-import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator, ShieldAlert } from 'lucide-react';
 import IPCCalculator from './IPCCalculator';
 import StackupCalculator from './StackupCalculator';
 import StackupLayerToggle from './StackupLayerToggle';
@@ -10,6 +10,8 @@ import LaminateTable from './LaminateTable';
 import DFMRuleChecker from './DFMRuleChecker';
 import FiberWeaveSkew from './FiberWeaveSkew';
 import StackupExport from './StackupExport';
+import ZdiffCalculator from './ZdiffCalculator';
+import DiffPairReferenceTable from './DiffPairReferenceTable';
 
 export default function ContentViewer() {
   const { id } = useParams();
@@ -282,6 +284,30 @@ export default function ContentViewer() {
                 {sec.type === 'fiber-weave' && <FiberWeaveSkew />}
 
                 {sec.type === 'stackup-export' && <StackupExport />}
+
+                {sec.type === 'zdiff-calculator' && <ZdiffCalculator />}
+
+                {sec.type === 'diff-reference-table' && <DiffPairReferenceTable />}
+
+                {sec.ruleCards && (
+                  <div className="rule-cards-grid slide-up">
+                    {sec.ruleCards.map((rule, ri) => (
+                      <div key={ri} className={`rule-card rule-card--${rule.severity}`}>
+                        <div className="rule-card-header">
+                          <span className="rule-badge">{rule.number}</span>
+                          <div className="rule-card-title-wrap">
+                            <h4 className="rule-card-title">{rule.title}</h4>
+                            <span className={`rule-severity-tag rule-severity-tag--${rule.severity}`}>
+                              {rule.severity === 'danger' ? <ShieldAlert size={10} /> : rule.severity === 'warning' ? <AlertTriangle size={10} /> : <Info size={10} />}
+                              {rule.severity === 'danger' ? 'DRC Violation' : rule.severity === 'warning' ? 'Caution' : 'Best Practice'}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="rule-card-body">{rule.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {sec.filletGrid && (
                   <div className="fillet-grid slide-up">

@@ -69,23 +69,33 @@ export default function FiberWeaveSkew() {
             <line key={`h${y}`} x1="160" y1={y} x2="540" y2={y} stroke="#1e40af" strokeWidth="8" strokeOpacity="0.4" />
           ))}
 
-          {/* Trace P (positive) — rides over glass */}
+          {/* Trace P (positive) — rides over glass (Slower) */}
           <path
-            d="M 0 110 L 700 110"
-            stroke="#f59e0b" strokeWidth="3" strokeLinecap="round"
+            d="M 10 110 L 690 110"
+            stroke="#f59e0b" strokeWidth="4" strokeLinecap="round"
             fill="none"
           />
-          <text x="15" y="103" className="fws-svg-trace-label" fill="#f59e0b" fontSize="10" fontWeight="700">P+</text>
-          <text x="655" y="103" className="fws-svg-trace-label" fill="#f59e0b" fontSize="10" fontWeight="700">P+</text>
+          {/* Signal Pulse P */}
+          <circle r="5" fill="#f59e0b" style={{ filter: 'drop-shadow(0 0 6px #f59e0b)' }}>
+            <animateMotion dur="3s" repeatCount="indefinite" path="M 10 110 L 690 110" />
+            <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" />
+          </circle>
+          <text x="15" y="103" className="fws-svg-trace-label" fill="#f59e0b" fontSize="10" fontWeight="900">P+ (Slow / Low Vp)</text>
+          <text x="655" y="103" className="fws-svg-trace-label" fill="#f59e0b" fontSize="10" fontWeight="900">P+</text>
 
-          {/* Trace N (negative) — rides over resin */}
+          {/* Trace N (negative) — rides over resin (Faster) */}
           <path
-            d="M 0 150 L 700 150"
-            stroke="#06b6d4" strokeWidth="3" strokeLinecap="round"
+            d="M 10 150 L 690 150"
+            stroke="#06b6d4" strokeWidth="4" strokeLinecap="round"
             fill="none" strokeDasharray="none"
           />
-          <text x="15" y="163" className="fws-svg-trace-label" fill="#06b6d4" fontSize="10" fontWeight="700">N-</text>
-          <text x="655" y="163" className="fws-svg-trace-label" fill="#06b6d4" fontSize="10" fontWeight="700">N-</text>
+          {/* Signal Pulse N (Faster animation) */}
+          <circle r="5" fill="#06b6d4" style={{ filter: 'drop-shadow(0 0 6px #06b6d4)' }}>
+            <animateMotion dur="2.4s" repeatCount="indefinite" path="M 10 150 L 690 150" />
+            <animate attributeName="opacity" values="0;1;0" dur="2.4s" repeatCount="indefinite" />
+          </circle>
+          <text x="15" y="163" className="fws-svg-trace-label" fill="#06b6d4" fontSize="10" fontWeight="900">N- (Fast / High Vp)</text>
+          <text x="655" y="163" className="fws-svg-trace-label" fill="#06b6d4" fontSize="10" fontWeight="900">N-</text>
 
           {/* Skew arrow annotation */}
           <line x1="350" y1="115" x2="350" y2="145" stroke="#f43f5e" strokeWidth="1.5" markerEnd="url(#arrowRed)" />
@@ -109,12 +119,27 @@ export default function FiberWeaveSkew() {
       </div>
 
       {/* Alerts */}
-      <div className="fws-alert">
-        <AlertTriangle size={14} className="fws-alert-icon" />
-        <p>
-          At 56 Gbps (PAM4), even 1–2ps of intra-pair skew degrades BER significantly. Fiber weave skew is the
-          primary limiting factor for routing differential pairs over standard 2116/7628 glass styles.
-        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="fws-alert">
+          <AlertTriangle size={24} className="fws-alert-icon" />
+          <div>
+            <h5 className="font-bold text-amber-500 mb-1">Timing Budget Critical</h5>
+            <p className="text-[11px] leading-relaxed opacity-80">
+              At 56 Gbps (PAM4), even 1–2ps of intra-pair skew degrades BER significantly. Fiber weave skew is the
+              primary limiting factor for routing differential pairs over standard 2116/7628 glass.
+            </p>
+          </div>
+        </div>
+        <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-6 flex gap-4 hover:border-indigo-500/40 transition-all">
+          <Zap size={24} className="text-indigo-400 shrink-0" />
+          <div>
+            <h5 className="font-bold text-indigo-400 mb-1">SI Expert Insight</h5>
+            <p className="text-[11px] leading-relaxed opacity-70">
+              To mitigate Skew: Use <strong>Spread-Glass</strong> (1067/1078) prepreg and route at a <strong>Zig-Zag angle (10°)</strong> 
+              relative to the weave. This averages out the Dk variations across both legs of the pair.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Glass style selector */}
