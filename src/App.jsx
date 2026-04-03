@@ -63,7 +63,7 @@ function App() {
         </main>
       </div>
       {/* Mobile Overlay */}
-      {isSidebarOpen && window.innerWidth <= 1024 && (
+      {isSidebarOpen && (
         <div className="sidebar-overlay" onClick={toggleSidebar}></div>
       )}
     </div>
