@@ -1,0 +1,795 @@
+
+<style>
+  :root {
+    --ink: var(--color-text-primary);
+    --muted: var(--color-text-secondary);
+    --faint: var(--color-text-tertiary);
+    --surface: var(--color-background-primary);
+    --raised: var(--color-background-secondary);
+    --border: var(--color-border-tertiary);
+    --border2: var(--color-border-secondary);
+    --rad: var(--border-radius-md);
+    --radlg: var(--border-radius-lg);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); font-size: 15px; color: var(--ink); line-height: 1.7; }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+  .hero { border-bottom: 0.5px solid var(--border2); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+  .hero-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .hero-title { font-size: 26px; font-weight: 500; line-height: 1.25; color: var(--ink); margin-bottom: 0.75rem; }
+  .hero-sub { font-size: 14px; color: var(--muted); max-width: 620px; line-height: 1.6; }
+
+  .toc { background: var(--raised); border: 0.5px solid var(--border); border-radius: var(--radlg); padding: 1.25rem 1.5rem; margin-bottom: 2.5rem; }
+  .toc-title { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px 1.5rem; }
+  .toc-item { font-size: 13px; color: var(--muted); padding: 3px 0; cursor: pointer; border-bottom: none; display: flex; align-items: center; gap: 6px; }
+  .toc-item:hover { color: var(--ink); }
+  .toc-num { font-size: 11px; font-weight: 500; color: var(--faint); min-width: 18px; }
+
+  .section { margin-bottom: 3rem; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid var(--border); }
+  .section-num { font-size: 11px; font-weight: 500; color: var(--faint); min-width: 28px; }
+  .section-title { font-size: 19px; font-weight: 500; }
+  .section-badge { font-size: 11px; padding: 2px 8px; border-radius: 100px; border: 0.5px solid; }
+  .badge-beginner { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
+  .badge-intermediate { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+  .badge-advanced { background: #FBEAF0; color: #993556; border-color: #F4C0D1; }
+
+  h3 { font-size: 15px; font-weight: 500; color: var(--ink); margin: 1.5rem 0 0.6rem; }
+  h4 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 1.25rem 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  p { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 0.75rem; }
+  p strong { color: var(--ink); font-weight: 500; }
+
+  .callout { border-left: 2px solid; padding: 0.75rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; margin: 1rem 0; }
+  .callout-warn { background: #FAEEDA; border-color: #EF9F27; }
+  .callout-info { background: #E6F1FB; border-color: #378ADD; }
+  .callout-danger { background: #FCEBEB; border-color: #E24B4A; }
+  .callout-success { background: #EAF3DE; border-color: #639922; }
+  .callout p { margin: 0; font-size: 13px; }
+  .callout-warn p { color: #633806; }
+  .callout-info p { color: #0C447C; }
+  .callout-danger p { color: #501313; }
+  .callout-success p { color: #27500A; }
+  .callout-label { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .rule-card { background: var(--raised); border: 0.5px solid var(--border); border-radius: var(--radlg); padding: 1rem 1.1rem; }
+  .rule-card-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--faint); margin-bottom: 6px; }
+  .rule-card-val { font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; font-family: var(--font-mono); }
+  .rule-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 1rem 0; }
+  .data-table th { text-align: left; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--faint); padding: 6px 10px; border-bottom: 0.5px solid var(--border2); }
+  .data-table td { padding: 8px 10px; border-bottom: 0.5px solid var(--border); color: var(--muted); vertical-align: top; }
+  .data-table td:first-child { color: var(--ink); font-weight: 500; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .mono { font-family: var(--font-mono); font-size: 12px; color: var(--ink); }
+
+  .mistake-list { display: flex; flex-direction: column; gap: 10px; margin: 1rem 0; }
+  .mistake-item { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 8px 12px; align-items: start; background: var(--raised); border: 0.5px solid var(--border); border-radius: var(--radlg); padding: 0.9rem 1.1rem; font-size: 13px; }
+  @media(max-width:600px){ .mistake-item { grid-template-columns: auto 1fr; } .mistake-fix-label, .mistake-fix { display: none; } }
+  .mis-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; padding: 2px 7px; border-radius: 100px; margin-top: 2px; white-space: nowrap; }
+  .mis-bad { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+  .mis-fix { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #C0DD97; }
+  .mistake-text { color: var(--muted); line-height: 1.5; }
+  .mistake-fix-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--faint); }
+
+  .stack-visual { border: 0.5px solid var(--border); border-radius: var(--radlg); overflow: hidden; margin: 1.25rem 0; }
+  .stack-row { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+  .stack-row:last-child { border-bottom: none; }
+  .stack-swatch { width: 40px; height: 18px; border-radius: 3px; flex-shrink: 0; }
+  .stack-layer { font-weight: 500; color: var(--ink); min-width: 130px; }
+  .stack-spec { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .stack-note { font-size: 12px; color: var(--faint); margin-left: auto; text-align: right; }
+
+  .termination-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .term-card { border: 0.5px solid var(--border); border-radius: var(--radlg); padding: 1rem; }
+  .term-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+  .term-tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 100px; margin-bottom: 8px; }
+  .term-pros, .term-cons { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .green-tag { background: #EAF3DE; color: #3B6D11; border: 0.5px solid #C0DD97; }
+  .amber-tag { background: #FAEEDA; color: #854F0B; border: 0.5px solid #FAC775; }
+  .blue-tag { background: #E6F1FB; color: #185FA5; border: 0.5px solid #B5D4F4; }
+
+  .formula-block { background: var(--raised); border: 0.5px solid var(--border2); border-radius: var(--rad); padding: 0.9rem 1.1rem; margin: 0.75rem 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink); line-height: 2; }
+  .formula-comment { color: var(--faint); font-family: var(--font-sans); font-size: 12px; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin: 0.75rem 0; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .check-icon { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; font-size: 9px; font-weight: 700; }
+  .check-green { background: #C0DD97; color: #27500A; }
+  .check-blue { background: #B5D4F4; color: #0C447C; }
+  .check-amber { background: #FAC775; color: #633806; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  @media(max-width:560px){ .two-col { grid-template-columns: 1fr; } }
+
+  .divider { height: 0.5px; background: var(--border); margin: 2.5rem 0; }
+
+  .sim-row { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center; font-size: 13px; margin: 8px 0; }
+  .sim-label { color: var(--muted); }
+  .sim-bar-wrap { height: 8px; background: var(--raised); border-radius: 100px; overflow: hidden; border: 0.5px solid var(--border); }
+  .sim-bar { height: 100%; border-radius: 100px; }
+
+  .phase-list { counter-reset: phase; display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+  .phase-item { display: flex; gap: 14px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .phase-num { width: 24px; height: 24px; border-radius: 50%; background: var(--raised); border: 0.5px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--ink); flex-shrink: 0; margin-top: 1px; }
+</style>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-tag">Senior Engineering Reference · PCB Design</div>
+    <div class="hero-title">High-Speed PCB Routing<br>The Complete Technical Guide</div>
+    <div class="hero-sub">A single-source-of-truth reference covering signal integrity fundamentals, impedance control, routing techniques, layer stack-up, termination, EMI/EMC, and simulation — from first principles to production-ready design rules.</div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <div class="toc-grid">
+      <div class="toc-item" onclick="document.getElementById('s1').scrollIntoView({behavior:'smooth'})"><span class="toc-num">01</span> What is High-Speed Design?</div>
+      <div class="toc-item" onclick="document.getElementById('s2').scrollIntoView({behavior:'smooth'})"><span class="toc-num">02</span> Transmission Line Theory</div>
+      <div class="toc-item" onclick="document.getElementById('s3').scrollIntoView({behavior:'smooth'})"><span class="toc-num">03</span> Impedance Control</div>
+      <div class="toc-item" onclick="document.getElementById('s4').scrollIntoView({behavior:'smooth'})"><span class="toc-num">04</span> Layer Stack-Up</div>
+      <div class="toc-item" onclick="document.getElementById('s5').scrollIntoView({behavior:'smooth'})"><span class="toc-num">05</span> Return Paths &amp; Ground Planes</div>
+      <div class="toc-item" onclick="document.getElementById('s6').scrollIntoView({behavior:'smooth'})"><span class="toc-num">06</span> Routing Techniques</div>
+      <div class="toc-item" onclick="document.getElementById('s7').scrollIntoView({behavior:'smooth'})"><span class="toc-num">07</span> Differential Pairs</div>
+      <div class="toc-item" onclick="document.getElementById('s8').scrollIntoView({behavior:'smooth'})"><span class="toc-num">08</span> Crosstalk</div>
+      <div class="toc-item" onclick="document.getElementById('s9').scrollIntoView({behavior:'smooth'})"><span class="toc-num">09</span> Termination Techniques</div>
+      <div class="toc-item" onclick="document.getElementById('s10').scrollIntoView({behavior:'smooth'})"><span class="toc-num">10</span> Via Design &amp; Stitching</div>
+      <div class="toc-item" onclick="document.getElementById('s11').scrollIntoView({behavior:'smooth'})"><span class="toc-num">11</span> EMI / EMC</div>
+      <div class="toc-item" onclick="document.getElementById('s12').scrollIntoView({behavior:'smooth'})"><span class="toc-num">12</span> Common Mistakes</div>
+      <div class="toc-item" onclick="document.getElementById('s13').scrollIntoView({behavior:'smooth'})"><span class="toc-num">13</span> Simulation &amp; Verification</div>
+      <div class="toc-item" onclick="document.getElementById('s14').scrollIntoView({behavior:'smooth'})"><span class="toc-num">14</span> Design Checklist</div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 1 -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">What is High-Speed PCB Design?</span>
+      <span class="section-badge badge-beginner">Beginner</span>
+    </div>
+
+    <p>A signal is considered <strong>high-speed</strong> not simply because of its clock frequency, but because its electrical wavelength — or its rise/fall time — is short enough relative to the trace length that the trace can no longer be treated as a simple wire. It must instead be treated as a <strong>transmission line</strong>.</p>
+
+    <h3>The Critical Length Rule</h3>
+    <p>The standard industry threshold is when trace length exceeds <strong>1/6 of the signal wavelength</strong> (some conservative designs use 1/10). Below this, lumped-circuit analysis is valid. Above it, distributed transmission line effects dominate.</p>
+
+    <div class="formula-block">
+      λ = v<sub>p</sub> / f &nbsp;&nbsp;&nbsp;<span class="formula-comment">— wavelength in the medium</span><br>
+      v<sub>p</sub> = c / √ε<sub>r</sub> &nbsp;&nbsp;&nbsp;<span class="formula-comment">— propagation velocity (c ≈ 3×10⁸ m/s)</span><br>
+      L<sub>critical</sub> = λ / 6 &nbsp;&nbsp;&nbsp;<span class="formula-comment">— minimum trace length requiring TL treatment</span><br><br>
+      <span class="formula-comment">For FR4 (ε<sub>r</sub> ≈ 4.2): v<sub>p</sub> ≈ 1.46×10⁸ m/s ≈ 5.85 in/ns</span>
+    </div>
+
+    <h3>Rise Time, Not Just Frequency</h3>
+    <p>Modern digital signals contain harmonics far beyond the fundamental clock frequency. A 100 MHz clock with a 1 ns rise time carries significant energy up to ~350 MHz. The effective electrical length is determined by <strong>rise time</strong>:</p>
+
+    <div class="formula-block">
+      L<sub>critical</sub> = (t<sub>r</sub> × v<sub>p</sub>) / 6 &nbsp;&nbsp;&nbsp;<span class="formula-comment">— rise-time-based critical length</span><br><br>
+      <span class="formula-comment">Example: t<sub>r</sub> = 1 ns, v<sub>p</sub> = 5.85 in/ns → L<sub>critical</sub> ≈ 0.975 inches (≈ 24.8 mm)</span>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rule-card-label">DDR4 / LPDDR4</div>
+        <div class="rule-card-val">&lt;200 ps t<sub>r</sub></div>
+        <div class="rule-card-desc">Critical length ≈ 7 mm. Every trace is a transmission line.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">PCIe Gen 4/5</div>
+        <div class="rule-card-val">16 / 32 GT/s</div>
+        <div class="rule-card-desc">Differential signaling, strict impedance ±10%, careful via optimization required.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">USB 3.2 Gen 2</div>
+        <div class="rule-card-val">10 Gbps</div>
+        <div class="rule-card-desc">85Ω differential, &lt;5 mil skew, stubs on board absolutely forbidden.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">Slow logic (I²C, GPIO)</div>
+        <div class="rule-card-val">&gt;10 ns t<sub>r</sub></div>
+        <div class="rule-card-desc">Critical length &gt;40 mm. Most board traces are safe without TL treatment.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 2 -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Transmission Line Theory</span>
+      <span class="section-badge badge-beginner">Beginner → Intermediate</span>
+    </div>
+
+    <p>A PCB trace over a reference plane forms a <strong>distributed network</strong> of inductance (L), capacitance (C), resistance (R), and conductance (G) per unit length. This is the physical basis of all high-speed behavior.</p>
+
+    <h3>Characteristic Impedance Z₀</h3>
+    <div class="formula-block">
+      Z₀ = √(L/C) &nbsp;&nbsp;&nbsp;<span class="formula-comment">— lossless approximation</span><br>
+      Z₀ = √((R + jωL) / (G + jωC)) &nbsp;&nbsp;&nbsp;<span class="formula-comment">— full lossy model</span><br><br>
+      <span class="formula-comment">Z₀ is a property of the transmission line geometry — NOT of signal frequency.</span>
+    </div>
+
+    <h3>Propagation Velocity</h3>
+    <p>Signals travel at approximately <strong>60% of the speed of light in FR4</strong>. Propagation delay (t<sub>pd</sub>) is critical for timing budgets:</p>
+    <div class="formula-block">
+      t<sub>pd</sub> = √(L × C) per unit length ≈ 170 ps/inch (FR4, microstrip)<br>
+      t<sub>pd</sub> ≈ 185 ps/inch (FR4, stripline, ε<sub>r,eff</sub> ≈ 4.2)
+    </div>
+
+    <h3>Reflections and Impedance Mismatch</h3>
+    <p>Any discontinuity in Z₀ causes a partial reflection. The <strong>reflection coefficient Γ</strong> quantifies this:</p>
+    <div class="formula-block">
+      Γ = (Z<sub>L</sub> − Z₀) / (Z<sub>L</sub> + Z₀)<br><br>
+      <span class="formula-comment">Open circuit (Z<sub>L</sub> = ∞): Γ = +1 → full positive reflection</span><br>
+      <span class="formula-comment">Short circuit (Z<sub>L</sub> = 0): Γ = −1 → full negative reflection</span><br>
+      <span class="formula-comment">Matched load (Z<sub>L</sub> = Z₀): Γ = 0 → no reflection</span>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-label">Key Insight</div>
+      <p>Reflections travel back to the source, cause ringing and overshoot, and result in setup/hold time violations, false triggering, and increased EMI. Matching Z₀ throughout the signal path is the single most important objective in high-speed routing.</p>
+    </div>
+
+    <h3>Lossy Transmission Lines (Advanced)</h3>
+    <p>At frequencies above a few GHz, conductor skin effect and dielectric loss become significant. Loss is characterized by the <strong>attenuation constant α</strong>:</p>
+    <div class="formula-block">
+      α<sub>conductor</sub> ∝ √f &nbsp;&nbsp;&nbsp;<span class="formula-comment">— skin effect (dominates at lower GHz)</span><br>
+      α<sub>dielectric</sub> ∝ f × tan δ &nbsp;&nbsp;&nbsp;<span class="formula-comment">— dielectric loss (dominates at higher GHz)</span><br><br>
+      <span class="formula-comment">FR4 tan δ ≈ 0.02–0.025 at 1 GHz. Low-loss laminates (Megtron6, Rogers 4350B) achieve tan δ &lt; 0.004.</span>
+    </div>
+  </div>
+
+
+  <!-- SECTION 3 -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Impedance Control</span>
+      <span class="section-badge badge-intermediate">Intermediate</span>
+    </div>
+
+    <p>Controlled impedance is the practice of designing trace geometry to achieve a target Z₀ within a specified tolerance (typically <strong>±10%</strong> for most digital, <strong>±5%</strong> for RF and high-speed serial). This requires tight coordination between PCB designer and fabricator.</p>
+
+    <h3>Microstrip Impedance (Outer Layers)</h3>
+    <div class="formula-block">
+      Z₀ ≈ (87 / √(ε<sub>r</sub> + 1.41)) × ln(5.98H / (0.8W + T))<br><br>
+      <span class="formula-comment">W = trace width, H = dielectric height, T = trace thickness, ε<sub>r</sub> = dielectric constant</span><br>
+      <span class="formula-comment">Valid for W/H between 0.1 and 2.0 (IPC-2141A approximation)</span>
+    </div>
+
+    <h3>Embedded Microstrip / Stripline (Inner Layers)</h3>
+    <div class="formula-block">
+      Z₀ (stripline) ≈ (60 / √ε<sub>r</sub>) × ln(4B / (0.67π(0.8W + T)))<br><br>
+      <span class="formula-comment">B = total dielectric thickness between the two reference planes</span><br>
+      <span class="formula-comment">Stripline is fully enclosed → better EMI shielding, more predictable Z₀</span>
+    </div>
+
+    <h3>Standard Target Impedances</h3>
+    <table class="data-table">
+      <thead><tr><th>Interface</th><th>Z₀ Single-Ended</th><th>Z₀ Differential</th><th>Tolerance</th></tr></thead>
+      <tbody>
+        <tr><td>PCIe Gen 1–5</td><td class="mono">—</td><td class="mono">100Ω ±10%</td><td>±10%</td></tr>
+        <tr><td>USB 2.0</td><td class="mono">—</td><td class="mono">90Ω ±10%</td><td>±10%</td></tr>
+        <tr><td>USB 3.x / SuperSpeed</td><td class="mono">—</td><td class="mono">90Ω ±10%</td><td>±10%</td></tr>
+        <tr><td>HDMI / DisplayPort</td><td class="mono">—</td><td class="mono">100Ω ±10%</td><td>±10%</td></tr>
+        <tr><td>DDR3 / DDR4 data</td><td class="mono">40Ω ±10%</td><td class="mono">—</td><td>±10%</td></tr>
+        <tr><td>DDR4 clock</td><td class="mono">—</td><td class="mono">100Ω ±10%</td><td>±5%</td></tr>
+        <tr><td>Ethernet 1G RGMII</td><td class="mono">50Ω ±10%</td><td class="mono">—</td><td>±10%</td></tr>
+        <tr><td>10G / 25G SerDes</td><td class="mono">—</td><td class="mono">100Ω ±5%</td><td>±5%</td></tr>
+        <tr><td>RF / Microwave (50Ω sys)</td><td class="mono">50Ω ±5%</td><td class="mono">—</td><td>±5%</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Fabrication Note</div>
+      <p>Always include controlled impedance test coupons on the panel. Specify ε<sub>r</sub>, target Z₀, trace width, and dielectric thickness in the fab drawing notes. Never rely solely on the CAD tool's impedance calculator — board shop process variation affects all parameters.</p>
+    </div>
+  </div>
+
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Layer Stack-Up Design</span>
+      <span class="section-badge badge-intermediate">Intermediate</span>
+    </div>
+
+    <p>Stack-up design determines the physical environment in which every trace exists. A well-designed stack-up controls impedance, minimizes crosstalk, provides adequate power distribution, and suppresses EMI. It must be defined <strong>before routing begins</strong> — never as an afterthought.</p>
+
+    <h3>Fundamental Stack-Up Principles</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div>Every signal layer must have an adjacent reference plane (power or ground) within 5–8 mils.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>High-speed signal layers should be internal (stripline) for better shielding.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Never place two high-speed signal layers adjacent to each other without an intervening reference plane.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Power planes and ground planes should be tightly coupled (thin dielectric between them) for low PDN impedance.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Symmetric stack-up prevents bow and twist during PCB fabrication.</div>
+    </div>
+
+    <h3>Typical 8-Layer High-Speed Stack-Up</h3>
+    <div class="stack-visual">
+      <div class="stack-row"><div class="stack-swatch" style="background:#D4963A;"></div><div class="stack-layer">L1 — Signal (Top)</div><div class="stack-spec">Microstrip · 50Ω</div><div class="stack-note">Components, non-critical routing</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#888780;"></div><div class="stack-layer">L2 — Ground (GND)</div><div class="stack-spec">Solid copper fill</div><div class="stack-note">Reference for L1 &amp; L3</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#D4963A;"></div><div class="stack-layer">L3 — Signal (HS)</div><div class="stack-spec">Stripline · 50Ω</div><div class="stack-note">High-speed: DDR, PCIe, SerDes</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#888780;"></div><div class="stack-layer">L4 — Ground (GND)</div><div class="stack-spec">Solid copper fill</div><div class="stack-note">Reference for L3 &amp; L5</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#378ADD;"></div><div class="stack-layer">L5 — Power (PWR)</div><div class="stack-spec">Power island fills</div><div class="stack-note">1.8V, 3.3V, 5V planes</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#888780;"></div><div class="stack-layer">L6 — Ground (GND)</div><div class="stack-spec">Solid copper fill</div><div class="stack-note">Reference for L5 &amp; L7</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#D4963A;"></div><div class="stack-layer">L7 — Signal (HS)</div><div class="stack-spec">Stripline · 50Ω</div><div class="stack-note">High-speed perpendicular to L3</div></div>
+      <div class="stack-row"><div class="stack-swatch" style="background:#D4963A;"></div><div class="stack-layer">L8 — Signal (Bottom)</div><div class="stack-spec">Microstrip · 50Ω</div><div class="stack-note">General routing, connectors</div></div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-label">Routing Direction Rule</div>
+      <p>Route adjacent signal layers perpendicular to each other (e.g., L3 routes X-axis, L7 routes Y-axis). This minimizes broadside coupled crosstalk between adjacent signal layers and simplifies via transitions.</p>
+    </div>
+  </div>
+
+
+  <!-- SECTION 5 -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Return Paths &amp; Ground Planes</span>
+      <span class="section-badge badge-intermediate">Intermediate</span>
+    </div>
+
+    <p>Every signal current must have a return path. At low frequencies, return current takes the path of least resistance — through the ground plane via the most direct route. At <strong>high frequencies</strong>, return current takes the path of <strong>least inductance</strong>, which means it flows directly beneath the signal trace, mirroring its path.</p>
+
+    <h3>Why Return Path Continuity is Critical</h3>
+    <p>If the return path is interrupted — by a slot, split plane, via transition without a nearby bypass capacitor, or a reference plane change — the return current is forced to take a longer detour. This creates a loop antenna that radiates EMI and increases ground bounce.</p>
+
+    <div class="callout callout-danger">
+      <div class="callout-label">Critical Rule</div>
+      <p>Never route a high-speed signal trace across a split in the reference plane beneath it. The return current loop area increases dramatically, radiating EMI proportional to the loop area × frequency². This is the most common cause of EMC test failures.</p>
+    </div>
+
+    <h3>Return Path at Via Layer Changes</h3>
+    <p>When a signal changes layers via a via, the return current must also transition. Place a <strong>ground via or bypass capacitor</strong> within 200 mils (5 mm) of any signal via that crosses a reference plane boundary. For frequencies above 1 GHz, reduce this to within 50 mils.</p>
+
+    <div class="two-col">
+      <div>
+        <h4>Correct Practice</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-green">✓</div>Signal via + adjacent GND via pair at every layer transition.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>100 nF bypass cap within 100 mils of signal via transitioning power domain.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Solid copper pours on reference layers with no unnecessary cutouts.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Connect all GND islands with stitching vias at &lt;λ/20 spacing.</div>
+        </div>
+      </div>
+      <div>
+        <h4>Common Errors</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-amber">!</div>Routing over anti-pads that break the reference plane copper.</div>
+          <div class="check-item"><div class="check-icon check-amber">!</div>Crossing split-plane boundaries with high-speed signals.</div>
+          <div class="check-item"><div class="check-icon check-amber">!</div>Large GND pours without stitching vias creating isolated copper islands.</div>
+          <div class="check-item"><div class="check-icon check-amber">!</div>Bypass capacitors placed far from the power pin they are decoupling.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 6 -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Routing Techniques</span>
+      <span class="section-badge badge-intermediate">Intermediate</span>
+    </div>
+
+    <h3>Trace Width and Geometry</h3>
+    <p>Trace width directly sets Z₀. Once the target impedance and stack-up are defined, trace width is <strong>calculated, not guessed</strong>. Use a validated field solver (Polar Si9000, Saturn PCB Toolkit, or Ansys SIwave) — not the basic online calculators for production designs.</p>
+
+    <table class="data-table">
+      <thead><tr><th>Parameter</th><th>Impact</th><th>Typical Value (FR4, 50Ω)</th></tr></thead>
+      <tbody>
+        <tr><td>Trace width W</td><td>Primary Z₀ control</td><td class="mono">~4–5 mil (inner), ~5–6 mil (outer)</td></tr>
+        <tr><td>Dielectric height H</td><td>Strong Z₀ influence</td><td class="mono">4–8 mil typical inner layer</td></tr>
+        <tr><td>Copper thickness T</td><td>Minor Z₀ impact</td><td class="mono">0.5 oz (17.5 µm) to 1 oz (35 µm)</td></tr>
+        <tr><td>ε<sub>r</sub> of dielectric</td><td>Propagation velocity</td><td class="mono">4.0–4.5 (FR4 at 1 GHz)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Length Matching (Timing)</h3>
+    <p>For parallel buses (DDR, address/data, SDRAM), signals must arrive within the <strong>timing window defined by the setup/hold specification</strong>. Length matching achieves this by controlling propagation delay (t<sub>pd</sub>) across all traces in the group.</p>
+
+    <div class="rule-grid">
+      <div class="rule-card">
+        <div class="rule-card-label">DDR4 Data Group</div>
+        <div class="rule-card-val">±25 mil</div>
+        <div class="rule-card-desc">Within each DQ byte lane. DQS to DQ within the same byte group.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">DDR4 Address/Command</div>
+        <div class="rule-card-val">±50 mil</div>
+        <div class="rule-card-desc">Address/command group matching to CK differential pair.</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">PCIe (per-lane)</div>
+        <div class="rule-card-val">±5 mil D+/D−</div>
+        <div class="rule-card-desc">Intra-pair skew. Inter-lane skew budget is much larger (ns range).</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-card-label">USB 3.x D+/D−</div>
+        <div class="rule-card-val">±5 mil</div>
+        <div class="rule-card-desc">Intra-pair only. Maintain coupling throughout.</div>
+      </div>
+    </div>
+
+    <h3>Serpentine Tuning (Length Matching)</h3>
+    <p>Use serpentines to add length to shorter traces. Follow these rules to avoid self-coupling within the serpentine:</p>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div>Gap between serpentine legs must be ≥ 3× trace width (3W rule) to prevent forward coupling.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Serpentine amplitude should be small — avoid long parallel sections. Multiple short serpentines are better than one long one.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Never serpentine within a differential pair (introduces intra-pair skew). Serpentine outside the pair, then re-couple.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>For &gt;5 GHz signals: serpentine gap ≥ 5W. Tightly coupled serpentines create artificial delay only at low frequency.</div>
+    </div>
+
+    <h3>Trace Spacing and the 3W Rule</h3>
+    <p>To prevent signal coupling between adjacent non-differential traces, maintain a center-to-center spacing of at least <strong>3× the trace width</strong>. For stricter isolation (e.g., clocks near data lines), use <strong>5W spacing</strong>.</p>
+
+    <div class="formula-block">
+      3W rule: S<sub>center-to-center</sub> ≥ 3 × W<br>
+      Edge-to-edge gap = 3W − W = 2W<br><br>
+      <span class="formula-comment">Example: 5 mil trace → maintain ≥ 10 mil edge-to-edge gap</span>
+    </div>
+
+    <h3>Routing Corners</h3>
+    <p>The old rule that 90° corners must be avoided is largely a myth for frequencies below 10 GHz. The capacitive discontinuity of a 90° corner is negligible at typical PCB speeds. However:</p>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-blue">→</div>Use 45° corners or arcs as best practice and for clean aesthetics.</div>
+      <div class="check-item"><div class="check-icon check-blue">→</div>Above 10 GHz (e.g., 28G SerDes, mmWave), minimize sharp bends and prefer arcs.</div>
+      <div class="check-item"><div class="check-icon check-blue">→</div>The real risk from 90° corners is etch undercut during fabrication on fine-pitch traces — not electrical performance.</div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 7 -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Differential Pair Routing</span>
+      <span class="section-badge badge-intermediate">Intermediate</span>
+    </div>
+
+    <p>Differential signaling transmits data on two complementary signals (D+ and D−). The receiver responds to the <strong>voltage difference</strong>, making it inherently immune to common-mode noise. Used in PCIe, USB, HDMI, LVDS, Ethernet, and nearly all high-speed serial interfaces.</p>
+
+    <h3>Key Differential Pair Rules</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Route as a coupled pair</strong> from driver pin to receiver pin. Decouple them only where absolutely necessary (e.g., AC coupling capacitors, connectors).</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Maintain constant separation</strong> throughout the route. Changes in spacing alter the differential Z₀ and create reflections.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Match intra-pair length</strong> to specification (typically ±5 mil for USB/PCIe). Skew converts differential-mode signal into common-mode noise.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Keep pairs symmetric</strong>: identical geometry, same layer, same dielectric throughout.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Do not route over splits</strong> or plane discontinuities.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>When vias are required, <strong>place both vias of the pair simultaneously</strong>, equal spacing from each trace, and add GND vias beside each signal via.</div>
+    </div>
+
+    <h3>Differential Impedance</h3>
+    <div class="formula-block">
+      Z<sub>diff</sub> = 2 × Z₀ × (1 − 0.347 × e<sup>−2.9 × S/H</sup>)<br><br>
+      <span class="formula-comment">Z₀ = single-ended impedance of one trace, S = edge-to-edge spacing, H = dielectric height</span><br>
+      <span class="formula-comment">Tightly coupled pairs (small S): Z<sub>diff</sub> &lt; 2×Z₀</span><br>
+      <span class="formula-comment">Loosely coupled pairs (large S): Z<sub>diff</sub> → 2×Z₀</span>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">AC Coupling Capacitor Placement</div>
+      <p>AC coupling caps must be placed as a symmetric pair, equidistant from both traces, with equal pad geometry. Asymmetric placement introduces intra-pair skew. Use 0201 or smaller packages to minimize stub inductance at high data rates.</p>
+    </div>
+  </div>
+
+
+  <!-- SECTION 8 -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">Crosstalk</span>
+      <span class="section-badge badge-advanced">Advanced</span>
+    </div>
+
+    <p>Crosstalk is the unwanted coupling of energy from an <strong>aggressor net</strong> onto a <strong>victim net</strong> through parasitic capacitance and mutual inductance between adjacent traces.</p>
+
+    <h3>Two Types of Crosstalk</h3>
+    <table class="data-table">
+      <thead><tr><th>Type</th><th>Location</th><th>Polarity</th><th>Magnitude</th></tr></thead>
+      <tbody>
+        <tr><td>NEXT (Near-End Crosstalk)</td><td>Same end as aggressor driver</td><td>Same as aggressor</td><td>Higher — accumulates over coupled length</td></tr>
+        <tr><td>FEXT (Far-End Crosstalk)</td><td>Far end of victim line</td><td>Opposite to aggressor (stripline)</td><td>Lower in microstrip, problematic in stripline</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Crosstalk Coupling Coefficients</h3>
+    <div class="formula-block">
+      K<sub>c</sub> (capacitive) = C<sub>m</sub> / C<sub>self</sub> &nbsp;&nbsp;&nbsp;<span class="formula-comment">— mutual to self capacitance ratio</span><br>
+      K<sub>L</sub> (inductive) = M / L<sub>self</sub> &nbsp;&nbsp;&nbsp;<span class="formula-comment">— mutual to self inductance ratio</span><br><br>
+      NEXT ≈ 0.25 × (K<sub>L</sub> + K<sub>c</sub>)<br>
+      FEXT ≈ (T<sub>d</sub> / 2) × (K<sub>L</sub> − K<sub>c</sub>) &nbsp;&nbsp;&nbsp;<span class="formula-comment">T<sub>d</sub> = one-way propagation delay of coupled section</span>
+    </div>
+
+    <h3>Crosstalk Mitigation Strategies</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Increase spacing</strong>: crosstalk falls off roughly as 1/S² for separation S. The 3W rule reduces NEXT to &lt;10%.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Reduce parallel run length</strong>: minimize the length over which aggressor and victim run parallel. Route to diverge quickly.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Route on different layers</strong>: orthogonal routing on adjacent layers eliminates broadside coupling.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Insert guard traces</strong>: a grounded trace between aggressor and victim, connected to GND at both ends, provides shielding. Effective for LVDS and clocks near sensitive nets.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Use stripline</strong>: FEXT in balanced stripline cancels (K<sub>L</sub> ≈ K<sub>c</sub>), making it superior to microstrip for critical nets.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Reduce dielectric height</strong>: reduces Z₀ and coupling coefficients by bringing reference planes closer.</div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 9 -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">Termination Techniques</span>
+      <span class="section-badge badge-advanced">Advanced</span>
+    </div>
+
+    <p>Termination absorbs signal energy at the end of a transmission line to prevent reflections. The correct termination strategy depends on topology, drive strength, data rate, and power constraints.</p>
+
+    <div class="termination-grid">
+      <div class="term-card">
+        <div class="term-name">Series (Source) Termination</div>
+        <span class="term-tag green-tag">Low power</span>
+        <div class="term-pros">Resistor in series with driver output. R<sub>s</sub> = Z₀ − Z<sub>driver</sub>. Prevents reflection at source. Signal arrives at load as full amplitude after one round trip. Ideal for point-to-point, single load.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">Typical R<sub>s</sub>: 22–33Ω for 50Ω lines with CMOS driver Z<sub>out</sub> ≈ 15–25Ω</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Parallel (End) Termination</div>
+        <span class="term-tag amber-tag">More power</span>
+        <div class="term-pros">Resistor from signal to GND (or V<sub>TT</sub>) at receiver. Instantaneous impedance match. Best for multi-drop buses, clocks, and high-frequency nets. Requires driver capable of sinking/sourcing termination current.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">DDR uses V<sub>TT</sub> termination (V<sub>DD</sub>/2). LVDS uses 100Ω across D+/D−.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Thevenin Termination</div>
+        <span class="term-tag blue-tag">Flexible</span>
+        <div class="term-pros">Two resistors forming voltage divider to V<sub>CC</sub> and GND. Parallel combination = Z₀. Sets DC bias mid-rail. Wastes power but works well for CMOS logic buses without dedicated V<sub>TT</sub> rail.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">Each resistor = 2×Z₀ for 50% DC bias point.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">AC (RC) Termination</div>
+        <span class="term-tag green-tag">Low DC power</span>
+        <div class="term-pros">Series RC to GND at far end. C blocks DC (no static current), R absorbs AC energy. Effective at high frequencies where capacitor is low impedance. Resistor = Z₀. Cap typically 100 pF.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">Not suitable for very low-frequency or DC-coupled signals.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">Differential Termination</div>
+        <span class="term-tag blue-tag">Serial interfaces</span>
+        <div class="term-pros">100Ω (for 100Ω Z<sub>diff</sub>) placed across D+ and D− at the receiver. Terminates differential mode. Most high-speed serial standards specify this at the IC receiver input pins. External only when IC lacks internal ODT.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">PCIe, HDMI, USB 3.x — receiver IC usually has built-in ODT.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-name">On-Die Termination (ODT)</div>
+        <span class="term-tag green-tag">Modern DDR/SerDes</span>
+        <div class="term-pros">Termination integrated inside the IC. Eliminates board-level resistors, stubs, and parasitic inductance. Programmable via configuration registers. Used in all DDR3/4/5, PCIe, and modern SerDes PHYs.</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--faint);">Check device datasheet — ODT value and enable condition is software-configurable.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 10 -->
+  <div class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <span class="section-title">Via Design &amp; Stitching</span>
+      <span class="section-badge badge-advanced">Advanced</span>
+    </div>
+
+    <p>Vias introduce <strong>parasitic inductance and capacitance</strong> into a signal path. At high speeds, via parasitics create impedance discontinuities, reflections, and bandwidth limiting behavior. Via optimization is non-negotiable above 5 Gbps.</p>
+
+    <h3>Via Parasitic Model</h3>
+    <div class="formula-block">
+      L<sub>via</sub> ≈ (5.08 × H) × [ln(4H/d) + 1] &nbsp;&nbsp;&nbsp;<span class="formula-comment">nH, H = via length in inches, d = drill diameter in inches</span><br>
+      C<sub>via</sub> ≈ 1.41 × ε<sub>r</sub> × T × D / (D₂ − D) &nbsp;&nbsp;&nbsp;<span class="formula-comment">pF, T = PCB thickness, D = pad diameter, D₂ = anti-pad diameter</span><br><br>
+      <span class="formula-comment">Typical through-hole via (8-layer board): L ≈ 1.2–2 nH, C ≈ 0.3–0.6 pF → resonance ~3–5 GHz</span>
+    </div>
+
+    <h3>Via Optimization Techniques</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Back-drill (controlled depth drill)</strong>: removes unused via stub below the signal layer transition. Eliminates the stub resonance that limits bandwidth. Essential for &gt;5 Gbps. Specify stub length &lt;10 mils for 10 Gbps+.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Blind/buried vias</strong>: connect only required layers, eliminate stub entirely. More expensive but necessary for dense BGA routing and signals above 10 Gbps.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>Minimize pad/anti-pad diameter</strong>: smaller pads → less capacitance. For 50Ω design, anti-pad diameter should be calculated to compensate via capacitance (via anti-pad sizing).</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>GND via proximity</strong>: place GND reference vias within 20 mils of each signal via for high-speed differential pairs. This provides a return path and reduces loop inductance.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div><strong>VIPPO (Via-in-Pad Plated Over)</strong>: allows vias directly under BGA pads. Eliminates escape routing traces and their associated discontinuities. Required for fine-pitch BGAs (&lt;0.8 mm pitch).</div>
+    </div>
+
+    <h3>GND Stitching Vias</h3>
+    <p>Ground plane stitching vias connect GND planes on different layers, preventing their separation at high frequencies. They also suppress EMI by reducing the size of resonant cavities between planes.</p>
+    <div class="formula-block">
+      Stitching via spacing ≤ λ/20 at highest EMI frequency of concern<br><br>
+      <span class="formula-comment">For 1 GHz: λ = 5.85 in/ns / 1 GHz = 5.85 inches → spacing ≤ 0.29 inches</span><br>
+      <span class="formula-comment">For 5 GHz: spacing ≤ 0.059 inches ≈ 60 mils — requires dense stitching</span>
+    </div>
+  </div>
+
+
+  <!-- SECTION 11 -->
+  <div class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <span class="section-title">EMI / EMC Design</span>
+      <span class="section-badge badge-advanced">Advanced</span>
+    </div>
+
+    <p>EMI (Electromagnetic Interference) is emitted radiation from the PCB. EMC (Electromagnetic Compatibility) is the board's ability to both limit emissions and withstand external interference. PCB layout is the <strong>primary determinant</strong> of EMI performance — far more than component selection or filtering.</p>
+
+    <h3>Sources of EMI on PCBs</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-amber">!</div><strong>Signal loop area</strong>: largest contributor. Radiation ∝ loop area × frequency² × dI/dt. Minimize every current loop.</div>
+      <div class="check-item"><div class="check-icon check-amber">!</div><strong>Discontinuous reference planes</strong>: forced return current detours create large loop antennas.</div>
+      <div class="check-item"><div class="check-icon check-amber">!</div><strong>PDN (Power Delivery Network) resonances</strong>: plane pair resonances create burst emissions at resonant frequencies.</div>
+      <div class="check-item"><div class="check-icon check-amber">!</div><strong>Clock harmonics</strong>: clocks are the strongest periodic emitters due to fast edges and harmonic content.</div>
+      <div class="check-item"><div class="check-icon check-amber">!</div><strong>Cable attachment points</strong>: cables attached to I/O connectors act as antennas — common-mode currents on cables are the dominant far-field emission source above 30 MHz.</div>
+    </div>
+
+    <h3>EMI Design Rules</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="check-icon check-green">✓</div>Minimize all current loop areas — every high-speed net needs its return path directly beneath it.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Place decoupling capacitors as close as possible to IC power pins: 100 nF (bulk HF), 10 nF (mid-frequency), bulk electrolytic at power entry.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Isolate analog and digital grounds — connect at a single point (star ground) or use a ferrite bead bridge.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Route clocks in internal stripline layers, away from board edges and I/O connectors.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Board edge keepout: no routing within 100 mils of board edge (reduces antenna effect of edge fields).</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Spread-spectrum clocking (SSC) can reduce peak emissions by 10–15 dB by distributing energy across a frequency band. Used on PCIe, SATA, USB.</div>
+      <div class="check-item"><div class="check-icon check-green">✓</div>Use EMI filters (ferrite beads, LC filters) on all external interface lines at the connector entry point.</div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 12 -->
+  <div class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <span class="section-title">Common Mistakes &amp; How to Avoid Them</span>
+      <span class="section-badge badge-intermediate">All Levels</span>
+    </div>
+
+    <div class="mistake-list">
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Routing high-speed signal across a reference plane split or slot.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Route all high-speed nets over continuous reference planes. Validate with return path analysis in your CAD tool.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Using online impedance calculators for production trace widths without field solver validation.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Use Polar Si9000, Saturn PCB Toolkit, or Ansys SIwave. Include test coupons and require fab impedance report.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Ignoring via stubs in &gt;5 Gbps designs — causes mid-band resonance nulls in insertion loss.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Specify back-drilling on all high-speed vias. Confirm with S-parameter simulation of via model.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Placing bypass capacitors far from IC power pins — parasitic inductance negates their effectiveness.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Place 100 nF cap within 50 mils, 10 nF within 100 mils. Use VIPPO for BGAs. Minimize via count in capacitor-to-power-pin path.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Serpentining within a differential pair — introduces intra-pair skew and disrupts coupling.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Length-tune outside the coupled pair region. Re-couple after the serpentine. Never add meanders inside the paired region.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Routing two adjacent high-speed signal layers with long parallel runs (no orthogonality).</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Enforce orthogonal routing direction per layer in design rules. Adjacent signal layers must be perpendicular to each other.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Adding termination resistors without accounting for PCB parasitic inductance — creating an LC resonance.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Model the complete termination network including pad and via parasitics in SPICE. Verify eye diagram opens correctly.</span>
+      </div>
+      <div class="mistake-item">
+        <span class="mis-label mis-bad">Mistake</span>
+        <span class="mistake-text">Floating copper (unused copper areas not connected to GND or signal) on signal layers.</span>
+        <span class="mis-label mis-fix">Fix</span>
+        <span class="mistake-text">Pour GND on all unused layer areas. Stitch with GND vias. Floating copper causes erratic capacitive coupling and EMI.</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SECTION 13 -->
+  <div class="section" id="s13">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <span class="section-title">Simulation &amp; Verification</span>
+      <span class="section-badge badge-advanced">Advanced</span>
+    </div>
+
+    <p>Simulation is not optional for high-speed designs above 1 Gbps. It is <strong>cheaper than one failed prototype spin</strong>. Modern EDA tools allow full pre-layout and post-layout signal integrity analysis.</p>
+
+    <h3>Simulation Flow</h3>
+    <div class="phase-list">
+      <div class="phase-item"><div class="phase-num">1</div><strong style="color:var(--ink);">Pre-layout (schematic stage):</strong>&nbsp;IBIS-based SPICE simulation. Verify termination strategy, topology, driver/receiver compatibility, timing margins. Tools: HyperLynx, Ansys SIwave, Cadence Sigrity.</div>
+      <div class="phase-item"><div class="phase-num">2</div><strong style="color:var(--ink);">Stack-up definition:</strong>&nbsp;Define layer stack-up and run impedance field solver (Polar Si9000, Ansys HFSS 2D Extractor) to get exact Z₀, propagation delay, and loss coefficients per layer.</div>
+      <div class="phase-item"><div class="phase-num">3</div><strong style="color:var(--ink);">Post-layout extraction:</strong>&nbsp;Extract 3D via models and transmission line RLGC parameters from the actual routed board. Import into signal integrity simulator.</div>
+      <div class="phase-item"><div class="phase-num">4</div><strong style="color:var(--ink);">Eye diagram / bathtub analysis:</strong>&nbsp;Simulate the eye diagram at receiver for worst-case channel. Verify eye height and width against JEDEC/PCIe/USB specification mask.</div>
+      <div class="phase-item"><div class="phase-num">5</div><strong style="color:var(--ink);">S-parameter (VNA) verification:</strong>&nbsp;Measure insertion loss (S21), return loss (S11), and NEXT/FEXT on fabricated test coupons using a VNA. Compare to simulated S-parameters.</div>
+      <div class="phase-item"><div class="phase-num">6</div><strong style="color:var(--ink);">EMC pre-compliance scan:</strong>&nbsp;Near-field scan using a small probe to identify hot spots before formal EMC chamber testing. Tools: Langer, Rohde &amp; Schwarz near-field scanners.</div>
+    </div>
+
+    <h3>Key Simulation Metrics</h3>
+    <table class="data-table">
+      <thead><tr><th>Metric</th><th>Description</th><th>Pass Criterion (example)</th></tr></thead>
+      <tbody>
+        <tr><td>Eye Height</td><td>Voltage margin at sampling point</td><td class="mono">&gt;200 mV (DDR4), &gt;150 mV (PCIe)</td></tr>
+        <tr><td>Eye Width</td><td>Timing margin at decision threshold</td><td class="mono">&gt;0.65 UI (depends on standard)</td></tr>
+        <tr><td>Insertion Loss (S21)</td><td>Channel attenuation at Nyquist</td><td class="mono">&lt;−20 dB at Nyquist (PCIe Gen 4)</td></tr>
+        <tr><td>Return Loss (S11)</td><td>Reflected energy at source</td><td class="mono">&lt;−10 dB across signal bandwidth</td></tr>
+        <tr><td>NEXT / FEXT</td><td>Crosstalk coupling magnitude</td><td class="mono">&lt;−40 dB at Nyquist</td></tr>
+        <tr><td>Jitter (TJ)</td><td>Total timing jitter at BER</td><td class="mono">&lt;0.1 UI at BER 10⁻¹²</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- SECTION 14 -->
+  <div class="section" id="s14">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <span class="section-title">Pre-Route Design Checklist</span>
+      <span class="section-badge badge-intermediate">All Levels</span>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h4>Stack-Up &amp; Impedance</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-green">✓</div>Stack-up defined and field-solver validated before routing.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Impedance-controlled layers identified per net class.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Test coupons specified in fab notes.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Every signal layer adjacent to a reference plane.</div>
+        </div>
+
+        <h4>Routing Rules</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-green">✓</div>Trace widths calculated and set as design rules.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>3W spacing rules applied to critical net classes.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Length matching constraints set for all bus groups.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>Differential pair coupling rules enforced.</div>
+        </div>
+      </div>
+      <div>
+        <h4>Power &amp; Ground</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-green">✓</div>Bypass capacitor values and placement specified.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>No plane splits under high-speed routes.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>PDN impedance target defined and verified.</div>
+          <div class="check-item"><div class="check-icon check-green">✓</div>GND stitching via grid designed for target frequency.</div>
+        </div>
+
+        <h4>Post-Route Verification</h4>
+        <div class="checklist">
+          <div class="check-item"><div class="check-icon check-blue">→</div>Return path analysis — no splits under critical nets.</div>
+          <div class="check-item"><div class="check-icon check-blue">→</div>Via stub analysis — back-drill specified where needed.</div>
+          <div class="check-item"><div class="check-icon check-blue">→</div>Eye diagram simulation passed for all serial links.</div>
+          <div class="check-item"><div class="check-icon check-blue">→</div>EMC pre-compliance simulation reviewed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-success" style="margin-top:1.5rem;">
+      <div class="callout-label">Final Principle</div>
+      <p>High-speed PCB design is a system discipline. No single rule fixes everything. Impedance control, return path integrity, via optimization, termination, and EMI management must all be addressed simultaneously and verified through simulation before a single board is fabricated. Every prototype spin costs time and money — invest in rigorous pre-silicon analysis.</p>
+    </div>
+  </div>
+
+</div>
