@@ -1562,21 +1562,23 @@ a:hover {
 /* Flow Component */
 .flow-container {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   align-items: stretch;
   gap: var(--space-4);
   margin: var(--space-8) 0;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .flow-container {
     flex-direction: column;
   }
 }
 
 .flow-step {
-  flex: 1;
-  min-width: 140px;
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 280px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   padding: var(--space-4);
@@ -1588,6 +1590,13 @@ a:hover {
   align-items: center;
   text-align: center;
   position: relative;
+  transition: all var(--transition-fast);
+}
+
+.flow-step:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
 }
 
 .flow-num {
@@ -1619,6 +1628,13 @@ a:hover {
   color: var(--accent-primary);
   opacity: 0.5;
   font-weight: 800;
+  pointer-events: none;
+}
+
+@media (max-width: 1100px) {
+  .flow-arrow {
+    display: none;
+  }
 }
 
 /* Code Block */

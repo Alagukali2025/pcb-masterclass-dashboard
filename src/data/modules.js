@@ -1719,27 +1719,181 @@ export const modulesData = [
     id: "dfm_dft",    
     icon: Factory,        
     title: "DFM / DFT",                 
-    desc: "Design for manufacturing and testing.",
+    desc: "Achieve industrial-grade yields and test coverage.",
     content: {
-      intro: "Design for Manufacturing (DFM) ensures your board can be built reliably. Design for Testing (DFT) ensures it can be tested in mass production without destroying yields.",
+      intro: "Design for Manufacturing (DFM) and Design for Testing (DFT) are the twin pillars of professional PCB engineering. DFM ensures your board can be built reliably, repeatably, and at target cost. DFT ensures that every critical net, component, and function can be verified after assembly. This guide provides a Single Source of Truth for DFM/DFT based on IPC-A-610, IPC-2221B, and J-STD-020 standards, ensuring high-yield production from prototype to volume.",
       sections: [
         {
-          heading: "Acid Traps & Slivers",
-          content: "Acute trace angles (less than 90 degrees) can trap etching acid during fabrication, causing the trace to over-etch and break. Always use 45-degree or rounded corners. Copper slivers (isolated copper less than 4 mils wide) can detach during soldering and short out pins."
+          heading: "The Business Case: Yield and Rework",
+          content: "In volume production, every 1% drop in yield significantly increases total product cost. DFM reduces NPI (New Product Introduction) cycles, while DFT prevents field failures by catching assembly defects at ICT.",
+          table: {
+            headers: ["Metric", "Without DFM/DFT", "Professional Engineering (SSOT)"],
+            rows: [
+              ["First-Pass Yield", "≤ 85%", "> 99.5%"],
+              ["Rework Cost", "High (Manual)", "Minimal (Optimized Process)"],
+              ["Time-to-Market", "3-5 Rework Cycles", "1-2 Cycles (Correct by Design)"],
+              ["Field Reliability", "Variable/Unknown", "Verifiable & Guaranteed"]
+            ]
+          }
         },
         {
-          heading: "Test Points (DFT)",
-          content: "Every critical node should have a test point for the 'Bed of Nails' ICT (In-Circuit Testing) machine. Test points should ideally all be on the bottom the board, spaced at least 50 mils apart.",
+          heading: "Fabrication & Assembly Thermal Profiles",
+          content: "Your design must survive the heat. Assembly processes like Reflow and Wave Soldering subject the board to temperatures between 235°C and 260°C. Material selection and pad design must account for these thermal cycles.",
+          table: {
+            headers: ["Process", "Standard", "Temperature Range", "Duration (Time Above Liquidus)"],
+            rows: [
+              ["Reflow (SMT)", "J-STD-020", "235–260°C (SAC305)", "30–90 sec (217°C)"],
+              { type: 'highlight', data: ["Wave (PTH)", "IPC-A-610", "260°C ±5°C", "2–4 sec Contact"] },
+              ["Preheat", "MFR Spec", "100–130°C", "60–120 sec"]
+            ]
+          },
           alerts: [
-            { type: 'warning', text: "Never place a test point directly on a high-speed trace like USB or PCIe, as the test pad creates a capacitive stub that ruins signal integrity." }
+            { type: 'info', text: "Lead-free SAC305 solder requires significantly higher temperatures than leaded SnPb. Ensure all components are rated for 260°C reflow." }
+          ]
+        },
+        {
+          heading: "Testing Methodologies & DFT Coverage",
+          content: "DFT ensures the board is testable after assembly. A combination of In-Circuit Testing (ICT), Flying Probe, and JTAG provides maximum fault coverage.",
+          filletGrid: [
+            {
+              title: "ICT (In-Circuit)",
+              color: "blue",
+              list: [
+                { label: "Method", text: "Bed-of-Nails fixture contacts dedicated test points simultaneously." },
+                { label: "Strength", text: "Fast; captures manufacturing defects on every net." },
+                { label: "Cost", text: "High fixture cost ($5k–$50k); amortized over volume." }
+              ]
+            },
+            {
+              title: "Flying Probe",
+              color: "orange",
+              list: [
+                { label: "Method", text: "Robotic probes move to pads and vias independently." },
+                { label: "Strength", text: "No fixture cost; flexible for NPI and low volume." },
+                { label: "Requirement", text: "Accessible pads/vias on both sides." }
+              ]
+            },
+            {
+              title: "Boundary Scan (JTAG)",
+              color: "cyan",
+              list: [
+                { label: "Method", text: "IEEE 1149.1; tests IC pins via software chain." },
+                { label: "Strength", text: "Probes nets under BGAs where physical access is impossible." },
+                { label: "Requirement", text: "TDI, TDO, TMS, TCK, TRST* TAP interface." }
+              ]
+            }
+          ]
+        },
+        {
+          heading: "Panelization & Depaneling Stress",
+          content: "Individual boards are typically arrayed in a larger 'panel' for assembly. The method of depaneling (separation) introduces mechanical stress that can crack ceramic capacitors (MLCCs).",
+          table: {
+            headers: ["Method", "Shape Capability", "Depanel Stress", "Advantage"],
+            rows: [
+              ["V-Groove / V-Score", "Rectangular Only", "Moderate (Shear)", "Cheap; no material waste"],
+              { type: 'highlight', data: ["Tab-Routing", "Irregular Shapes", "Low (if routed properly)", "Best for sensitive components"] },
+              ["Laser Depaneling", "Any Shape", "Near Zero", "High precision; no stress"]
+            ]
+          },
+          alerts: [
+            { type: 'warning', text: "Keep MLCCs and sensitive ICs at least 3-5mm away from V-score lines or Tab-routing break-points to prevent stress-induced failure." }
+          ]
+        },
+        {
+          heading: "Common DFM Defects & Mitigation",
+          content: "Preventable defects occur at the interaction between footprint geometry and soldering dynamics.",
+          mistakeList: [
+            { mistake: "Acid Traps (Acute Angles)", fix: "Use 45° or rounded corners on all traces to prevent etchant build-up." },
+            { mistake: "Tombstoning (Passive Lift)", fix: "Balance pad sizes and thermal relief to ensure symmetric wetting forces." },
+            { mistake: "Solder Bridging (Dams)", fix: "Ensure minimum 4 mil (0.1mm) solder mask dams between pads on fine-pitch components." },
+            { mistake: "BGA Voids (Via wicking)", fix: "Specify IPC-4761 Type VII filled/capped vias for via-in-pad locations." }
+          ]
+        },
+        {
+          heading: "Tool-Specific DFM Configuration",
+          content: "Modern EDA tools integrate DFM checks directly into the constraint manager. These rules should be imported early from the fabricator's capability list.",
+          twoColumnGrid: [
+            {
+              badge: "Altium Designer",
+              badgeClass: "tool-badge-altium",
+              title: "Manufacturing Rules",
+              items: [
+                "Verify 'Manufacturing' rule set (Min Annular Ring, Mask Expansion).",
+                "Use 'Testpoint' rules for probe grid (typically 2.54mm/100mil).",
+                "Layer Stack Manager → Impedance → Fabrication tolerance."
+              ]
+            },
+            {
+              badge: "Cadence Allegro",
+              badgeClass: "tool-badge-cadence",
+              title: "Analysis Modes",
+              items: [
+                "Analyze → Design for Manufacturing (DFM) check engine.",
+                "Verify 'Spacing' rules include component-to-edge constraints.",
+                "DFT Analyst add-on evaluates ICT coverage and testability."
+              ]
+            }
+          ]
+        },
+        {
+          heading: "Real-Time DFM Rule Checker",
+          content: "Enter your board parameters to validate against IPC-2221B and IPC-6012 manufacturing limits. This interactive engine checks Aspect Ratio, Copper Weight vs. Trace Width, and Copper Density Balance simultaneously, providing instant pass/fail feedback for high-yield production.",
+          type: 'dfm-checker'
+        },
+        {
+          heading: "Professional Design Flow (SSOT)",
+          content: "Follow this systematic workflow to ensure industrial compliance.",
+          flow: [
+            { step: "01", title: "Capabilities", desc: "Collect Fab Rules and Assembly DFM guidelines (The SSOT constraints)" },
+            { step: "02", title: "Constraints", desc: "Embed min trace/space/annular ring into CAD Constraint Manager" },
+            { step: "03", title: "Placement", desc: "Respect assembly keepouts, fiducials, and thermal balance" },
+            { step: "04", title: "DFT Planning", desc: "Assign test points to every net (Reset, PWR, Clocks, Buses)" },
+            { step: "05", title: "Verification", desc: "Run full DRC, DFA, and DFT reports — zero violations required" },
+            { step: "06", title: "Review", desc: "Formal MFR DFM Review before tape-out — incorporating fab feedback" }
           ]
         }
       ],
-      checklist: [
-        "Ensure all vias are tented or plugged to prevent solder-wicking during assembly.",
-        "Add fiducial marks on opposite corners of the board for pick-and-place cameras.",
-        "Verify silkscreen text does not overlap any exposed copper pads.",
-        "Provide test points for all voltage rails, ground, JTAG, and UART."
+      checklists: [
+        {
+          category: "1. Pre-Layout & Fabrication",
+          items: [
+            "Laminate selection (Tg/Td) verified against Lead-Free reflow profile.",
+            "Fabricator's min trace/space and drill size confirmed.",
+            "Soldermask expansion set to min 2 mil (0.05mm) or per fab requirement.",
+            "Impedance-controlled traces call-out clearly in fab drawings.",
+            "Solder mask dams for 0.5mm pitch parts verified (≥4 mil)."
+          ]
+        },
+        {
+          category: "2. Assembly & Footprint",
+          items: [
+            "All footprints verified against IPC-7351 and datasheet landing patterns.",
+            "Polarized components (Diodes, ICs) clearly marked on Silkscreen & ASM layers.",
+            "Component spacing (SMD-to-SMD) meets assembly house minimums.",
+            "3 global fiducials placed on panel in non-colinear arrangement.",
+            "Vias under BGA/QFN pads specified as epoxy-filled and plated-over."
+          ]
+        },
+        {
+          category: "3. DFT & Testability",
+          items: [
+            "Test points assigned to 100% of power, ground, and reset nets.",
+            "Test points accessible on all primary communication buses (I2C, SPI, UART).",
+            "JTAG (IEEE 1149.1) chain complete and accessible via 10-pin/14-pin header.",
+            "Test point grid ≥ 2.54mm (100mil) for ICT or ≥0.5mm for flying probe.",
+            "No silkscreen text or mask coverage on test point landing pads."
+          ]
+        },
+        {
+          category: "4. Final Verification (Sign-Off)",
+          items: [
+            "Full DRC run with ZERO violations (Electrical, Manufacturing, Silk).",
+            "Panelization drawing includes V-score/Tab-routing details and tooling holes.",
+            "Pick-and-Place centroid file (X, Y, Rotation) verified against drawing.",
+            "BOM (Bill of Materials) matched 100% with footprints and manufacturers.",
+            "MFR DFM Review feedback incorporated and signed off by lead engineer."
+          ]
+        }
       ]
     }
   },
