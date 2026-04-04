@@ -1746,25 +1746,190 @@ export const modulesData = [
   { 
     id: "si_pi",      
     icon: Activity,     
-    title: "SI / PI Calculation",         
-    desc: "Signal and power integrity basics.",
+    title: "Advanced Signal & Power Integrity (SI/PI)",         
+    desc: "Industrial-grade engineering for high-speed channel compliance and PDN stability.",
     content: {
-      intro: "Signal Integrity (SI) ensures that signals arriving at receivers are clean enough to be interpreted correctly. Power Integrity (PI) ensures that components receive stable, low-noise power under dynamic load conditions.",
+      intro: "Signal Integrity (SI) ensures that signals arriving at receivers are clean enough to be interpreted correctly. Power Integrity (PI) ensures that components receive stable, low-noise power under dynamic load conditions. This module serves as the authoritative SI/PI Knowledge System, anchored in IPC-2141A, JEDEC, and PCI-SIG standards.",
       sections: [
         {
-          heading: "Target Impedance (PI)",
-          content: "A PDN (Power Delivery Network) must maintain an impedance below a certain target across a wide frequency band (DC to several GHz). This is accomplished through a hierarchy of capacitors: VRM -> Bulk Caps -> Decoupling Caps -> Package Caps -> On-die Caps."
+          heading: "SI Core: Transmission Line Standards",
+          content: "Characteristic impedance (Z₀) selection is determined by the interface standard. Modern high-speed designs require tighter tolerances (±10% to ±15%) and validated field-solver results.",
+          table: {
+            headers: ["Interface", "Z₀ Target", "Tolerance", "Standard Reference"],
+            rows: [
+              ["Single-ended (General)", "50 Ω", "±10%", "IPC-2141A"],
+              ["DDR4/5 Data (DQ)", "40–50 Ω SE", "±10%", "JEDEC JESD79-5B"],
+              ["DDR4/5 CLK / DQS", "100 Ω Diff", "±10%", "JEDEC JESD79-5B"],
+              ["PCIe Gen 1–5", "85 Ω Diff", "±15%", "PCI-SIG CEM Spec"],
+              ["USB 3.x / 4", "90 Ω Diff", "±15%", "USB 3.2 §6.7"],
+              ["1000BASE-T (GbE)", "100 Ω Diff", "±15%", "IEEE 802.3"]
+            ]
+          },
+          formula: {
+            title: "The Velocity of Propagation (Vp)",
+            equations: [
+              "Vp ≈ c / √εr_eff",
+              "Delay (ps/in) = 1012 × √εr_eff / c ≈ 169 ps/in (FR4)"
+            ],
+            variables: [
+              { name: "εr_eff", desc: "Effective dielectric constant", tag: "INPUT" },
+              { name: "c", desc: "Speed of light (1.18e10 in/s)", tag: "CONST" }
+            ]
+          }
         },
         {
-          heading: "PDN Resonance",
-          content: "Every capacitor has an ESL (Equivalent Series Inductance) which causes it to resonate at a specific frequency. Parallel combinations of different-sized capacitors can create anti-resonance peaks (impedance spikes). Simulating the PDN is required for high-current core voltages."
+          heading: "Differential Pair Routing Mastery",
+          content: "Differential signaling provides inherent common-mode noise rejection. Maintaining geometry symmetry is the primary task of the layout engineer.",
+          list: [
+            { label: "Intra-pair Spacing (S)", text: "Set to 2× Trace Width (W) to maintain target odd-mode impedance." },
+            { label: "Intra-pair Skew", text: "Must be ≤ 5 mils for DDR4/5; ≤ 10ps max for multi-Gbps serial links." },
+            { label: "Inter-pair Spacing", text: "Maintain ≥ 3× W (5× preferred) to reduce crosstalk below -40 dB." },
+            { label: "Reference Continuity", text: "Place a GND stitching via within 50 mils of any signal via changing layers." }
+          ],
+          alerts: [
+            { type: 'danger', text: "Never route high-speed signals across plane splits. The resulting return path detour causes massive EMI radiation and crosstalk failures." }
+          ]
+        },
+        {
+          heading: "PI Core: Target Impedance & PDN",
+          content: "The Power Distribution Network (PDN) must maintain an impedance (Ztarget) below the threshold from DC to the bandwidth of the switching current.",
+          type: 'pi-target-calc'
+        },
+        {
+          heading: "Decoupling Hierarchy & Via Physics",
+          content: "Capacitors are inductive above their Self-Resonant Frequency (SRF). A multi-tier strategy is required to cover the frequency spectrum.",
+          filletGrid: [
+            {
+              title: "Bulk / VRM (DC–100kHz)",
+              color: "blue",
+              list: [
+                { label: "Value", text: "100µF – 1mF Tantalum or Polymer." },
+                { label: "Role", text: "Supplies current during slow load transients." }
+              ]
+            },
+            {
+              title: "Mid-Freq (1MHz–100MHz)",
+              color: "orange",
+              list: [
+                { label: "Value", text: "100nF – 1µF MLCC (0402/0603)." },
+                { label: "Role", text: "Bridges the gap between VRM and local decoupling." }
+              ]
+            },
+            {
+              title: "High-Freq (100MHz–1GHz+)",
+              color: "cyan",
+              list: [
+                { label: "Value", text: "10nF – 100nF (0201/01005)." },
+                { label: "Role", text: "Critical for suppressing switching noise near IC pins." }
+              ]
+            }
+          ],
+          alerts: [
+            { type: 'info', text: "Via placement is critical. Vias must be immediately adjacent to capacitor pads to keep loop inductance < 100 pH." }
+          ]
+        },
+        {
+          heading: "Lossy Line Physics (Expert Insight)",
+          content: "At frequencies >10 GHz, material physics dominates. The ideal 'lossless' model becomes invalid as Skin Effect and Dielectric Loss (Tan δ) attenuate signals.",
+          cards: [
+            {
+              title: "Dielectric Loss (Tan δ)",
+              text: "Absorption of energy by the resin/glass. Specify Low-Loss materials (Megtron 6/7) for PCIe Gen 5+."
+            },
+            {
+              title: "Skin Effect & Roughness",
+              text: "Current crowds to the copper surface. Rough copper (STD) increases resistance by 30% over VLP copper."
+            }
+          ]
+        },
+        {
+          heading: "Recommended 6-Layer Stackup",
+          content: "For high-performance designs, the 6-layer stackup provides a balanced approach to SI, PI, and cost.",
+          stackVisual: [
+            { layer: "L1 — Signal (Top)", spec: "High-Speed Microstrip", color: "#D4963A", note: "Referenced to L2 GND" },
+            { layer: "L2 — Ground (GND)", spec: "Solid Copper Plane", color: "#888780", note: "Primary Reference" },
+            { layer: "L3 — Signal / PWR", spec: "Stripline / Islands", color: "#378ADD", note: "Keep <4 mil from L4" },
+            { layer: "L4 — Ground (GND)", spec: "Solid Copper Plane", color: "#888780", note: "Primary Reference" },
+            { layer: "L5 — Power (VCC)", spec: "Copper Pour", color: "#378ADD", note: "Main distribution layer" },
+            { layer: "L6 — Signal (Bot)", spec: "Microstrip", color: "#D4963A", note: "Referenced to L5" }
+          ],
+          alerts: [
+            { type: 'warning', text: "Maintain thin dielectric (≤ 4 mils) between Power and GND plane pairs to maximize distributed capacitance for HF decoupling." }
+          ]
+        },
+        {
+          heading: "Simulation & Validation Pipeline",
+          content: "Simulation tools and lab equipment required for professional-level SI/PI sign-off.",
+          twoColumnGrid: [
+            {
+              badge: "Software Suite",
+              badgeClass: "tool-badge-cadence",
+              title: "Industry Standard Tools",
+              items: [
+                "Ansys (SIwave / HFSS / Icepak)",
+                "Cadence Sigrity (PowerDC / SystemSI)",
+                "Siemens HyperLynx (LineSim / PI)",
+                "Keysight ADS / PathWave"
+              ]
+            },
+            {
+              badge: "Hardware Lab",
+              badgeClass: "tool-badge-altium",
+              title: "Measurement Equipment",
+              items: [
+                "Oscilloscope (≥ 4× signal bandwidth)",
+                "TDR (Time Domain Reflectometry)",
+                "VNA (Vector Network Analyzer)",
+                "Near-field Probes (EMI debugging)"
+              ]
+            }
+          ]
         }
       ],
-      checklist: [
-        "Place smallest value decoupling capacitors closest to the IC power pins.",
-        "Use multi-via connections for power and ground to reduce ESL.",
-        "Ensure VCC copper pours are wide enough to carry the DC current without voltage drop (IR Drop).",
-        "Use a PDN simulation tool for any SoC requiring >5 Amps at <1.2V."
+      checklists: [
+        {
+          category: "1. Pre-Layout SI/PI Foundations",
+          items: [
+            "Stackup defined and impedance targets (Z₀/Zdiff) calculated with fab.",
+            "IC datasheets reviewed for all signal breakout/routing requirements.",
+            "Target impedance Ztarget calculated for all critical power domains.",
+            "Decoupling cap BOM derived from simulation or IC vendor data.",
+            "IBIS / S-Parameter models obtained for all active/passive components.",
+            "Dielectric material (Dk/Df) specified at frequencies > 5 GHz.",
+            "Differential pair skew budgets (ps/mil) imported into constraint manager.",
+            "Return path plan approved: no routing over splits identified."
+          ]
+        },
+        {
+          category: "2. Post-Layout Engineering Verification",
+          items: [
+            "All differential pairs meet Zdiff target ±10% via post-layout extraction.",
+            "Intra-pair skew verified within spec for DDR/PCIe/USB links.",
+            "Inter-pair length matching verified for all synchronous buses.",
+            "Return path stitching vias placed at every reference layer change.",
+            "Via stub lengths checked; back-drilling specified where needed (> 3 GHz).",
+            "Crosstalk (NEXT/FEXT) analysis completed; < -30 dB margin verified.",
+            "Decoupling caps placed within 5mm of IC power pins (Low Inductance).",
+            "Eye diagram statistical simulation passed per interface mask.",
+            "PDN post-layout simulation shows no peaks above Ztarget.",
+            "IR Drop simulation shows VDD within ±3% spec at all IC pins."
+          ]
+        },
+        {
+          category: "3. Manufacturing & Quality Sign-Off",
+          items: [
+            "Impedance test coupon included on board panelization drawing.",
+            "Back-drill requirements explicitly specified in fabrication notes.",
+            "Via-in-pad with copper fill specified for BGA escape (IPC-4761).",
+            "Controlled-depth blind/buried vias specified on drill table.",
+            "Surface finish (ENIG/OSP) specified to minimize skin effect loss.",
+            "Dk / Df values at 10 GHz specified in fab notes (Not just 'FR4').",
+            "Copper weight specified per layer (1.5 oz for Planes preferred).",
+            "DFM review completed with fab to ensure trace/space manufacturability.",
+            "TDR signature measurement requested as part of the cert package.",
+            "Final Gerber / ODB++ review completed using CAM350 or equivalent."
+          ]
+        }
       ]
     }
   }

@@ -16,6 +16,7 @@ import DDRTimingCalculator from './DDRTimingCalculator';
 import EMICalculator from './EMICalculator';
 import EMIVisualizer from './EMIVisualizer';
 import EMIKnowledgeToggle from './EMIKnowledgeToggle';
+import PITargetCalculator from './PITargetCalculator';
 
 
 
@@ -312,6 +313,8 @@ export default function ContentViewer() {
                   {sec.type === 'emi-calculator' && <EMICalculator />}
 
                   {sec.type === 'emi-visualizer' && <EMIVisualizer />}
+
+                  {sec.type === 'pi-target-calc' && <PITargetCalculator />}
 
 
 
