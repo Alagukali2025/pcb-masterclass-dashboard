@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DFM / DFT Knowledge System — PCB Engineering Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1f2535;
+    --accent: #00d4aa;
+    --accent2: #f59e0b;
+    --accent3: #60a5fa;
+    --accent4: #f87171;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRID NOISE BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  .header {
+    position: relative;
+    padding: 60px 40px 50px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #0d1117 0%, var(--bg) 100%);
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .header::after {
+    content: 'DFM·DFT';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--serif);
+    font-size: 160px;
+    color: rgba(0,212,170,0.04);
+    letter-spacing: -4px;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,170,0.4);
+    padding: 4px 12px;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 60px);
+    line-height: 1.1;
+    color: #fff;
+    max-width: 700px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-sub {
+    margin-top: 16px;
+    color: var(--text-dim);
+    max-width: 600px;
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .meta-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* NAV */
+  .nav-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,12,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    overflow-x: auto;
+  }
+
+  .nav {
+    display: flex;
+    gap: 0;
+    min-width: max-content;
+  }
+
+  .nav a {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 14px 16px;
+    border-bottom: 2px solid transparent;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .nav a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* LAYOUT */
+  .content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 80px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    padding: 6px 10px;
+    border: 1px solid rgba(0,212,170,0.3);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3vw, 32px);
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .section-desc {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* SUBSECTIONS */
+  .subsection {
+    margin-bottom: 48px;
+  }
+
+  .subsection-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .subsection-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .card.warn::before { background: var(--accent2); }
+  .card.danger::before { background: var(--accent4); }
+  .card.info::before { background: var(--accent3); }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* GRID */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(31,37,53,0.6);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  td strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-green { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .tag-yellow { background: rgba(245,158,11,0.15); color: var(--accent2); }
+  .tag-red { background: rgba(248,113,113,0.15); color: var(--accent4); }
+  .tag-blue { background: rgba(96,165,250,0.15); color: var(--accent3); }
+
+  /* RULE BLOCK */
+  .rule-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .rule-block { grid-template-columns: 1fr; }
+  }
+
+  .rule-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .rule-value {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .rule-value strong {
+    color: var(--text);
+  }
+
+  /* CODE / MONO BLOCKS */
+  .mono-block {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: #080a0e;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 16px;
+    color: var(--accent);
+    overflow-x: auto;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    overflow-x: auto;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .flow-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .flow-box.active {
+    border-color: rgba(0,212,170,0.5);
+    color: var(--accent);
+    background: rgba(0,212,170,0.05);
+  }
+
+  .flow-arrow {
+    color: var(--text-muted);
+    padding: 0 8px;
+    font-size: 16px;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(31,37,53,0.5);
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    background: var(--surface2);
+    position: relative;
+  }
+
+  .check-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 0px;
+  }
+
+  /* DEFECT ROW */
+  .defect-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .defect-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent4);
+    border-radius: 4px;
+    padding: 20px;
+  }
+
+  .defect-card h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent4);
+    margin-bottom: 12px;
+  }
+
+  .defect-row {
+    margin-bottom: 8px;
+  }
+
+  .defect-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .defect-value {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    background: rgba(0,212,170,0.05);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .highlight strong {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* WARN BOX */
+  .warn-box {
+    background: rgba(248,113,113,0.05);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #fca5a5;
+  }
+
+  .warn-box strong {
+    color: var(--accent4);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* STEPS */
+  .steps {
+    counter-reset: step;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    counter-increment: step;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,212,170,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    flex-shrink: 0;
+    background: rgba(0,212,170,0.05);
+  }
+
+  .step-num::before {
+    content: counter(step);
+  }
+
+  .step-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .step-content p {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  ul.bullets {
+    list-style: none;
+    padding: 0;
+  }
+  ul.bullets li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+  ul.bullets li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    top: 7px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 700px) {
+    .two-col { grid-template-columns: 1fr; }
+    .header, .nav-wrapper, .content, footer { padding-left: 20px; padding-right: 20px; }
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">PCB Engineering Reference · SSOT Compliant</div>
+  <h1>Design for <em>Manufacturing</em><br>&amp; Design for <em>Testability</em></h1>
+  <p class="header-sub">A structured, implementation-ready knowledge system for DFM and DFT — grounded in IPC standards, fab capabilities, and real production constraints.</p>
+  <div class="header-meta">
+    <div class="meta-item"><div class="meta-dot"></div> IPC-2221 · IPC-A-600 · IPC-A-610</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--accent2)"></div> ICT · JTAG · Flying Probe</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--accent3)"></div> Cadence Allegro · Altium Designer</div>
+    <div class="meta-item"><div class="meta-dot" style="background:var(--accent4)"></div> Senior PCB Engineer Reference</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-wrapper">
+  <nav class="nav">
+    <a href="#sec1">01 Overview</a>
+    <a href="#sec2">02 Fabrication</a>
+    <a href="#sec3">03 Assembly</a>
+    <a href="#sec4">04 DFT</a>
+    <a href="#sec5">05 Panelization</a>
+    <a href="#sec6">06 Defects</a>
+    <a href="#sec7">07 Yield</a>
+    <a href="#sec8">08 CAD Tools</a>
+    <a href="#sec9">09 Mistakes</a>
+    <a href="#sec10">10 Design Flow</a>
+    <a href="#sec11">11 Checklists</a>
+  </nav>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- SECTION 1: OVERVIEW -->
+  <section class="section" id="sec1">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div>
+        <div class="section-title">DFM &amp; DFT Overview</div>
+        <div class="section-desc">Foundational concepts — what they are, why they matter, and how they fit the manufacturing flow</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Design for Manufacturing (DFM)</div>
+        <p>DFM is the practice of designing PCBs so they can be fabricated and assembled efficiently, with high yield, minimal defects, and at target cost. Every layout decision — trace widths, pad sizes, component spacing — must respect the physical limits of your fab house and assembly line.</p>
+      </div>
+      <div class="card info">
+        <div class="card-title">Design for Testability (DFT)</div>
+        <p>DFT ensures that every critical net, component, and function on the board can be tested after assembly. Without DFT, production defects go undetected, escaping to the field. DFT adds test points, JTAG chains, and net accessibility that allow ICT, flying probe, and functional tests to work.</p>
+      </div>
+    </div>
+
+    <div class="subsection" style="margin-top:32px">
+      <div class="subsection-title">Why DFM/DFT Is Critical</div>
+      <div class="grid-3">
+        <div class="card warn">
+          <div class="card-title">Cost of Ignoring DFM</div>
+          <p>Boards scrapped at fabrication, solder bridges in assembly, rework costs — all avoidable if DFM is applied in layout.</p>
+        </div>
+        <div class="card danger">
+          <div class="card-title">Cost of Ignoring DFT</div>
+          <p>Defective boards pass final test undetected, reach customers, cause field failures, RMAs, and warranty costs 10–100× higher than fixing at ICT.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Combined Benefit</div>
+          <p>Properly applied DFM + DFT reduces NPI rework cycles, cuts prototype-to-production time, and sustains >99% yield in high-volume production.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Manufacturing Flow</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-box active">Schematic<br>Capture</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box active">PCB Layout<br>(DFM/DFT)</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box">Gerber<br>Generation</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box">PCB<br>Fabrication</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box">SMT<br>Assembly</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box">Reflow /<br>Wave Solder</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box">AOI /<br>X-Ray</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box active">ICT / FP /<br>JTAG Test</div>
+          <div class="flow-arrow">→</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-box active">Functional<br>Test</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: FABRICATION -->
+  <section class="section" id="sec2">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div>
+        <div class="section-title">PCB Fabrication Considerations</div>
+        <div class="section-desc">DFM core — stackup, trace/spacing, vias, drill, and annular ring constraints</div>
+      </div>
+    </div>
+
+    <!-- 2.1 -->
+    <div class="subsection">
+      <div class="subsection-title">2.1 — Board Stackup &amp; Material</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Standard Value</th><th>Source</th><th>Reason</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Layer Count</strong></td><td>2, 4, 6, 8, 10, 12 (even layers only)</td><td>Fab Capability</td><td>Symmetrical stackup prevents board warpage</td><td>Board warp &gt;0.75% → SMT placement failure (IPC-A-610)</td></tr>
+            <tr><td><strong>Standard Material</strong></td><td>FR4 Tg 130–170°C</td><td>IPC-4101</td><td>Lead-free reflow requires Tg &gt;150°C</td><td>Delamination during reflow if wrong Tg selected</td></tr>
+            <tr><td><strong>High-Speed Material</strong></td><td>Rogers 4003C, Megtron 6, Isola 370HR</td><td>Material Datasheet</td><td>Controlled Dk/Df for signal integrity</td><td>Impedance mismatch, SI degradation at &gt;1 GHz</td></tr>
+            <tr><td><strong>Outer Cu Thickness</strong></td><td>1 oz (35µm) standard; 2 oz for power</td><td>Fab Capability</td><td>Current carrying capacity per IPC-2221</td><td>Trace heating, voltage drop if undersized</td></tr>
+            <tr><td><strong>Inner Cu Thickness</strong></td><td>0.5 oz (17µm) or 1 oz</td><td>Fab Capability</td><td>Inner layers have less etching bias</td><td>Over-etching if wrong Cu weight specified</td></tr>
+            <tr><td><strong>Board Thickness</strong></td><td>1.6mm ±10% (standard)</td><td>Fab Capability</td><td>Connector compatibility, edge connector tolerance</td><td>Mechanical fit failure, connector insertion force issues</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="subsection">
+      <div class="subsection-title">2.2 — Trace &amp; Spacing Rules</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Minimum Value</th><th>Source</th><th>Reason</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Min Trace Width (Signal)</strong></td><td>0.1mm (4 mil) — standard; 0.075mm (3 mil) — advanced</td><td>Fab Capability / IPC-2221</td><td>Etching resolution limit of photolithography</td><td>Open circuit from over-etching; yield loss</td></tr>
+            <tr><td><strong>Min Trace Spacing</strong></td><td>0.1mm (4 mil) standard; 0.075mm (3 mil) advanced</td><td>Fab Capability</td><td>Prevents solder bridging and dielectric breakdown</td><td>Short circuit; voltage withstand failure</td></tr>
+            <tr><td><strong>Trace Width for 1A (1 oz Cu)</strong></td><td>~0.3mm (12 mil) external; ~0.5mm (20 mil) internal</td><td>IPC-2221 Table 6-1</td><td>Current capacity with &lt;10°C rise</td><td>Trace overheating, fire risk, field failure</td></tr>
+            <tr><td><strong>Acid Trap Angle</strong></td><td>No acute trace angles &lt;45°; use 45° or arc bends</td><td>IPC-2221 §2.3</td><td>Etchant pooling in acute corners → over-etching</td><td>Open circuits at corners, intermittent failure</td></tr>
+            <tr><td><strong>Crosstalk Spacing (High-Speed)</strong></td><td>3× trace width minimum between parallel signals</td><td>IPC-2141 (SI)</td><td>Reduces inductive/capacitive coupling</td><td>Signal integrity degradation, bit errors</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mono-block">ACID TRAP — AVOID THIS:        CORRECT:
+     ___                           ___
+    /                              /
+   / ← acute angle (bad)          /  45° bend (good)
+  /___                          /___
+  ↑ Etchant pools here          ↑ Clean etch, no pooling</div>
+    </div>
+
+    <!-- 2.3 -->
+    <div class="subsection">
+      <div class="subsection-title">2.3 — Via Design</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Via Type</th><th>Drill / Pad</th><th>Aspect Ratio</th><th>Source</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Through-Hole Via</strong></td><td>Drill: 0.2mm min; Pad: Drill + 0.5mm</td><td>Max 10:1 (board thickness / drill dia)</td><td>Fab Capability / IPC-2221</td><td>Standard; always preferred for cost</td></tr>
+            <tr><td><strong>Blind Via</strong></td><td>Drill: 0.1mm min (laser)</td><td>Max 0.8:1 (depth/dia)</td><td>Fab Capability</td><td>Laser-drilled; +cost; HDI boards</td></tr>
+            <tr><td><strong>Buried Via</strong></td><td>Drill: 0.15mm min</td><td>Max 1:1</td><td>Fab Capability</td><td>Sequential lamination; expensive</td></tr>
+            <tr><td><strong>Via-in-Pad (Non-filled)</strong></td><td>Not recommended under SMD pads</td><td>N/A</td><td>IPC-7093</td><td>Solder wicking → solder starved joints</td></tr>
+            <tr><td><strong>Via-in-Pad (Filled &amp; Capped)</strong></td><td>Resin filled + Cu capped + plated</td><td>N/A</td><td>IPC-4761 Type VII</td><td>Acceptable for BGA fanout; adds cost</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn-box"><strong>⚠ Critical Warning</strong> Never place unfilled vias under BGA pads or thermal pads. Solder will wick into the via during reflow, creating solder-starved joints that fail electrically and mechanically. Source: IPC-7093.</div>
+    </div>
+
+    <!-- 2.4 -->
+    <div class="subsection">
+      <div class="subsection-title">2.4 — Annular Ring &amp; Drill Constraints</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>Value</th><th>Source</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Min Annular Ring (PTH)</strong></td><td>0.125mm (5 mil) — Class 2; 0.05mm (2 mil) — Class 3</td><td>IPC-2221 / IPC-A-600</td><td>Breakout: drill misses pad, open circuit</td></tr>
+            <tr><td><strong>Drill Tolerance</strong></td><td>±0.05mm standard; ±0.025mm precision</td><td>Fab Capability</td><td>Misregistration, annular ring violation</td></tr>
+            <tr><td><strong>Min Drill-to-Copper Clearance</strong></td><td>0.25mm (10 mil) typical</td><td>Fab Capability</td><td>Short circuit if drill wanders into adjacent copper</td></tr>
+            <tr><td><strong>Min Hole Size (Mechanical)</strong></td><td>0.2mm (8 mil)</td><td>Fab Capability</td><td>Drill breakage, cost penalty below 0.3mm</td></tr>
+            <tr><td><strong>Plating Thickness (PTH)</strong></td><td>25µm min (avg wall)</td><td>IPC-6012 Class 2</td><td>Barrel crack on thermal cycling if thin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: ASSEMBLY -->
+  <section class="section" id="sec3">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div>
+        <div class="section-title">PCB Assembly Considerations</div>
+        <div class="section-desc">DFM critical — placement, soldering, footprints, and thermal management for zero-defect assembly</div>
+      </div>
+    </div>
+
+    <!-- 3.1 -->
+    <div class="subsection">
+      <div class="subsection-title">3.1 — Component Placement Rules</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rule</th><th>Value</th><th>Source</th><th>Reason</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SMD to SMD Spacing (same side)</strong></td><td>0.2mm min (8 mil)</td><td>Assembly Guideline / IPC-7711</td><td>Squeegee access, rework clearance</td><td>Bridging, inability to rework</td></tr>
+            <tr><td><strong>SMD to Board Edge</strong></td><td>0.5mm min (20 mil)</td><td>Assembly / Fab Guideline</td><td>Depaneling stress, conveyor clearance</td><td>Component cracking during depanel</td></tr>
+            <tr><td><strong>THT to SMD Clearance</strong></td><td>1.5mm min (60 mil)</td><td>Assembly Guideline</td><td>Wave solder pallet clearance</td><td>SMD components shadowed from solder wave</td></tr>
+            <tr><td><strong>Tall Components (h &gt;5mm)</strong></td><td>Place away from shorter components in reflow direction</td><td>Assembly Guideline</td><td>Prevents shadowing in reflow oven</td><td>Cold solder joints behind tall components</td></tr>
+            <tr><td><strong>Polarity Orientation</strong></td><td>Align all polarized parts (caps, diodes) in same direction</td><td>IPC-7711 / Assembly Best Practice</td><td>Visual inspection, reduces placement error</td><td>Reversed component: board damage or field failure</td></tr>
+            <tr><td><strong>Fiducial Keep-out</strong></td><td>3mm radius clear zone around each fiducial</td><td>Assembly Guideline</td><td>Camera must see full copper circle for alignment</td><td>Pick-and-place mis-alignment, placement shifts</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3.2 -->
+    <div class="subsection">
+      <div class="subsection-title">3.2 — Soldering Constraints</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Reflow Soldering (SMT)</div>
+          <ul class="bullets">
+            <li>Peak temperature: 235–260°C (lead-free SAC305)</li>
+            <li>Time above liquidus (217°C): 30–90 seconds</li>
+            <li>Ramp rate: max 3°C/sec to avoid component cracking</li>
+            <li>Cooling rate: max 6°C/sec to prevent cold joints</li>
+            <li>Source: IPC/JEDEC J-STD-020</li>
+          </ul>
+        </div>
+        <div class="card warn">
+          <div class="card-title">Wave Soldering (THT)</div>
+          <ul class="bullets">
+            <li>Preheat: 100–130°C board bottom</li>
+            <li>Wave temperature: 260°C ±5°C</li>
+            <li>Contact time: 2–4 seconds</li>
+            <li>Flux type must match solder mask compatibility</li>
+            <li>SMD components on bottom side need glue dots if wave-soldered</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight"><strong>Tombstoning Prevention</strong>Balance land pattern pad sizes symmetrically. If one pad is larger, it cools slower → surface tension pulls the component upright. Use IPC-7351 standard footprints. Ensure equal copper pour balance on both pads of passive components.</div>
+
+      <div class="highlight"><strong>Shadowing Effect</strong>Tall components placed in the wave-solder direction block solder from reaching components behind them. Always orient tall components perpendicular to board travel direction, or place them downstream.</div>
+    </div>
+
+    <!-- 3.3 -->
+    <div class="subsection">
+      <div class="subsection-title">3.3 — Footprint Accuracy (IPC-7351)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Land Pattern Standard</th><th>Source</th><th>Key Rule</th></tr></thead>
+          <tbody>
+            <tr><td><strong>0402 Resistor/Capacitor</strong></td><td>1.0 × 0.5mm pad; 0.5mm gap</td><td>IPC-7351 (Nominal density)</td><td>Symmetric pads mandatory — tombstone prevention</td></tr>
+            <tr><td><strong>0201 Component</strong></td><td>0.5 × 0.35mm pad; 0.3mm gap</td><td>IPC-7351</td><td>Requires fine-pitch paste printing, 100µm stencil</td></tr>
+            <tr><td><strong>QFP / LQFP</strong></td><td>Pad = lead width + 0.1mm; length = 1.5–2× lead length</td><td>IPC-7351</td><td>Avoid solder bridges by matching pitch exactly</td></tr>
+            <tr><td><strong>BGA</strong></td><td>Pad diameter = 0.8× ball diameter (NSMD preferred)</td><td>IPC-7351 / Component Datasheet</td><td>NSMD (Non-Solder Mask Defined) gives better solder joint reliability</td></tr>
+            <tr><td><strong>QFN / DFN</strong></td><td>Thermal pad must have solder paste coverage 50–80%</td><td>IPC-7093 / Component Datasheet</td><td>Full coverage causes solder outgassing (voiding) &gt;25%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3.4 -->
+    <div class="subsection">
+      <div class="subsection-title">3.4 — Thermal Considerations</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rule</th><th>Value</th><th>Source</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Thermal Relief on PTH Pads (Copper Pour)</strong></td><td>4 spokes, 0.3mm spoke width</td><td>Assembly Guideline</td><td>Without relief: pad acts as heat sink → cold solder joint</td></tr>
+            <tr><td><strong>Thermal Relief on SMD Pads</strong></td><td>Do NOT use thermal relief for SMD in high-current path</td><td>IPC-2221</td><td>Thermal relief increases resistance → heating</td></tr>
+            <tr><td><strong>QFN / Power Package Thermal Via</strong></td><td>Array of filled vias under thermal pad (0.3mm dia, 1mm pitch)</td><td>Component Datasheet / IPC-7093</td><td>Without vias: junction temperature too high, early failure</td></tr>
+            <tr><td><strong>Copper Pour Thermal Balance</strong></td><td>Symmetric copper balance both sides of passive component pads</td><td>Assembly Guideline</td><td>Unbalanced → different cooling rates → tombstoning</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: DFT -->
+  <section class="section" id="sec4">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div>
+        <div class="section-title">Design for Testability (DFT — Core)</div>
+        <div class="section-desc">Test strategy, test point design, signal accessibility, and boundary scan implementation</div>
+      </div>
+    </div>
+
+    <!-- 4.1 -->
+    <div class="subsection">
+      <div class="subsection-title">4.1 — Test Strategy Overview</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">ICT — In-Circuit Test</div>
+          <ul class="bullets">
+            <li>Bed-of-nails fixture contacts all test points simultaneously</li>
+            <li>Tests: opens, shorts, component values, power rails</li>
+            <li>Coverage: 85–95% (depends on test point access)</li>
+            <li>Speed: fastest per-board test method</li>
+            <li>Cost: fixture expensive ($5,000–$50,000), amortized over volume</li>
+            <li>Requires: test point on every net, min 2.54mm probe grid</li>
+          </ul>
+        </div>
+        <div class="card info">
+          <div class="card-title">Flying Probe Test</div>
+          <ul class="bullets">
+            <li>Movable probes contact pads/vias — no fixture required</li>
+            <li>Tests: opens, shorts, component values, basic functional</li>
+            <li>Coverage: 70–90% (limited by probe speed)</li>
+            <li>Speed: slow — suited for NPI, low volume</li>
+            <li>Cost: no fixture cost; per-board time cost</li>
+            <li>Requires: accessible pads/vias on both sides</li>
+          </ul>
+        </div>
+        <div class="card warn">
+          <div class="card-title">Boundary Scan (JTAG)</div>
+          <ul class="bullets">
+            <li>Scan chain tests IC interconnects without physical probes</li>
+            <li>Tests: IC pin connectivity, inter-IC buses, flash programming</li>
+            <li>Coverage: depends on JTAG-compliant device count</li>
+            <li>Requires: TCK, TMS, TDI, TDO, TRST* test access port</li>
+            <li>Standard: IEEE 1149.1</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Functional Test</div>
+          <ul class="bullets">
+            <li>Board powered up; software/firmware executes test routines</li>
+            <li>Tests: end-to-end functional behaviour</li>
+            <li>Coverage: depends on test program completeness</li>
+            <li>Requires: stable power, working firmware, test connectors</li>
+            <li>Always last step — catches what ICT/FP cannot</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.2 -->
+    <div class="subsection">
+      <div class="subsection-title">4.2 — Test Point Design (Critical)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Parameter</th><th>ICT (Bed-of-Nails)</th><th>Flying Probe</th><th>Source</th><th>Impact if Violated</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Min Test Point Diameter</strong></td><td>1.0mm (preferred 1.27mm)</td><td>0.5mm pad / via</td><td>Test Equipment Spec / IPC-9252</td><td>Probe miss → false open; no test coverage</td></tr>
+            <tr><td><strong>Min TP-to-TP Spacing</strong></td><td>2.54mm (100 mil) grid preferred; 1.27mm min</td><td>No grid constraint</td><td>ICT Fixture Specification</td><td>Mechanical probe interference; fixture cost increase</td></tr>
+            <tr><td><strong>TP-to-Component Clearance</strong></td><td>1.0mm min from component body</td><td>0.5mm min</td><td>Assembly / Test Guideline</td><td>Probe hits component; mechanical damage</td></tr>
+            <tr><td><strong>Test Point Location</strong></td><td>Bottom side preferred (primary probe side)</td><td>Both sides acceptable</td><td>ICT Fixture Guideline</td><td>Top-side only TPs require complex fixture; cost penalty</td></tr>
+            <tr><td><strong>Solder Mask</strong></td><td>Must be solder mask-free copper (bare Cu or HASL)</td><td>Same</td><td>Test Equipment Spec</td><td>Solder mask on TP → probe cannot make contact</td></tr>
+            <tr><td><strong>Test Point Coverage</strong></td><td>Every net must have ≥1 TP for full ICT coverage</td><td>Every net accessible pad or via</td><td>IPC-9252 / DFT Best Practice</td><td>Missing TPs = uncovered defects escape to field</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mono-block">TEST POINT LAYOUT — ICT GRID EXAMPLE:
+
+  ● TP1    ● TP3    ● TP5
+  (2.54mm grid spacing — preferred for ICT)
+
+  ● TP2    ● TP4    ● TP6
+
+  ● = 1.0–1.27mm bare copper pad, solder mask open
+  Minimum bottom-side; no silkscreen over TP pads</div>
+    </div>
+
+    <!-- 4.3 -->
+    <div class="subsection">
+      <div class="subsection-title">4.3 — Signal Accessibility Requirements</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Signal / Net</th><th>Test Point Mandatory?</th><th>Source</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td><strong>VCC / Power Rails</strong></td><td>Yes — on each unique power domain</td><td>DFT Guideline / IPC-9252</td><td>Power verification before functional test</td></tr>
+            <tr><td><strong>GND</strong></td><td>Yes — multiple GND TPs distributed across board</td><td>ICT Fixture Spec</td><td>Low-impedance probe return path</td></tr>
+            <tr><td><strong>Reset Signal</strong></td><td>Yes</td><td>DFT Guideline</td><td>ICT must be able to force reset; control logic state</td></tr>
+            <tr><td><strong>Clock Signals</strong></td><td>Yes — at source and destination</td><td>DFT Guideline</td><td>Verify clock generation and routing integrity</td></tr>
+            <tr><td><strong>SPI / I2C / UART</strong></td><td>Yes — all bus signals need TPs</td><td>DFT Guideline</td><td>Communication interface test and programming</td></tr>
+            <tr><td><strong>JTAG Port</strong></td><td>Dedicated 2.54mm header or pads</td><td>IEEE 1149.1</td><td>Boundary scan and in-system programming access</td></tr>
+            <tr><td><strong>Test Enable / Mode Pins</strong></td><td>Yes — accessible TP or header</td><td>DFT Guideline</td><td>Must be able to force IC into test mode</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4.4 -->
+    <div class="subsection">
+      <div class="subsection-title">4.4 — Boundary Scan (JTAG) Design</div>
+      <div class="highlight"><strong>IEEE 1149.1 — TAP Signals Required</strong>
+TCK (Test Clock) · TMS (Test Mode Select) · TDI (Test Data In) · TDO (Test Data Out) · TRST* (Test Reset, optional but recommended)</div>
+
+      <div class="mono-block">JTAG DAISY CHAIN (Multiple ICs):
+
+  ┌──────────┐    ┌──────────┐    ┌──────────┐
+  │  IC1     │    │  IC2     │    │  IC3     │
+  │  (MCU)   │    │  (FPGA)  │    │  (DSP)   │
+  │       TDO├───▶│TDI    TDO├───▶│TDI    TDO├──▶ TDO (to test header)
+  └──────────┘    └──────────┘    └──────────┘
+       ↑                ↑               ↑
+  TCK, TMS, TRST* shared (parallel) to all devices
+  TDI ──▶ IC1.TDI (start of chain)</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>JTAG Design Rule</th><th>Requirement</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Series resistor on TCK/TMS/TDI/TDO</td><td>22–33Ω series termination</td><td>SI Best Practice / Board Datasheet</td></tr>
+            <tr><td>Pull-up on TMS</td><td>10kΩ to VCC (holds chain in reset when disconnected)</td><td>IEEE 1149.1</td></tr>
+            <tr><td>Pull-up on TRST*</td><td>10kΩ to VCC</td><td>IEEE 1149.1</td></tr>
+            <tr><td>JTAG header</td><td>Standard 10-pin (2×5, 1.27mm) or 14-pin ARM header</td><td>JTAG Standard / ARM IHI0031</td></tr>
+            <tr><td>Max TCK frequency</td><td>Per slowest device in chain — check all device datasheets</td><td>Component Datasheet</td></tr>
+            <tr><td>Bypass option</td><td>Zero-ohm jumpers to bypass non-JTAG devices</td><td>DFT Best Practice</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: PANELIZATION -->
+  <section class="section" id="sec5">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div>
+        <div class="section-title">Panelization &amp; Manufacturing Flow</div>
+        <div class="section-desc">Panel design rules, fiducials, tooling holes, and board edge clearances</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="subsection-title" style="margin-bottom:16px">Panel Separation Methods</div>
+        <div class="card">
+          <div class="card-title">V-Scoring</div>
+          <ul class="bullets">
+            <li>V-groove cut 1/3 through each side of board</li>
+            <li>Suitable for rectangular boards only</li>
+            <li>Depanel stress: low if done correctly</li>
+            <li>Min board thickness remaining: 0.4mm</li>
+            <li>Board edge clearance: 0.5mm from components</li>
+          </ul>
+        </div>
+        <div class="card warn" style="margin-top:12px">
+          <div class="card-title">Mouse Bites (Tab-Routing)</div>
+          <ul class="bullets">
+            <li>Row of overlapping drill holes along tab</li>
+            <li>Hole diameter: 0.5mm; 6–10 holes per tab</li>
+            <li>Tab width: 1.5–3mm</li>
+            <li>Depanel stress: higher — keep sensitive components 5mm away</li>
+            <li>Allows irregular board shapes</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-bottom:16px">Fiducials &amp; Tooling</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Specification</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Global Fiducial</strong></td><td>3 fiducials per panel (not colinear); 1.5mm Cu circle, 3mm clear zone</td><td>IPC-7351 / Assembly Guideline</td></tr>
+              <tr><td><strong>Local Fiducial</strong></td><td>2 per fine-pitch IC (&lt;0.5mm pitch); 1.0mm Cu, 2mm clear zone</td><td>IPC-7351</td></tr>
+              <tr><td><strong>Fiducial Copper</strong></td><td>Bare copper (OSP or HASL) — no solder mask over fiducial</td><td>Assembly Guideline</td></tr>
+              <tr><td><strong>Tooling Holes</strong></td><td>2 min per panel; 3.2mm dia NPTH; 0.05mm positional tolerance</td><td>Assembly Guideline</td></tr>
+              <tr><td><strong>Board Edge Clearance</strong></td><td>Component: 0.5mm (SMD), 1.0mm (THT) from board edge</td><td>Assembly / Fab Guideline</td></tr>
+              <tr><td><strong>Panel Rail Width</strong></td><td>5–10mm on each side of panel for conveyor grip</td><td>Assembly Line Guideline</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="mono-block">PANEL LAYOUT EXAMPLE (2×2 array):
+
+  ┌─────────────────────────────────────────┐
+  │  RAIL (5–10mm)    ● Global Fid 1       │
+  ├──────────┬──────────────────────────────┤
+  │  Board 1 │  Board 2                    │
+  │  ╔═════╗ │  ╔═════╗                   │
+  │  ║     ║ │  ║     ║   ◉ Tooling hole  │
+  │  ╚═════╝ │  ╚═════╝                   │
+  ├──────────┼──────────────────────────────┤
+  │  Board 3 │  Board 4   ● Global Fid 2  │
+  │  ╔═════╗ │  ╔═════╗                   │
+  │  ║     ║ │  ║     ║                   │
+  │  ╚═════╝ │  ╚═════╝   ● Global Fid 3  │
+  ├──────────┴──────────────────────────────┤
+  │  RAIL (5–10mm)                         │
+  └─────────────────────────────────────────┘
+  V-score lines run between boards (horizontal + vertical)</div>
+  </section>
+
+  <!-- SECTION 6: DEFECTS -->
+  <section class="section" id="sec6">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div>
+        <div class="section-title">Soldering Defects &amp; Root Cause</div>
+        <div class="section-desc">Common assembly defects — cause, layout fix, and prevention method</div>
+      </div>
+    </div>
+
+    <div class="defect-grid">
+      <div class="defect-card">
+        <h4>⚠ Tombstoning</h4>
+        <div class="defect-row">
+          <div class="defect-label">Cause (Layout)</div>
+          <div class="defect-value">Asymmetric pad sizes or copper pour on one side heats/cools differently → surface tension stands component upright</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Prevention</div>
+          <div class="defect-value">Use IPC-7351 symmetric land patterns; balance copper fill on both pads; avoid large copper pour connecting to one pad only</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Source</div>
+          <div class="defect-value">IPC-7711 / IPC-7351 / Assembly Guideline</div>
+        </div>
+      </div>
+
+      <div class="defect-card">
+        <h4>⚠ Solder Bridging</h4>
+        <div class="defect-row">
+          <div class="defect-label">Cause (Layout)</div>
+          <div class="defect-value">Pad spacing too small; incorrect stencil aperture; paste over-deposit between fine-pitch pads</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Prevention</div>
+          <div class="defect-value">Maintain IPC-7351 pad gaps; use solder mask dams ≥0.1mm between pads &lt;0.4mm pitch; correct stencil aperture reduction</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Source</div>
+          <div class="defect-value">IPC-A-610 / IPC-7351</div>
+        </div>
+      </div>
+
+      <div class="defect-card">
+        <h4>⚠ Cold Solder Joints</h4>
+        <div class="defect-row">
+          <div class="defect-label">Cause (Layout)</div>
+          <div class="defect-value">Missing thermal relief on PTH pad in large copper pour → pad acts as heatsink → solder doesn't reflow fully</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Prevention</div>
+          <div class="defect-value">Add thermal relief spokes to all PTH pads in copper pour; verify thermal profile with thermocouple</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Source</div>
+          <div class="defect-value">IPC-A-610 Class 2/3</div>
+        </div>
+      </div>
+
+      <div class="defect-card">
+        <h4>⚠ BGA Voids</h4>
+        <div class="defect-row">
+          <div class="defect-label">Cause (Layout)</div>
+          <div class="defect-value">Unfilled vias under BGA pads; solder mask-defined pads causing outgassing; insufficient flux escape path</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Prevention</div>
+          <div class="defect-value">Use filled/capped vias (IPC-4761 Type VII); NSMD pads; QFN thermal pad paste coverage 50–80%; X-ray inspect for voids &gt;25% pad area</div>
+        </div>
+        <div class="defect-row">
+          <div class="defect-label">Source</div>
+          <div class="defect-value">IPC-7093 / IPC-A-610 / J-STD-001</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: YIELD -->
+  <section class="section" id="sec7">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div>
+        <div class="section-title">Yield Optimization</div>
+        <div class="section-desc">Advanced — design choices that directly affect first-pass yield and production economics</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Design Choice</th><th>High Yield Option</th><th>Low Yield Risk</th><th>Source</th><th>Yield Impact</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Component Package</strong></td><td>0402 or larger for passives</td><td>0201, 01005 — placement/AOI escape risk</td><td>Assembly Capability</td><td>0201 placement error rate 3–5× higher than 0402</td></tr>
+          <tr><td><strong>BGA Ball Pitch</strong></td><td>0.8mm or 1.0mm pitch BGA</td><td>0.4mm, 0.3mm pitch — X-ray inspection critical</td><td>Assembly Capability</td><td>Fine pitch BGA: 2–5% void/bridge risk vs &lt;1% at 0.8mm</td></tr>
+          <tr><td><strong>Component Density</strong></td><td>Component spacing ≥0.3mm</td><td>&lt;0.2mm — rework impossible</td><td>Assembly Guideline</td><td>Dense boards: rework cost 10× higher; yield 5–15% lower</td></tr>
+          <tr><td><strong>Test Point Coverage</strong></td><td>100% net coverage with TPs</td><td>&lt;80% coverage — defects escape</td><td>IPC-9252 / DFT</td><td>Each 10% TP reduction → ~5–8% more field escapes</td></tr>
+          <tr><td><strong>Single Side Assembly</strong></td><td>All SMD top side only</td><td>Double-side SMD: 2× oven passes, 2× potential damage</td><td>Assembly Guideline</td><td>Double-side adds 10–20% more handling defects</td></tr>
+          <tr><td><strong>Impedance Control</strong></td><td>Specify controlled impedance in Gerber notes to fab</td><td>Uncontrolled: trace width variation → SI issues</td><td>IPC-2141</td><td>Uncontrolled impedance → 5–15% functional test fail</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight"><strong>High-Volume Production Rule</strong>
+First Pass Yield (FPY) target: ≥99.5% for mature high-volume production. Each solder joint has a ~50–100 PPM defect rate at best. A board with 5,000 joints at 100 PPM = 50% chance of ≥1 defect. DFM reduces per-joint defect rate; DFT catches remaining defects before shipment.</div>
+  </section>
+
+  <!-- SECTION 8: CAD TOOLS -->
+  <section class="section" id="sec8">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <div>
+        <div class="section-title">DFM / DFT in CAD Tools</div>
+        <div class="section-desc">Practical constraint setup in Cadence Allegro and Altium Designer</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">Cadence Allegro</div>
+        <div class="card">
+          <div class="card-title">Constraint Manager Setup</div>
+          <ul class="bullets">
+            <li><strong>Physical Rules:</strong> Min line width, via pad/drill per net class</li>
+            <li><strong>Spacing Rules:</strong> Line-to-line, pad-to-pad, via-to-pad per region</li>
+            <li><strong>Electrical Rules:</strong> Impedance, max stub length, diff pair rules</li>
+            <li><strong>DFM Checks:</strong> Allegro PCB Editor → Analyze → Design for Manufacturing</li>
+            <li><strong>Test Point Rules:</strong> DFT Analyst add-on for ICT probe grid check</li>
+            <li><strong>Thermal DRC:</strong> Sigrity PowerDC for copper pour thermal relief check</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">Altium Designer</div>
+        <div class="card info">
+          <div class="card-title">Design Rules Setup</div>
+          <ul class="bullets">
+            <li><strong>Design → Rules:</strong> Electrical, Routing, SMT, Manufacturing rules</li>
+            <li><strong>Manufacturing Rules:</strong> Min annular ring, solder mask expansion, board outline</li>
+            <li><strong>DFM Check:</strong> Tools → Design Rule Check (DRC) — run all Manufacturing rules</li>
+            <li><strong>Test Point Rules:</strong> Design Rules → Testpoint — min size, grid, side</li>
+            <li><strong>Output Manager:</strong> Generates test point report for ICT vendor</li>
+            <li><strong>Layer Stack Manager:</strong> Define impedance-controlled stackup</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection" style="margin-top:24px">
+      <div class="subsection-title">DRC vs DFA vs DFT Checks</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check Type</th><th>What It Verifies</th><th>Tool</th><th>When to Run</th></tr></thead>
+          <tbody>
+            <tr><td><strong>DRC — Design Rule Check</strong></td><td>Trace widths, spacings, via rules, annular rings, short/open detection</td><td>Allegro DRC / Altium DRC</td><td>Continuously during layout; mandatory pre-release</td></tr>
+            <tr><td><strong>DFA — Design for Assembly</strong></td><td>Component spacing, placement orientation, fiducials, board edge clearance</td><td>Valor NPI / Mentor HyperLynx DFA</td><td>After component placement; before routing</td></tr>
+            <tr><td><strong>DFT — Design for Test</strong></td><td>Test point coverage, probe spacing, JTAG chain connectivity, net accessibility</td><td>Cadence DFT Analyst / Mentor TestExpert</td><td>After layout; before Gerber release</td></tr>
+            <tr><td><strong>ERC — Electrical Rule Check</strong></td><td>Power pin connectivity, net naming, dangling pins</td><td>Schematic tool (Allegro Design Entry / Altium)</td><td>After schematic capture; before layout</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: MISTAKES -->
+  <section class="section" id="sec9">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <div>
+        <div class="section-title">Common Design Mistakes</div>
+        <div class="section-desc">The most frequent DFM/DFT errors found in real production boards</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card danger">
+        <div class="card-title">Missing or Insufficient Test Points</div>
+        <p>Not adding test points to every net — especially buried nets under BGAs — results in zero ICT coverage. Flying probe can probe vias but cannot reach under-component signals. Resolution at design stage; rework is impossible after fixture build.</p>
+      </div>
+      <div class="card danger">
+        <div class="card-title">Trace/Spacing Below Fab Capability</div>
+        <p>Designing 2 mil traces when fab minimum is 3 mil. Gerbers accepted but boards fail at etching. Always collect fab capability datasheet first and set CAD constraints to match — never assume.</p>
+      </div>
+      <div class="card warn">
+        <div class="card-title">Incorrect or Non-IPC Footprints</div>
+        <p>Custom footprints that don't match IPC-7351 land patterns cause tombstoning, bridging, and component misalignment. Always use IPC-7351 library footprints; verify against component datasheet recommended land pattern.</p>
+      </div>
+      <div class="card warn">
+        <div class="card-title">No Fiducials or Wrong Fiducial Placement</div>
+        <p>Missing fiducials force the pick-and-place machine to skip automatic optical alignment → all placements shift. Colinear fiducials (all in a line) fail rotation detection. Minimum 3 fiducials, non-colinear, on panel.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Poor Panelization Design</div>
+        <p>No panel rails, wrong V-score depth, missing tooling holes — all cause assembly line jams and board damage. Never send bare boards to assembly; always panelize with rails. Confirm panel dimensions with assembly house first.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Unfilled Vias Under BGAs / QFNs</div>
+        <p>Open vias under thermal pads or BGA pads wick solder during reflow. Boards pass visual inspection but have open joints visible only under X-ray. Specify IPC-4761 Type VII filled/capped vias in fabrication notes.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">No Solder Mask Dam Between Fine-Pitch Pads</div>
+        <p>At pitch &lt;0.5mm, without solder mask dams between pads, paste bridges during reflow. Minimum 0.1mm mask dam must be specified in design rules and verified that fab can achieve it.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Silkscreen Over Test Points or Pads</div>
+        <p>Silkscreen ink over solder pads or test points prevents probe contact and inhibits soldering. Set CAD rules to keep silkscreen ≥0.1mm clear of all pads and test points.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: DESIGN FLOW -->
+  <section class="section" id="sec10">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <div>
+        <div class="section-title">Real-World Design Flow</div>
+        <div class="section-desc">Expert-level step-by-step process from fab capability collection to manufacturing review</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Collect Fab + Assembly Capability Documents</h4>
+          <p>Request fab design rules (min trace/space, drill, layer count, impedance capability) and assembly DFM guidelines (component spacing, panel requirements, stencil capability) before starting layout. These become your SSOT constraints.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Define DFM Rules in CAD Constraint Manager</h4>
+          <p>Enter all fab/assembly constraints into Allegro Constraint Manager or Altium Design Rules. Set min width, min space, via drill/pad, annular ring, board edge clearance. Run DRC during layout, not after.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Create IPC-7351 Compliant Footprints</h4>
+          <p>Generate all footprints from IPC-7351 calculator or verified library. Cross-check every pad size and gap against component datasheet land pattern recommendation. Document any deviation with justification.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Place Components with Assembly Rules</h4>
+          <p>Respect spacing rules (SMD-to-SMD, edge clearance). Align polarized components consistently. Place fiducials first. Keep BGA/QFN components away from board edges. Orient ICs for wave direction if mixed assembly.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Add Test Points (DFT Planning)</h4>
+          <p>After placement, add test points to every net. Prioritize power, ground, reset, clocks, and communication buses. Verify 2.54mm grid where possible for ICT. Place all TPs on bottom side. Check coverage with DFT tool report.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Route with SI and DFM in Mind</h4>
+          <p>Route impedance-controlled traces first (differential pairs, clock, RF). Maintain 3W spacing rule for crosstalk. Use 45° or arc bends — never 90°. Add thermal relief to all PTH pads in copper pour.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Validate with DRC / DFA / DFT Checks</h4>
+          <p>Run full DRC — zero violations acceptable for release. Run DFA check (Valor NPI or equivalent) for assembly spacing. Run DFT check for test point coverage percentage. Document and resolve all violations.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num"></div>
+        <div class="step-content">
+          <h4>Review with Manufacturer (DFM Review)</h4>
+          <p>Submit Gerbers + assembly drawing to fab and assembly house for formal DFM review before releasing to production. Incorporate all DFM feedback. This step prevents costly board respins. Never skip for cost/schedule.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: CHECKLISTS -->
+  <section class="section" id="sec11">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <div>
+        <div class="section-title">Mandatory Checklists</div>
+        <div class="section-desc">Pre-layout · Pre-release · DFT Readiness · Assembly Readiness</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">Pre-Layout DFM Checklist</div>
+        <ul class="checklist">
+          <li><span class="check-icon">☐</span> Fab capability document received and reviewed</li>
+          <li><span class="check-icon">☐</span> Assembly DFM guidelines received</li>
+          <li><span class="check-icon">☐</span> Layer stackup defined and confirmed with fab</li>
+          <li><span class="check-icon">☐</span> Impedance targets defined (if controlled impedance)</li>
+          <li><span class="check-icon">☐</span> All footprints verified against IPC-7351</li>
+          <li><span class="check-icon">☐</span> CAD constraints set to fab minimums</li>
+          <li><span class="check-icon">☐</span> Component package choices reviewed for assembly capability</li>
+          <li><span class="check-icon">☐</span> Test strategy defined (ICT / Flying Probe / JTAG)</li>
+        </ul>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">DFT Readiness Checklist</div>
+        <ul class="checklist">
+          <li><span class="check-icon">☐</span> Test points on all power rails (VCC, GND)</li>
+          <li><span class="check-icon">☐</span> Test point on Reset signal</li>
+          <li><span class="check-icon">☐</span> Test points on all clock signals</li>
+          <li><span class="check-icon">☐</span> Test points on SPI / I2C / UART / CAN buses</li>
+          <li><span class="check-icon">☐</span> JTAG header (10-pin or 14-pin) placed and accessible</li>
+          <li><span class="check-icon">☐</span> JTAG chain verified (TDO→TDI daisy chain complete)</li>
+          <li><span class="check-icon">☐</span> Test point coverage report ≥90% net coverage</li>
+          <li><span class="check-icon">☐</span> All TPs solder mask-free bare copper confirmed</li>
+          <li><span class="check-icon">☐</span> TP spacing ≥2.54mm grid (ICT) or ≥0.5mm (flying probe)</li>
+          <li><span class="check-icon">☐</span> No silkscreen over test point pads</li>
+        </ul>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">Pre-Release Manufacturing Checklist</div>
+        <ul class="checklist">
+          <li><span class="check-icon">☐</span> DRC: zero violations</li>
+          <li><span class="check-icon">☐</span> DFA check passed (component spacing, orientation)</li>
+          <li><span class="check-icon">☐</span> Gerbers reviewed layer by layer in CAM viewer</li>
+          <li><span class="check-icon">☐</span> Drill file verified (drill count matches vias/holes)</li>
+          <li><span class="check-icon">☐</span> Board outline closed (no open segments)</li>
+          <li><span class="check-icon">☐</span> Solder mask expansion verified (min 0.05mm)</li>
+          <li><span class="check-icon">☐</span> Impedance-controlled traces called out in fab notes</li>
+          <li><span class="check-icon">☐</span> Vias under BGA specified as filled/capped in fab notes</li>
+          <li><span class="check-icon">☐</span> Panel design includes rails, fiducials, tooling holes</li>
+          <li><span class="check-icon">☐</span> Fab and assembly DFM review completed and signed off</li>
+        </ul>
+      </div>
+      <div>
+        <div class="subsection-title" style="margin-bottom:12px">Assembly Readiness Checklist</div>
+        <ul class="checklist">
+          <li><span class="check-icon">☐</span> Assembly drawing (top/bottom placement, ref designators) generated</li>
+          <li><span class="check-icon">☐</span> Pick-and-place centroid file exported (X, Y, rotation, side)</li>
+          <li><span class="check-icon">☐</span> Bill of Materials (BOM) complete with approved vendor parts</li>
+          <li><span class="check-icon">☐</span> Stencil aperture file (paste layer) verified</li>
+          <li><span class="check-icon">☐</span> QFN/QFP thermal pad paste coverage 50–80% confirmed</li>
+          <li><span class="check-icon">☐</span> All polarized components annotated on assembly drawing</li>
+          <li><span class="check-icon">☐</span> 3 global fiducials on panel confirmed (non-colinear)</li>
+          <li><span class="check-icon">☐</span> Tooling holes confirmed (2 minimum, NPTH)</li>
+          <li><span class="check-icon">☐</span> Panel V-score / mouse bite depths confirmed with fab</li>
+          <li><span class="check-icon">☐</span> ICT test fixture design initiated (if ICT planned)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /content -->
+
+<footer>
+  DFM / DFT KNOWLEDGE SYSTEM — PCB ENGINEERING REFERENCE &nbsp;·&nbsp;
+  IPC-2221 · IPC-A-600 · IPC-A-610 · IPC-7351 · IPC-4761 · IPC-7093 · IPC-9252 · IEEE 1149.1 &nbsp;·&nbsp;
+  SSOT COMPLIANT — NO ASSUMED VALUES
+</footer>
+
+</body>
+</html>
