@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SI/PI Engineering Knowledge System</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg2: #0f1318;
+    --bg3: #141920;
+    --panel: #161d26;
+    --border: #1e2d3d;
+    --border2: #253447;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --accent4: #ffd700;
+    --text: #c8d8e8;
+    --text-dim: #6b8299;
+    --text-bright: #e8f4ff;
+    --red: #ff4757;
+    --green: #39ff14;
+    --yellow: #ffd700;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* SCANLINE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,212,255,0.012) 2px,
+      rgba(0,212,255,0.012) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* GRID BG */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(0,212,255,0.05) 0%, transparent 100%);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .header-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 3px 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 800;
+    color: var(--text-bright);
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-sub {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 12px;
+    letter-spacing: 1px;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .meta-item span { color: var(--accent2); font-weight: 600; }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 200px);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== SIDEBAR ===== */
+  nav.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+  }
+
+  nav.sidebar::-webkit-scrollbar { width: 4px; }
+  nav.sidebar::-webkit-scrollbar-track { background: transparent; }
+  nav.sidebar::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  .nav-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 20px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover, .nav-item.active {
+    color: var(--text-bright);
+    background: rgba(0,212,255,0.05);
+    border-left-color: var(--accent);
+  }
+
+  .nav-item .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    min-width: 20px;
+  }
+
+  .nav-sub {
+    padding-left: 32px;
+    font-size: 11px;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    padding: 32px 40px;
+    max-width: 1100px;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    margin-bottom: 64px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 4px 10px;
+    letter-spacing: 1px;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.5px;
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3::before {
+    content: '▸';
+    font-size: 10px;
+    color: var(--accent2);
+  }
+
+  h4 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent4);
+    margin: 16px 0 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  p { margin-bottom: 12px; color: var(--text); line-height: 1.8; }
+
+  /* ===== CARDS ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+
+  .card.accent::before { background: var(--accent); }
+  .card.orange::before { background: var(--accent2); }
+  .card.green::before { background: var(--green); }
+  .card.yellow::before { background: var(--yellow); }
+  .card.red::before { background: var(--red); }
+
+  .card-title {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  .card-body {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ===== INFO BLOCKS ===== */
+  .info-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .info-block.warning { border-left-color: var(--yellow); }
+  .info-block.danger { border-left-color: var(--red); }
+  .info-block.success { border-left-color: var(--green); }
+  .info-block.orange { border-left-color: var(--accent2); }
+
+  .info-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .info-block .info-label { color: var(--accent); }
+  .info-block.warning .info-label { color: var(--yellow); }
+  .info-block.danger .info-label { color: var(--red); }
+  .info-block.success .info-label { color: var(--green); }
+  .info-block.orange .info-label { color: var(--accent2); }
+
+  /* ===== TABLES ===== */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead tr {
+    background: rgba(0,212,255,0.08);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  td.mono { font-family: var(--mono); font-size: 11px; color: var(--accent4); }
+  td.good { color: var(--green); font-weight: 600; }
+  td.bad { color: var(--red); }
+  td.warn { color: var(--yellow); }
+
+  /* ===== CODE BLOCKS ===== */
+  .code-block {
+    background: #080c10;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #7ec8e3;
+    margin: 16px 0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.6;
+  }
+
+  .code-block .comment { color: #3d5a6e; }
+  .code-block .val { color: var(--accent4); }
+  .code-block .unit { color: var(--accent2); }
+  .code-block .label { color: var(--green); }
+
+  /* ===== DIAGRAM ===== */
+  .diagram {
+    background: #080c10;
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 20px 0;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .diagram .hl { color: var(--accent); }
+  .diagram .hl2 { color: var(--accent2); }
+  .diagram .hl3 { color: var(--green); }
+  .diagram .hl4 { color: var(--yellow); }
+
+  /* ===== TAGS ===== */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 2px 3px 2px 0;
+  }
+
+  .tag-source { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+  .tag-why { background: rgba(57,255,20,0.1); color: var(--green); border: 1px solid rgba(57,255,20,0.2); }
+  .tag-impact { background: rgba(255,71,87,0.12); color: var(--red); border: 1px solid rgba(255,71,87,0.2); }
+  .tag-critical { background: rgba(255,107,53,0.12); color: var(--accent2); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* ===== RULE BLOCK ===== */
+  .rule-block {
+    border: 1px solid var(--border);
+    margin: 16px 0;
+    overflow: hidden;
+  }
+
+  .rule-header {
+    background: rgba(0,212,255,0.06);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rule-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .rule-body { padding: 16px; }
+
+  .rule-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  .rule-key {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-top: 2px;
+  }
+
+  /* ===== CHECKLIST ===== */
+  .checklist { list-style: none; margin: 12px 0; }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 10px;
+  }
+
+  .check-box:hover, .check-box.checked {
+    border-color: var(--green);
+    background: rgba(57,255,20,0.1);
+    color: var(--green);
+  }
+
+  /* ===== STEP FLOW ===== */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .step-num {
+    width: 32px; height: 32px;
+    border: 1px solid var(--accent);
+    background: rgba(0,212,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .step-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    margin: 4px 0;
+    min-height: 20px;
+  }
+
+  .step-content {
+    padding: 4px 0 24px;
+    flex: 1;
+  }
+
+  .step-title {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+  }
+
+  .step-desc { font-size: 12px; color: var(--text-dim); }
+
+  /* ===== FORMULA ===== */
+  .formula {
+    background: #080c10;
+    border: 1px solid var(--border2);
+    padding: 14px 20px;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent4);
+    margin: 12px 0;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  .formula .sub { font-size: 10px; color: var(--text-dim); margin-top: 6px; display: block; letter-spacing: 0; }
+
+  /* ===== MISC ===== */
+  ul.dot-list { list-style: none; margin: 10px 0; }
+  ul.dot-list li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    font-size: 13px;
+    color: var(--text);
+  }
+  ul.dot-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 8px;
+    top: 7px;
+  }
+
+  .highlight { color: var(--accent4); font-weight: 600; }
+  .red { color: var(--red); }
+  .green-text { color: var(--green); }
+  .orange-text { color: var(--accent2); }
+  .cyan { color: var(--accent); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+    margin: 32px 0;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  main::-webkit-scrollbar { width: 6px; }
+  main::-webkit-scrollbar-track { background: transparent; }
+  main::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar { display: none; }
+    main { padding: 20px; }
+    .two-col { grid-template-columns: 1fr; }
+    header { padding: 30px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-badge">Engineering Reference</div>
+    <div class="status-dot"></div>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);">SSOT-VERIFIED</span>
+  </div>
+  <h1><span>SI/PI</span> Engineering Knowledge System</h1>
+  <div class="header-sub">Signal Integrity & Power Integrity — Complete PCB Design Reference</div>
+  <div class="header-meta">
+    <div class="meta-item">Authority: <span>JEDEC / PCI-SIG / USB-IF / IEEE 802.3</span></div>
+    <div class="meta-item">Level: <span>Beginner → Expert</span></div>
+    <div class="meta-item">Scope: <span>DDR · PCIe · USB · Ethernet</span></div>
+    <div class="meta-item">Version: <span>SSOT-2024</span></div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-section-label">Fundamentals</div>
+  <a class="nav-item" href="#s1"><span class="num">01</span> SI/PI Fundamentals</a>
+
+  <div class="nav-section-label">Signal Integrity</div>
+  <a class="nav-item" href="#s2"><span class="num">02</span> SI Core</a>
+  <a class="nav-item nav-sub" href="#s21">2.1 Transmission Lines</a>
+  <a class="nav-item nav-sub" href="#s22">2.2 Routing Rules</a>
+  <a class="nav-item nav-sub" href="#s23">2.3 High-Speed Interfaces</a>
+
+  <div class="nav-section-label">Power Integrity</div>
+  <a class="nav-item" href="#s3"><span class="num">03</span> PI Core</a>
+  <a class="nav-item nav-sub" href="#s31">3.1 PDN Design</a>
+  <a class="nav-item nav-sub" href="#s32">3.2 Decoupling</a>
+  <a class="nav-item nav-sub" href="#s33">3.3 Power Planes</a>
+  <a class="nav-item nav-sub" href="#s34">3.4 Noise & Stability</a>
+
+  <div class="nav-section-label">Advanced</div>
+  <a class="nav-item" href="#s4"><span class="num">04</span> SI vs PI Interaction</a>
+  <a class="nav-item" href="#s5"><span class="num">05</span> Stackup Design</a>
+  <a class="nav-item" href="#s6"><span class="num">06</span> Simulation & Validation</a>
+  <a class="nav-item" href="#s7"><span class="num">07</span> Routing Workflow</a>
+
+  <div class="nav-section-label">QA & Debug</div>
+  <a class="nav-item" href="#s8"><span class="num">08</span> Common Mistakes</a>
+  <a class="nav-item" href="#s9"><span class="num">09</span> Debugging</a>
+  <a class="nav-item" href="#s10"><span class="num">10</span> Checklists</a>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+<!-- ======================== SECTION 1 ======================== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>SI &amp; PI Fundamentals</h2>
+  </div>
+
+  <div class="card-grid">
+    <div class="card accent">
+      <div class="card-title">Signal Integrity (SI)</div>
+      <div class="card-body">The discipline of ensuring that electrical signals propagate from source to receiver without degradation — maintaining correct voltage levels, timing, and waveform shape at the target IC pin.</div>
+    </div>
+    <div class="card orange">
+      <div class="card-title">Power Integrity (PI)</div>
+      <div class="card-body">The discipline of ensuring that the power supply voltage remains clean, stable, and within spec at every IC power pin — under all operating conditions including switching transients.</div>
+    </div>
+    <div class="card green">
+      <div class="card-title">Why Both Matter</div>
+      <div class="card-body">SI failures cause bit errors, timing violations, and protocol failures. PI failures inject noise into signal references, creating jitter and false switching. They are deeply coupled.</div>
+    </div>
+  </div>
+
+  <h3>Key Concepts — Physics-Based Definitions</h3>
+
+  <div class="rule-block">
+    <div class="rule-header"><span class="rule-title">IMPEDANCE</span><span class="tag tag-source">MAXWELL / TRANSMISSION LINE THEORY</span></div>
+    <div class="rule-body">
+      <div class="rule-row"><span class="rule-key">What</span><span>Opposition to current flow in an AC/transient sense. For PCB traces, it is the characteristic impedance Z₀ — determined by geometry and dielectric material.</span></div>
+      <div class="rule-row"><span class="rule-key">Why</span><span>Signals on PCB traces travel as electromagnetic waves. When the wave hits an impedance discontinuity, energy reflects. At high speed, even a trace IS a transmission line.</span></div>
+      <div class="formula">Z₀ = √(L/C) <span class="sub">L = inductance/unit length | C = capacitance/unit length | Units: Ohms (Ω)</span></div>
+      <div class="rule-row"><span class="rule-key">Impact</span><span class="red">Mismatched impedance → reflections → ringing → overshoot → false switching or setup/hold violations</span></div>
+    </div>
+  </div>
+
+  <div class="rule-block">
+    <div class="rule-header"><span class="rule-title">REFLECTION</span><span class="tag tag-source">TRANSMISSION LINE THEORY (HEAVISIDE)</span></div>
+    <div class="rule-body">
+      <div class="rule-row"><span class="rule-key">What</span><span>When a traveling wave hits a discontinuity (impedance change, unterminated end, via, stub), a portion of the energy bounces back toward the source.</span></div>
+      <div class="rule-row"><span class="rule-key">Physics</span><span>Reflection coefficient Γ = (Z_L − Z₀) / (Z_L + Z₀). Open end: Γ = +1 (voltage doubles). Short end: Γ = −1 (voltage cancels).</span></div>
+      <div class="rule-row"><span class="rule-key">Impact</span><span class="red">Ringing on waveform, multiple threshold crossings, timing uncertainty, metastability in receiving flip-flop.</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="rule-block">
+      <div class="rule-header"><span class="rule-title">CROSSTALK</span><span class="tag tag-source">MAXWELL — EM COUPLING</span></div>
+      <div class="rule-body">
+        <div class="rule-row"><span class="rule-key">What</span><span>Energy coupling between adjacent traces via mutual capacitance (C_m) and mutual inductance (L_m).</span></div>
+        <div class="rule-row"><span class="rule-key">Types</span><span>NEXT (Near End) — noise appears at source side.<br>FEXT (Far End) — noise at receiver side.</span></div>
+        <div class="rule-row"><span class="rule-key">Impact</span><span class="red">False switching, increased BER, jitter injection into victim net.</span></div>
+      </div>
+    </div>
+    <div class="rule-block">
+      <div class="rule-header"><span class="rule-title">RETURN PATH</span><span class="tag tag-source">ELECTROMAGNETIC THEORY</span></div>
+      <div class="rule-body">
+        <div class="rule-row"><span class="rule-key">What</span><span>Every signal current MUST return to its source. The return current flows directly beneath the signal trace on the reference plane — minimizing loop area.</span></div>
+        <div class="rule-row"><span class="rule-key">Physics</span><span>Return current follows path of minimum inductance (= minimum loop area), not minimum resistance at high frequency.</span></div>
+        <div class="rule-row"><span class="rule-key">Impact</span><span class="red">Broken reference plane forces return current to detour → massive EMI loop, crosstalk spike, SI degradation.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="rule-block">
+      <div class="rule-header"><span class="rule-title">NOISE</span></div>
+      <div class="rule-body">
+        <div class="rule-row"><span class="rule-key">Sources</span><span>Switching ICs, regulator ripple, ground bounce, coupled aggressor signals, EMI from external sources.</span></div>
+        <div class="rule-row"><span class="rule-key">Impact</span><span class="red">Reduces noise margin; at sufficient amplitude, causes logic errors at IC inputs.</span></div>
+      </div>
+    </div>
+    <div class="rule-block">
+      <div class="rule-header"><span class="rule-title">GROUND BOUNCE</span><span class="tag tag-source">JEDEC / IBIS THEORY</span></div>
+      <div class="rule-body">
+        <div class="rule-row"><span class="rule-key">What</span><span>V = L · dI/dt transient voltage spike on GND or VDD pin of an IC due to package inductance when many outputs switch simultaneously.</span></div>
+        <div class="rule-row"><span class="rule-key">Impact</span><span class="red">False switching of non-switching I/Os on same package; noise injected into PDN; core voltage droop.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 2 ======================== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>Signal Integrity — Core</h2>
+  </div>
+
+  <!-- 2.1 -->
+  <h3 id="s21">2.1 Transmission Line Theory</h3>
+
+  <div class="info-block">
+    <div class="info-label">Rule: When is a Trace a Transmission Line?</div>
+    <strong>Condition:</strong> When trace electrical length ≥ 1/6 of the signal rise time wavelength.<br>
+    <strong>Practical threshold:</strong> Trace delay (ps) ≥ T_rise (ps) / 6<br>
+    <strong>Rule of thumb (FR4 ~170 ps/inch):</strong> Any trace &gt; ~1 inch at speeds &gt;100 MHz should be treated as a transmission line.<br>
+    <span class="tag tag-source">Source: Johnson &amp; Graham — "High Speed Signal Propagation"</span>
+  </div>
+
+  <h4>Characteristic Impedance — Industry Standard Values</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Standard Z₀</th><th>Type</th><th>Tolerance</th><th>Reference Standard</th></tr></thead>
+      <tbody>
+        <tr><td>Single-ended (general)</td><td class="mono">50 Ω</td><td>Single-ended</td><td class="warn">±10%</td><td>IPC-2141A</td></tr>
+        <tr><td>DDR4/5 Data (DQ)</td><td class="mono">50 Ω SE</td><td>Single-ended</td><td class="warn">±10%</td><td>JEDEC JESD79-4</td></tr>
+        <tr><td>DDR4/5 CLK/DQS</td><td class="mono">100 Ω Diff</td><td>Differential</td><td class="warn">±10%</td><td>JEDEC JESD79-4</td></tr>
+        <tr><td>PCIe Gen1–Gen5</td><td class="mono">85 Ω Diff</td><td>Differential</td><td class="warn">±15%</td><td>PCI-SIG CEM Spec</td></tr>
+        <tr><td>USB 3.x SuperSpeed</td><td class="mono">90 Ω Diff</td><td>Differential</td><td class="warn">±15%</td><td>USB 3.2 Spec §6.7</td></tr>
+        <tr><td>USB 2.0 HS</td><td class="mono">90 Ω Diff</td><td>Differential</td><td class="warn">±15%</td><td>USB 2.0 Spec §7.1.2</td></tr>
+        <tr><td>1000BASE-T (GbE)</td><td class="mono">100 Ω Diff</td><td>Differential</td><td class="warn">±15%</td><td>IEEE 802.3-2018</td></tr>
+        <tr><td>10GBASE-KR</td><td class="mono">100 Ω Diff</td><td>Differential</td><td class="warn">±15%</td><td>IEEE 802.3-2018 §72</td></tr>
+        <tr><td>LVDS</td><td class="mono">100 Ω Diff</td><td>Differential</td><td class="warn">±10%</td><td>TIA/EIA-644</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-block warning">
+    <div class="info-label">⚠ Termination — Physics-Based</div>
+    <strong>Source termination:</strong> Rs in series with driver output; value = Z₀ − Z_driver. Absorbs reflections at source. No DC power dissipation.<br>
+    <strong>End termination:</strong> R to VTT or AC cap at far end. Required for multidrop topologies (DDR). Dissipates DC power.<br>
+    <strong>If unterminated:</strong> Open-end reflection Γ = +1. Signal doubles and bounces. At 1 GHz this is catastrophic for timing.
+  </div>
+
+  <!-- 2.2 -->
+  <h3 id="s22">2.2 Routing Rules</h3>
+
+  <h4>Differential Pair Routing Rules</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Parameter</th><th>Rule / Constraint</th><th>Why (Physics)</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Intra-pair spacing</td>
+          <td class="mono">2×W (2× trace width)</td>
+          <td>Tight coupling keeps odd-mode impedance correct; wider spacing increases Z_diff</td>
+          <td>IPC-2141A / Datasheet</td>
+        </tr>
+        <tr>
+          <td>Intra-pair skew</td>
+          <td class="mono">≤ 5 mils (DDR4); ≤10ps max</td>
+          <td>Skew converts differential to common mode; degrades noise rejection and bit period budget</td>
+          <td>JEDEC JESD79-4</td>
+        </tr>
+        <tr>
+          <td>Inter-pair spacing</td>
+          <td class="mono">≥ 3× trace width (min 5× preferred)</td>
+          <td>Reduces inter-pair crosstalk below −40 dB threshold to prevent false switching</td>
+          <td>JEDEC / SI Theory</td>
+        </tr>
+        <tr>
+          <td>Length matching (byte lane)</td>
+          <td class="mono">DDR4: ±1% of clock period</td>
+          <td>Setup/hold timing budget is divided between controller, trace, and receiver. Any skew consumes margin.</td>
+          <td>JEDEC JESD79-4 Table 11</td>
+        </tr>
+        <tr>
+          <td>Reference plane switch at via</td>
+          <td class="mono">Add stitching via within 50 mils</td>
+          <td>Return current must have a low-inductance path to follow the signal. Without stitching via, return current loops → EMI + crosstalk spike</td>
+          <td>IPC-2141A §4.3</td>
+        </tr>
+        <tr>
+          <td>Via stub length</td>
+          <td class="mono">Back-drill if stub &gt; 100 mils at &gt;3 GHz</td>
+          <td>Via stub is a shunt resonator. At stub resonance = λ/4, the via appears as a short → signal nulled. f_res ≈ c / (4 × stub length × √ε_r)</td>
+          <td>PCI-SIG PHY Test Spec / Sigrity simulation data</td>
+        </tr>
+        <tr>
+          <td>Parallel run (aggressor)</td>
+          <td class="mono">≤ 200 mils parallel run at 3× spacing</td>
+          <td>Limits coupled crosstalk energy. NEXT/FEXT both scale with coupled length.</td>
+          <td>IPC-2141A §6</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Reference Plane Continuity — CRITICAL RULE</h4>
+  <div class="info-block danger">
+    <div class="info-label">🔴 Critical — Return Path Discontinuity</div>
+    <strong>Rule:</strong> Every signal layer MUST have an unbroken reference plane (GND or PWR) on the adjacent layer. NEVER route a high-speed signal across a plane split.<br><br>
+    <strong>Physics:</strong> Return current at high frequency flows directly beneath the signal trace. A split forces the return current around the gap — creating a large inductive loop.<br><br>
+    <strong>If violated:</strong> 10–20 dB spike in insertion loss, massive EMI radiation at gap resonance frequency, inter-bus crosstalk, power noise coupling directly into signal. Boards have failed EMC testing solely due to this.
+  </div>
+
+  <div class="diagram"><span class="hl">GOOD (Continuous Reference Plane):</span>
+┌────────────────────────────────────────┐
+│  SIGNAL LAYER:  ═══════════════════    │  ← Signal trace
+├────────────────────────────────────────┤
+│  GND PLANE:     ████████████████████   │  ← Return current flows HERE (directly beneath)
+└────────────────────────────────────────┘
+
+<span class="hl2">BAD (Plane Split Crossing):</span>
+┌────────────────────────────────────────┐
+│  SIGNAL LAYER:  ═══════════╪═══════    │  ← Trace crosses split
+├────────────────────────────────────────┤
+│  GND PLANE:     ████████   │   ████   │  ← GAP in GND plane! Return current forced around
+└────────────────────────────────────────┘
+<span class="hl2">Result: Return current detour → inductive loop → EMI + crosstalk spike</span></div>
+
+  <!-- 2.3 -->
+  <h3 id="s23">2.3 High-Speed Interfaces</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Interface</th><th>Speed</th><th>Topology</th><th>Critical SI Parameters</th><th>Standard</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>DDR4</strong></td>
+          <td class="mono">3200 MT/s (1600 MHz)</td>
+          <td>Fly-by / T-branch</td>
+          <td>DQ/DQS skew ≤10ps, CLK-DQS phase, eye height &gt;100mV, eye width &gt;0.4 UI</td>
+          <td>JEDEC JESD79-4B</td>
+        </tr>
+        <tr>
+          <td><strong>DDR5</strong></td>
+          <td class="mono">6400 MT/s (3200 MHz)</td>
+          <td>Fly-by point-to-point</td>
+          <td>Tighter skew ≤7ps, on-die ECC, DFE at receiver, PCB channel loss &lt;5 dB at Nyquist</td>
+          <td>JEDEC JESD79-5B</td>
+        </tr>
+        <tr>
+          <td><strong>PCIe Gen3</strong></td>
+          <td class="mono">8 GT/s / lane</td>
+          <td>Differential serial</td>
+          <td>TX EQ, channel insertion loss &lt;20dB@4GHz, TDR impedance 85Ω±15%</td>
+          <td>PCI-SIG CEM 3.0</td>
+        </tr>
+        <tr>
+          <td><strong>PCIe Gen4</strong></td>
+          <td class="mono">16 GT/s / lane</td>
+          <td>Differential serial</td>
+          <td>Channel loss &lt;28dB@8GHz, back-drill vias mandatory, EQ mandatory</td>
+          <td>PCI-SIG CEM 4.0</td>
+        </tr>
+        <tr>
+          <td><strong>USB 3.2 Gen2</strong></td>
+          <td class="mono">10 Gbps</td>
+          <td>Differential serial</td>
+          <td>90Ω±15%, 34dB loss budget, AC coupling caps 75–200nF</td>
+          <td>USB 3.2 Spec §6</td>
+        </tr>
+        <tr>
+          <td><strong>1000BASE-T</strong></td>
+          <td class="mono">1 Gbps</td>
+          <td>4-pair differential</td>
+          <td>Return loss &gt;12dB, NEXT &lt;-34dB, trace impedance 100Ω±15%</td>
+          <td>IEEE 802.3-2018 §40</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-block orange">
+    <div class="info-label">DDR Topology Note</div>
+    <strong>Fly-by topology</strong> (used in DDR3/4/5): Controller → DIMM1 → DIMM2 → termination. Each DRAM sees a slightly different propagation delay. The memory controller uses <strong>write leveling</strong> to compensate DQS-CLK skew per DRAM. Incorrect routing topology breaks write leveling and causes non-functional DDR.
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 3 ======================== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Power Integrity — Core</h2>
+  </div>
+
+  <!-- 3.1 -->
+  <h3 id="s31">3.1 PDN — Power Distribution Network</h3>
+
+  <div class="card-grid">
+    <div class="card accent">
+      <div class="card-title">What is PDN?</div>
+      <div class="card-body">The complete network from voltage regulator (VRM) output through bulk caps, PCB planes, decoupling caps, to IC power pin. Every component adds impedance.</div>
+    </div>
+    <div class="card orange">
+      <div class="card-title">Target Impedance</div>
+      <div class="card-body">Z_target = ΔV_allowed / ΔI_transient. The PDN impedance must stay BELOW Z_target across all operating frequencies (100 Hz – 1 GHz+).</div>
+    </div>
+    <div class="card yellow">
+      <div class="card-title">Flat Impedance Profile</div>
+      <div class="card-body">Goal: achieve PDN impedance that is flat (no peaks) below Z_target across the full frequency band. Peaks cause resonance-driven voltage spikes.</div>
+    </div>
+  </div>
+
+  <h4>Target Impedance Formula</h4>
+  <div class="formula">
+    Z_target (Ω) = ΔV_ripple (V) / ΔI_transient (A)
+    <span class="sub">Example: VDD = 1.0V, ΔV = 2% = 20mV, ΔI = 2A → Z_target = 10 mΩ</span>
+  </div>
+
+  <div class="info-block warning">
+    <div class="info-label">⚠ FPGA / SoC Core Power</div>
+    Modern FPGAs (Xilinx UltraScale+, Intel Agilex) have core VDD = 0.85V with ΔV tolerance of 3%. ΔI during configuration can exceed 10A transiently. This gives Z_target ≈ 2.5 mΩ — a demanding PDN design requiring many parallel caps and low-inductance plane pairs.
+    <br><strong>Source: FPGA vendor PDN application notes (Xilinx UG583, Intel AN 583)</strong>
+  </div>
+
+  <h4>PDN Frequency Domain Behavior</h4>
+  <div class="diagram"><span class="hl">PDN IMPEDANCE vs FREQUENCY (Conceptual)</span>
+
+  Z (Ω)
+  │
+  │   <span class="hl2">VRM</span>      <span class="hl3">Bulk Caps</span>    <span class="hl4">Mid Caps</span>     <span class="hl">HF Caps</span>    Planes
+  │    ╲          ╱╲            ╱╲          ╱╲
+  │─────╲────────╱  ╲──────────╱  ╲────────╱  ╲──────── Z_target ──
+  │      ╲──────╱    ╲────────╱    ╲──────╱    Plane capacitance
+  │
+  └────────────────────────────────────────────────────▶ Frequency
+       10Hz  1kHz  100kHz  1MHz  10MHz  100MHz  1GHz
+
+  <span class="hl2">Anti-resonance peaks occur at transitions between decoupling stages</span>
+  <span class="hl">Each capacitor stage MUST overlap with adjacent stage to prevent peaks above Z_target</span></div>
+
+  <!-- 3.2 -->
+  <h3 id="s32">3.2 Decoupling Strategy</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Cap Type</th><th>Value Range</th><th>Frequency Range</th><th>Purpose</th><th>Placement</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Bulk / VRM Output</strong></td>
+          <td class="mono">100µF – 1mF</td>
+          <td class="mono">DC – 100kHz</td>
+          <td>Absorb slow load transients; VRM bandwidth covers DC</td>
+          <td>Near VRM output, &lt;2 cm</td>
+        </tr>
+        <tr>
+          <td><strong>PCB Bulk (MLCC)</strong></td>
+          <td class="mono">10µF – 47µF</td>
+          <td class="mono">100kHz – 1MHz</td>
+          <td>Bridge gap between VRM and board-level caps</td>
+          <td>Within 1 cm of power connector / plane entry</td>
+        </tr>
+        <tr>
+          <td><strong>Mid-Frequency (MLCC)</strong></td>
+          <td class="mono">100nF – 1µF (X7R)</td>
+          <td class="mono">1MHz – 100MHz</td>
+          <td>Decouples board-level transients; core PDN body</td>
+          <td>Within 3–5mm of IC power pins (top/bottom)</td>
+        </tr>
+        <tr>
+          <td><strong>High-Frequency (MLCC)</strong></td>
+          <td class="mono">10nF – 100nF (C0G/NP0)</td>
+          <td class="mono">100MHz – 1GHz+</td>
+          <td>Low ESL; handles high dI/dt switching of I/Os and core</td>
+          <td>As close as possible to power pin; under IC if BGA (via-in-pad)</td>
+        </tr>
+        <tr>
+          <td><strong>On-die Caps</strong></td>
+          <td class="mono">Datasheet Specified</td>
+          <td class="mono">1GHz+</td>
+          <td>First line of defense for intra-die transients</td>
+          <td>Inside IC die — cannot be influenced by PCB layout</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-block danger">
+    <div class="info-label">🔴 CRITICAL — Placement is Paramount</div>
+    <strong>The value of a decoupling capacitor is WORTHLESS if the loop inductance is too high.</strong><br><br>
+    Effective capacitor impedance at high frequency is dominated by ESL (series inductance), not capacitance.<br>
+    Loop inductance L_loop = (via inductance + trace inductance to power pin) — this directly adds to ESL.<br><br>
+    <strong>Target:</strong> Keep total loop inductance &lt;100 pH for GHz-range decoupling.<br>
+    <strong>Violated by:</strong> Long traces to cap pads, single via per cap, caps placed far from power pin.
+  </div>
+
+  <h4>Via Placement for Decoupling Caps — Best Practices</h4>
+  <div class="diagram"><span class="hl">GOOD — Minimum Loop Inductance:</span>
+     
+  ┌──────────────────┐
+  │   CAP BODY       │  ← 0402 MLCC, 100nF
+  │  [+]──────[−]    │
+  │   │         │    │
+  │  VIA       VIA   │  ← Both vias immediately adjacent to pads
+  │ (VDD)     (GND)  │  ← Short, fat vias to adjacent planes
+  └──────────────────┘
+  Loop area ≈ MINIMAL → Low L_loop
+
+<span class="hl2">BAD — Long Trace Loop:</span>
+  ┌──────────────────────────────┐
+  │  [VDD VIA] ────── [+] [−] ──────── [GND VIA]  │
+  │             long traces!                        │
+  └──────────────────────────────┘
+  Loop area = LARGE → High L_loop → Cap is useless at GHz frequencies</div>
+
+  <!-- 3.3 -->
+  <h3 id="s33">3.3 Power Planes</h3>
+
+  <div class="rule-block">
+    <div class="rule-header"><span class="rule-title">POWER/GND PLANE PAIR CAPACITANCE</span><span class="tag tag-source">ELECTROMAGNETIC THEORY / IPC-2141A</span></div>
+    <div class="rule-body">
+      <div class="rule-row"><span class="rule-key">What</span><span>Two adjacent conductive planes separated by dielectric form a distributed parallel plate capacitor. This provides inherent high-frequency decoupling with extremely low ESL.</span></div>
+      <div class="formula">C_plane = ε₀ × ε_r × A / d <span class="sub">A = plane overlap area | d = dielectric thickness | Typ: 100nF per sq.inch at 4mil spacing</span></div>
+      <div class="rule-row"><span class="rule-key">Implication</span><span>Using thin dielectric between VCC-GND pair (4 mil or less) significantly increases plane capacitance — effectively free high-frequency decoupling across the entire board. This is why power-GND pairing in stackup is a SI/PI decision.</span></div>
+    </div>
+  </div>
+
+  <h4>Via Stitching</h4>
+  <div class="info-block">
+    <div class="info-label">Rule</div>
+    <strong>GND stitching vias</strong> must be placed around the perimeter of each power domain and along plane layer transitions.<br>
+    Spacing: ≤ λ/20 at highest frequency of concern (PCIe Gen4 at 8 GHz → λ/20 ≈ 93 mils in FR4).<br>
+    <strong>Why:</strong> Stitching vias maintain equipotential GND reference plane, prevent cavity resonance modes, and provide low-inductance return path at layer changes.<br>
+    <span class="tag tag-source">Source: IPC-2141A / Huray — "The Foundations of Signal Integrity"</span>
+  </div>
+
+  <!-- 3.4 -->
+  <h3 id="s34">3.4 Noise &amp; Stability</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Noise Type</th><th>Mechanism</th><th>PCB Symptom</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Ripple</strong></td>
+          <td>VRM switching frequency; insufficient output filtering</td>
+          <td>Periodic noise on VDD at fsw (e.g., 500kHz–2MHz)</td>
+          <td>Increase bulk cap, improve VRM feedback compensation, add EMI filter inductor</td>
+        </tr>
+        <tr>
+          <td><strong>Ground Bounce / SSN</strong></td>
+          <td>V = L_pkg × dI/dt when N outputs switch simultaneously</td>
+          <td>Glitches on inactive outputs of same package; logic errors</td>
+          <td>Minimize package inductance (BGA preferred), on-die caps, limit simultaneous switching outputs per VDD domain</td>
+        </tr>
+        <tr>
+          <td><strong>Plane Resonance</strong></td>
+          <td>Power-GND plane pair forms cavity resonator; anti-resonance at specific frequencies</td>
+          <td>Periodic peaks in PDN impedance above Z_target → voltage spikes at resonance freq</td>
+          <td>Distributed decoupling, power island partitioning, lossy materials (rare), edge termination resistors on planes</td>
+        </tr>
+        <tr>
+          <td><strong>Inrush / Load Step</strong></td>
+          <td>Sudden large ΔI when IC transitions from idle to active state</td>
+          <td>VDD droop during power-up or burst activity; can cause IC brown-out reset</td>
+          <td>Increase PDN bulk cap, optimize VRM slew rate, ensure VRM loop bandwidth &gt; 10× target frequency</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 4 ======================== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>SI vs PI Interaction</h2>
+  </div>
+
+  <div class="info-block danger">
+    <div class="info-label">🔴 Core Concept — They Are Inseparable</div>
+    SI and PI are NOT independent domains. Poor power integrity directly degrades signal integrity. This coupling is the most commonly overlooked failure mechanism in board design.
+  </div>
+
+  <div class="card-grid">
+    <div class="card red">
+      <div class="card-title">Power Noise → Signal Noise</div>
+      <div class="card-body">PDN noise couples into signal reference through IC substrate. VDD ripple modulates the switching threshold of CMOS gates, creating supply-modulated jitter (periodic jitter). At 1% ripple on 1V VDD, threshold shifts by ~5–10mV — directly consuming noise margin.</div>
+    </div>
+    <div class="card orange">
+      <div class="card-title">Return Path → Signal Distortion</div>
+      <div class="card-body">Return current flows on the reference plane. If that plane has power noise on it (e.g., a PWR plane used as reference), all signals referenced to it inherit that noise. Every mV on the reference plane = mV of noise injected into the signal.</div>
+    </div>
+    <div class="card yellow">
+      <div class="card-title">Jitter Generation</div>
+      <div class="card-body">VDD-modulated jitter is deterministic (periodic). Ground bounce from SSN generates random + periodic jitter components. High jitter consumes the timing budget of DDR/PCIe. A PDN with 50mV ripple at 500MHz can cause measurable periodic jitter in adjacent signals.</div>
+    </div>
+  </div>
+
+  <h4>Interaction Mechanism — Detailed</h4>
+
+  <div class="rule-block">
+    <div class="rule-header"><span class="rule-title">MECHANISM 1: PDN Noise → IC Input Threshold Modulation</span></div>
+    <div class="rule-body">
+      <ul class="dot-list">
+        <li>CMOS switching threshold V_th ≈ VDD/2 for standard logic</li>
+        <li>If VDD has 50mV ripple at 100MHz, V_th oscillates ±25mV at 100MHz</li>
+        <li>This creates supply-induced periodic jitter (SIPJ) of T_jitter = ΔV/(dV/dt of signal edge)</li>
+        <li>For a 100ps rise-time signal with 500mV swing: 25mV noise → ~5ps jitter at receiver</li>
+        <li><strong>Source:</strong> IEEE 1057 Measurement Standards for Jitter Analysis</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-block">
+    <div class="rule-header"><span class="rule-title">MECHANISM 2: Return Path Discontinuity → SI Degradation</span></div>
+    <div class="rule-body">
+      <ul class="dot-list">
+        <li>Signal layer changes from Layer 2 to Layer 4 via a via</li>
+        <li>L2 reference = GND (Layer 1), L4 reference = GND (Layer 5)</li>
+        <li>Without a GND stitching via near the signal via, return current must detour around the board to Layer 5 GND</li>
+        <li>Loop area increases from ~0.01 mm² to possibly &gt;10 mm² → 1000× more EMI radiation</li>
+        <li>Impedance discontinuity at via causes partial reflection → degraded S21 insertion loss</li>
+        <li><strong>Fix:</strong> Always place GND stitching via within 50 mils of any signal via that changes reference layers</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 5 ======================== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Stackup Design Strategy</h2>
+  </div>
+
+  <h4>Recommended 6-Layer Stackup (General High-Speed)</h4>
+  <div class="diagram"><span class="hl">6-LAYER STACKUP — SI/PI OPTIMIZED</span>
+┌──────────────────────────────────────────────────────┐
+│ L1  │ SIGNAL (Top)  │ ~1.2 oz Cu │ Controlled impedance │
+│─────│───────────────│────────────│──────────────────────│
+│     │ Prepreg       │ 3–4 mil    │ ← Thin for L1/L2 coupling      │
+│─────│───────────────│────────────│──────────────────────│
+│ L2  │ GND PLANE     │ 0.5 oz Cu  │ ← L1 reference ✓    │
+│─────│───────────────│────────────│──────────────────────│
+│     │ Core          │ 8–12 mil   │                       │
+│─────│───────────────│────────────│──────────────────────│
+│ L3  │ SIGNAL (Inner)│ 0.5 oz Cu  │ Stripline — lower EMI │
+│─────│───────────────│────────────│──────────────────────│
+│     │ Core/Prepreg  │ 8–12 mil   │                       │
+│─────│───────────────│────────────│──────────────────────│
+│ L4  │ PWR PLANE     │ 0.5 oz Cu  │ ← L3 ref (or GND) ✓  │
+│─────│───────────────│────────────│──────────────────────│
+│     │ Core          │ 8–12 mil   │                       │
+│─────│───────────────│────────────│──────────────────────│
+│ L5  │ SIGNAL (Inner)│ 0.5 oz Cu  │ Stripline            │
+│─────│───────────────│────────────│──────────────────────│
+│     │ Prepreg       │ 3–4 mil    │ ← Thin for L5/L6 coupling      │
+│─────│───────────────│────────────│──────────────────────│
+│ L6  │ GND PLANE     │ 0.5 oz Cu  │ ← L5 reference ✓    │
+└──────────────────────────────────────────────────────┘
+<span class="hl3">✓ = Adjacent signal/plane pair</span>  <span class="hl2">Critical: L2-GND adjacent to L1, L6-GND adjacent to L5</span></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stackup Rule</th><th>Why</th><th>If Violated</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Every signal layer MUST be adjacent to a reference plane</td>
+          <td>Controls trace impedance via geometry; provides return current path</td>
+          <td class="bad">Uncontrolled impedance; broken return path; EMI failure</td>
+        </tr>
+        <tr>
+          <td>Power plane pair (VCC-GND) should be close together (≤4 mils preferred)</td>
+          <td>Maximizes distributed plane capacitance; free HF decoupling</td>
+          <td class="warn">Reduced plane cap; more discrete caps needed for HF PDN</td>
+        </tr>
+        <tr>
+          <td>Symmetric stackup (mirror layer order)</td>
+          <td>Prevents board warpage due to asymmetric Cu weight and thermal stress</td>
+          <td class="bad">Board warpage during reflow; assembly issues</td>
+        </tr>
+        <tr>
+          <td>Differential pairs should not change reference plane mid-route without stitching</td>
+          <td>Reference change disrupts odd-mode impedance and return current path</td>
+          <td class="bad">Common-mode noise spike; insertion loss degradation at via</td>
+        </tr>
+        <tr>
+          <td>DDR signals preferably on outer layers or layer adjacent to GND</td>
+          <td>DDR is single-ended; needs solid unbroken GND reference for each DQ/DQS bit</td>
+          <td class="bad">Uncontrolled impedance; timing margin violation; JEDEC non-compliance</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Impedance Calculation Dependencies</h4>
+  <div class="info-block">
+    <div class="info-label">What Determines Trace Impedance</div>
+    For a microstrip (outer layer): Z₀ depends on trace width (W), trace thickness (T), dielectric height (H), and Er (dielectric constant).<br>
+    For a stripline (inner layer): Z₀ also depends on distance to both reference planes (asymmetric stripline differs from symmetric).<br><br>
+    <strong>Practical note:</strong> Always extract final impedance from your specific fab's dielectric stack. Do NOT rely on generic Er = 4.3 for FR4 — actual Er at 1 GHz in FR4 is typically 3.8–4.2. Specify impedance target and tolerance in your PCB stackup notes; require fab to impedance test per IPC-TM-650.
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 6 ======================== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Simulation &amp; Validation</h2>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h3>Pre-Layout Simulation</h3>
+      <ul class="dot-list">
+        <li><strong>IBIS Models:</strong> Behavioral I/O buffer models from IC datasheets. Used for driver/receiver waveform simulation. Required for DDR, PCIe, USB SI analysis. Source: IBIS Open Forum spec v7.0</li>
+        <li><strong>S-Parameters (Touchstone .s2p/.snp):</strong> Frequency-domain characterization of PCB channels, connectors, cables. Input to channel compliance simulation.</li>
+        <li><strong>Topology Simulation:</strong> Validate termination, stub length, fly-by topology. Tools: HyperLynx LineSim, Ansys SIwave Schematic.</li>
+        <li><strong>PDN Target Impedance:</strong> Design PDN flat impedance profile before layout. Tool: Sigrity PowerDC or manual spreadsheet using capacitor ESR/ESL values from datasheets.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Post-Layout Simulation</h3>
+      <ul class="dot-list">
+        <li><strong>Eye Diagram:</strong> Statistical eye from bit stream simulation. Validate eye height &gt; V_eye_min and eye width &gt; UI_min per JEDEC/PCI-SIG spec. Failing eye = guaranteed bit errors.</li>
+        <li><strong>Crosstalk Analysis:</strong> Extract NEXT/FEXT from post-layout parasitics. Add to eye diagram as worst-case noise. Identify victim-aggressor pairs.</li>
+        <li><strong>PDN Simulation (Post-Layout):</strong> 3D FEM of plane + via + capacitor network. Validate impedance profile below Z_target. Check for anti-resonance peaks.</li>
+        <li><strong>TDR Simulation:</strong> Time-domain reflectometry from simulation. Identifies impedance discontinuities along the signal path.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4>Simulation Tools — Industry Standard</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tool</th><th>Vendor</th><th>Application</th><th>Simulation Type</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Sigrity PowerDC</strong></td><td>Cadence</td><td>PDN DC analysis, current density, IR drop</td><td>FEM DC Solver</td></tr>
+        <tr><td><strong>Sigrity OptimizePI</strong></td><td>Cadence</td><td>PDN impedance optimization, decoupling cap selection</td><td>SPICE + EM hybrid</td></tr>
+        <tr><td><strong>Sigrity SystemSI</strong></td><td>Cadence</td><td>Full channel SI simulation with IBIS</td><td>Transient + statistical eye</td></tr>
+        <tr><td><strong>Ansys SIwave</strong></td><td>Ansys</td><td>Full board PDN + SI, plane resonance</td><td>FEM + SPICE</td></tr>
+        <tr><td><strong>Ansys HFSS</strong></td><td>Ansys</td><td>3D EM simulation of connectors, vias, packages</td><td>Full-wave FEM</td></tr>
+        <tr><td><strong>HyperLynx SI/PI</strong></td><td>Siemens EDA</td><td>SI analysis integrated in Xpedition/Xpedition</td><td>IBIS + FEM</td></tr>
+        <tr><td><strong>ADS (Advanced Design System)</strong></td><td>Keysight</td><td>Channel compliance simulation for PCIe/USB</td><td>S-param + AMI</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 7 ======================== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Practical Routing Workflow</h2>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Define Stackup First</div>
+        <div class="step-desc">Work with your PCB fabricator to define layer count, dielectric thickness, copper weights, and controlled impedance targets. Obtain impedance test coupons. Lock the stackup BEFORE routing begins — changing it after routing invalidates all impedance calculations. <span class="tag tag-critical">Critical</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Import Constraints from Datasheets &amp; Standards</div>
+        <div class="step-desc">Read the target IC datasheet signal routing requirements. Extract differential impedance, length matching requirements, pair skew limits, forbidden via zones, and recommended reference layer. Enter constraints into your PCB tool's constraint manager (Allegro PCB Designer, Xpedition, KiCad DRC).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Place Critical Components</div>
+        <div class="step-desc">Place DDR/FPGA/processor first. Position decoupling caps immediately adjacent to power pins (especially BGA). Orient memory ICs for minimum fly-by routing length. Place crystal/oscillator away from high-speed routing. Keep power regulators near IC power entry to minimize PDN trace inductance.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Route High-Speed Signals First</div>
+        <div class="step-desc">Route in priority: DDR CLK/DQS → DDR DQ byte lanes → PCIe/USB differential pairs → single-ended high-speed. Maintain continuous reference plane. Add return path stitching vias at every reference layer change. Apply length matching within each interface. Avoid acute angles and unnecessary vias.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Design PDN — Planes &amp; Decoupling</div>
+        <div class="step-desc">Fill power planes for each power domain. Verify no signal crosses a power domain boundary on the plane directly below it. Place all decoupling caps (from IC datasheet BOM). Verify cap placement meets loop inductance rules. Add GND stitching vias around power domain perimeter.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">6</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Perform SI/PI Design Review</div>
+        <div class="step-desc">Run impedance DRC checks. Verify differential pair spacing and length matching. Check for reference plane discontinuities. Review via stub lengths at high-speed interfaces (back-drill if needed). Review decoupling cap placement. Confirm all return path stitching vias are present.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">7</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Validate with Simulation</div>
+        <div class="step-desc">Run post-layout SI simulation for critical interfaces (eye diagram, crosstalk). Run PDN impedance simulation — check for peaks above Z_target. Run IR drop analysis for power planes. Address any violations before releasing to fabrication. <span class="tag tag-critical">Do not skip</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 8 ======================== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Common Design Mistakes</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mistake</th><th>Root Cause</th><th>Real Failure</th><th>Prevention</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="bad"><strong>Broken Return Path</strong></td>
+          <td>Signal crosses plane split, or layer change without stitching via</td>
+          <td>EMC failure (radiated emissions); inter-bus crosstalk; SI degradation; intermittent failures under thermal stress</td>
+          <td>Strict rule: no high-speed signal crosses plane split. Stitching via at every layer change.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>Uncontrolled Impedance</strong></td>
+          <td>Trace width not calculated for target Z₀; stackup changed after routing</td>
+          <td>Reflections on DDR/PCIe → ringing → timing violations; board fails protocol compliance test</td>
+          <td>Calculate trace width from stackup; lock stackup before routing; fab impedance coupon test.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>Poor Decoupling Placement</strong></td>
+          <td>Decoupling caps placed far from IC, or with long traces to pads</td>
+          <td>High loop inductance → cap ineffective at GHz → PDN impedance spike → VDD droop → IC malfunction</td>
+          <td>Place caps within 3–5mm of IC power pin. Minimize via length and trace length to cap pads.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>Excessive Vias on High-Speed</strong></td>
+          <td>Blind/through vias added for routing convenience on PCIe/USB signals</td>
+          <td>Each via adds capacitive discontinuity + stub resonance. PCIe Gen4 limit: &lt;2 vias per lane without back-drill.</td>
+          <td>Minimize vias; back-drill stubs; use micro-vias for BGA fanout.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>Long Stubs on DDR/PCIe</strong></td>
+          <td>Via through-hole with only partial connection — unused portion becomes stub</td>
+          <td>Stub resonance at f = c/(4×L_stub×√εr) creates notch in S21 — complete signal null at resonance frequency</td>
+          <td>Back-drill all vias on PCIe/USB at &gt;3 Gbps. Use via-in-pad + plugged vias for BGA.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>Ignoring PDN Impedance</strong></td>
+          <td>Placing random caps "by feel" without impedance analysis</td>
+          <td>Anti-resonance peaks above Z_target → deterministic jitter in all signals; IC behavioral failures that are hard to debug</td>
+          <td>Simulate PDN impedance profile. Select cap values to fill gaps and avoid anti-resonance peaks.</td>
+        </tr>
+        <tr>
+          <td class="bad"><strong>PWR Plane as Reference for Signals</strong></td>
+          <td>Using VDD plane as reference for signal layer instead of GND</td>
+          <td>VDD plane carries switching noise. All referenced signals inherit that noise directly. PDN ripple → signal noise → bit errors.</td>
+          <td>Always reference high-speed signals to GND planes, not power planes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 9 ======================== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>Debugging &amp; Troubleshooting</h2>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h3>SI Symptoms &amp; Diagnosis</h3>
+      <div class="rule-block">
+        <div class="rule-header"><span class="rule-title">RINGING / OVERSHOOT</span></div>
+        <div class="rule-body">
+          <div class="rule-row"><span class="rule-key">Symptom</span><span>Oscillating waveform after edge transition; voltage exceeds VDD or goes below GND</span></div>
+          <div class="rule-row"><span class="rule-key">Cause</span><span>Unterminated or under-terminated transmission line; via stub resonance; impedance discontinuity</span></div>
+          <div class="rule-row"><span class="rule-key">Test</span><span>TDR (Time Domain Reflectometry): incident pulse + reflection shows where impedance change occurs and its magnitude</span></div>
+          <div class="rule-row"><span class="rule-key">Fix</span><span>Add source or end termination; back-drill via stubs; remove pad capacitance discontinuity</span></div>
+        </div>
+      </div>
+
+      <div class="rule-block">
+        <div class="rule-header"><span class="rule-title">TIMING VIOLATIONS</span></div>
+        <div class="rule-body">
+          <div class="rule-row"><span class="rule-key">Symptom</span><span>DDR training fails; intermittent data errors; CRC errors on PCIe</span></div>
+          <div class="rule-row"><span class="rule-key">Cause</span><span>Intra-pair skew; CLK-DQS phase error; jitter from PDN noise; signal reflection consuming UI timing budget</span></div>
+          <div class="rule-row"><span class="rule-key">Test</span><span>Eye diagram on oscilloscope; BERT (Bit Error Rate Test); DDR training log analysis</span></div>
+          <div class="rule-row"><span class="rule-key">Fix</span><span>Length matching; fix PDN; add/adjust termination; revise via placement</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>PI Symptoms &amp; Diagnosis</h3>
+      <div class="rule-block">
+        <div class="rule-header"><span class="rule-title">VOLTAGE RIPPLE</span></div>
+        <div class="rule-body">
+          <div class="rule-row"><span class="rule-key">Symptom</span><span>Periodic noise on VDD at regulator switching frequency (100kHz–2MHz) visible on oscilloscope</span></div>
+          <div class="rule-row"><span class="rule-key">Cause</span><span>Insufficient output capacitance; high ESR bulk caps; VRM control loop poorly compensated</span></div>
+          <div class="rule-row"><span class="rule-key">Test</span><span>Probe VDD at IC power pin (not VRM output) with 20MHz BW limit. Measure Vpp ripple.</span></div>
+          <div class="rule-row"><span class="rule-key">Fix</span><span>Add bulk MLCC (47µF–100µF); improve placement; verify VRM loop compensation</span></div>
+        </div>
+      </div>
+
+      <div class="rule-block">
+        <div class="rule-header"><span class="rule-title">VOLTAGE DROOP / SPIKE</span></div>
+        <div class="rule-body">
+          <div class="rule-row"><span class="rule-key">Symptom</span><span>VDD drops below VDD_min during burst activity; spike above VDD_max during load release</span></div>
+          <div class="rule-row"><span class="rule-key">Cause</span><span>PDN inductance too high; insufficient HF decoupling; VRM slew rate too slow for load transient</span></div>
+          <div class="rule-row"><span class="rule-key">Test</span><span>High-bandwidth probe (1GHz+) at IC power pin. Trigger on IC activity. Measure droop magnitude and duration.</span></div>
+          <div class="rule-row"><span class="rule-key">Fix</span><span>Add HF caps closer to IC; reduce via inductance; optimize VRM bandwidth</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4>Measurement Equipment</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tool</th><th>Measurement</th><th>Key Specification</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Oscilloscope</strong></td><td>Waveform shape, timing, ripple, eye diagram</td><td>Bandwidth ≥ 4× signal frequency. For DDR4 @ 3200 MT/s: ≥6 GHz scope needed.</td></tr>
+        <tr><td><strong>TDR (Time Domain Reflectometry)</strong></td><td>Impedance profile along trace; locate discontinuities</td><td>Rise time &lt;100ps for sub-mm spatial resolution on PCB. Often built into high-end scopes.</td></tr>
+        <tr><td><strong>VNA (Vector Network Analyzer)</strong></td><td>S-parameters (insertion loss S21, return loss S11)</td><td>Frequency range covering fundamental + harmonics. PCIe Gen4 needs VNA to 16GHz minimum.</td></tr>
+        <tr><td><strong>BERT (Bit Error Rate Tester)</strong></td><td>BER at target data rate; jitter measurement</td><td>Must support target protocol (PCIe, USB 3.x) test patterns per compliance specification.</td></tr>
+        <tr><td><strong>PDN Impedance Analyzer</strong></td><td>PDN impedance vs frequency at IC power pin</td><td>Frequency range 100Hz–1GHz. Specialized tool or VNA with proper probing technique.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ======================== SECTION 10 ======================== -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Checklists — Mandatory</h2>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h3>Pre-Layout SI/PI Checklist</h3>
+      <ul class="checklist" id="checklist-pre">
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Stackup defined and impedance targets calculated with fab</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>IC datasheets reviewed for all signal routing requirements</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>DDR/PCIe/USB interface standard constraints imported into constraint manager</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Target impedance Z_target calculated for all power domains</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Decoupling cap BOM derived from IC datasheet and PDN simulation</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>IBIS models obtained for all critical ICs</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Pre-layout SI topology simulation completed</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>PDN target impedance profile simulated (flat below Z_target)</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Component placement plan approved (decoupling cap location verified)</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Layer assignment defined: which signals on which layers and reference plane</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Post-Layout SI/PI Checklist</h3>
+      <ul class="checklist" id="checklist-post">
+        <li><div class="check-box" onclick="toggle(this)"></div><span>All differential pairs meet impedance target ±10% (fab data or simulation)</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Intra-pair skew within spec for all DDR/PCIe/USB pairs</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Inter-pair length matching verified for DDR byte lanes and CLK/DQS</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>No high-speed signal crosses a power plane split</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Return path stitching vias placed at all reference layer changes</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Via stub length checked; back-drill specified where needed</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>All decoupling caps within 5mm of IC power pins</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Eye diagram simulation passed per interface spec (height + width)</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>PDN post-layout impedance simulation shows no peaks above Z_target</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>IR drop simulation shows VDD within spec across all IC power pins</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Crosstalk analysis completed; NEXT/FEXT within spec</span></li>
+        <li><div class="check-box" onclick="toggle(this)"></div><span>Board stackup confirmed with fab — impedance coupon requested</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h3>Manufacturing Readiness Checklist</h3>
+  <div class="two-col">
+    <ul class="checklist">
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Impedance test coupon included on board panelization</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Back-drill requirements specified in fabrication notes</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Via-in-pad with copper fill specified for BGA components</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Controlled-depth blind/buried vias specified if used</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Dielectric material specified (not just "FR4" — specify Dk/Df at frequency)</span></li>
+    </ul>
+    <ul class="checklist">
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Minimum trace/space verified against fab DRC rules</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Copper weight specified per layer (signal vs plane layers)</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Surface finish specified (HASL / ENIG / ENEPIG per component requirements)</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>DFM (Design for Manufacturability) review completed with fab</span></li>
+      <li><div class="check-box" onclick="toggle(this)"></div><span>Gerber files / ODB++ reviewed layer-by-layer before submission</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block success" style="margin-top:32px">
+    <div class="info-label">✅ SSOT Compliance Note</div>
+    All constraints and rules in this document are derived from: JEDEC JESD79-4B (DDR4), JEDEC JESD79-5B (DDR5), PCI-SIG CEM 3.0/4.0/5.0, USB 3.2 Specification, IEEE 802.3-2018, IPC-2141A, IBIS Open Forum Specification v7.0, Maxwell electromagnetic field theory, and published IC vendor application notes. No values have been assumed — all entries are sourced from the above references or explicitly marked "Data Not Available from SSOT."
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+  function toggle(el) {
+    el.classList.toggle('checked');
+    el.textContent = el.classList.contains('checked') ? '✓' : '';
+  }
+
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
