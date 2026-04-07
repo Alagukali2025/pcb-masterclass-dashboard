@@ -2196,6 +2196,30 @@ export const modulesData = [
           ]
         },
         {
+          heading: "7. Standard Release Package (Directory Structure)",
+          level: "intermediate",
+          content: "A professional release should be structured to allow automated CAM scripts to parse the data without manual intervention.",
+          codeBlock: "PROJECT_REL_v1.0/\n├── Fabrication/          ; Gerbers, Drill, Fab Drawing\n├── Assembly/             ; PnP, BOM, Asm Drawing, Stencil\n├── Test/                 ; IPC-D-356, TP Report, BSDL\n└── Documentation/        ; Schematics, Stackup, DRC Reports",
+          list: [
+            "<strong>Naming:</strong> PROJECT_LAYER_v1.0_YYYYMMDD. Use underscores; avoid spaces which break CAM scripts.",
+            "<strong>Integrity:</strong> Include an MD5 or SHA-256 checksum for the ZIP archive to verify transmission integrity."
+          ]
+        },
+        {
+          heading: "8. Technical Appendix: Test & PnP Metadata",
+          level: "expert",
+          content: "For engineers integrating with automated factories (Lights-out manufacturing).",
+          table: {
+            headers: ["Metadata Type", "Format/Record", "Precision Requirement"],
+            rows: [
+              ["Netlist Record 317", "IPC-D-356A", "Through-hole XY coordinates & access side"],
+              ["Netlist Record 327", "IPC-D-356A", "SMT pad center & access side (Top/Bot)"],
+              ["Centroid (PnP)", "CSV/Text", "X, Y, Rotation (Degrees), Side (T/B)"],
+              ["BSDL", "IEEE 1149.1", "JTAG chain description (Provided by IC Mfgr)"]
+            ]
+          }
+        },
+        {
           heading: "Interactive: Manufacturing Release Simulator",
           level: "intermediate",
           content: "Execute a virtual production release flow that performs professional-grade DFM and metadata checks on your export package.",
