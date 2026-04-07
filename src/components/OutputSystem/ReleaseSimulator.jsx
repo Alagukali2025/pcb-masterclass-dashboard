@@ -6,8 +6,16 @@ import {
   FolderTree,
   Terminal as TerminalIcon
 } from 'lucide-react';
-import { outputData } from '../../data/outputData';
 import './OutputSystem.css';
+
+const fileTree = {
+  name: 'PROJECT_REL_v1.0',
+  children: [
+    { name: 'Fabrication', files: ['TopCopper.gbr', 'BotCopper.gbr', 'NC_Drill.drl', 'FabDrawing.pdf'] },
+    { name: 'Assembly', files: ['PickPlace.csv', 'BOM.xlsx', 'AsmDrawing.pdf', 'Stencil.gbr'] },
+    { name: 'Test', files: ['IPC-D-356.ipc', 'TestPointReport.csv'] }
+  ]
+};
 
 export default function ReleaseSimulator() {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -15,7 +23,7 @@ export default function ReleaseSimulator() {
   const [logs, setLogs] = useState([]);
 
   const addLog = (msg) => {
-    setLogs(prev => [...prev.slice(-5), msg]);
+    setLogs(prev => [...prev.slice(-4), msg]); // Keep fewer logs for cleaner terminal
   };
 
   const handleVerify = () => {
@@ -87,13 +95,15 @@ export default function ReleaseSimulator() {
             <FolderTree size={16} /> Virtual Package Archive
           </div>
           <div className="file-tree">
-            <div className="tree-root">/ {outputData.fileTree.name}</div>
-            {outputData.fileTree.children.map((child, i) => (
+            <div className="tree-root">/ {fileTree.name}</div>
+            {fileTree.children.map((child, i) => (
               <div key={i} className="tree-folder">
                 <div className="folder-name">📁 {child.name}</div>
-                {child.files.map((f, j) => (
-                  <div key={j} className="tree-file">📄 {f}</div>
-                ))}
+                <div className="folder-files-grid">
+                  {child.files.map((f, j) => (
+                    <div key={j} className="tree-file">📄 {f}</div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
