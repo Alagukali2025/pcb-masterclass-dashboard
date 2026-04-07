@@ -22,8 +22,6 @@ const StackupCalculator = () => {
     
     // Convert to floats
     const h_f = parseFloat(h);
-    // eslint-disable-next-line no-unused-vars
-    const h2_f = parseFloat(h2);
     const w_f = parseFloat(w);
     const t_f = parseFloat(t);
     const s_f = parseFloat(s);
@@ -152,7 +150,7 @@ const StackupCalculator = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">H (Dielectric Height)</label>
+              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">H — Dielectric Height (mm)</label>
               <input 
                 type="number" step="0.001" value={activeStackup.height}
                 onChange={(e) => handleInputChange('height', e.target.value)}
@@ -160,7 +158,7 @@ const StackupCalculator = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">W (Trace Width)</label>
+              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">W — Trace Width (mm)</label>
               <input 
                 type="number" step="0.001" value={activeStackup.width}
                 onChange={(e) => handleInputChange('width', e.target.value)}
@@ -169,7 +167,7 @@ const StackupCalculator = () => {
             </div>
             {mode === 'diff' && (
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-orange-500 uppercase tracking-widest pl-1">S (Spacing)</label>
+                <label className="text-[10px] font-bold text-orange-500 uppercase tracking-widest pl-1">S — Intra-pair Spacing (mm)</label>
                 <input 
                   type="number" step="0.001" value={activeStackup.spacing}
                   onChange={(e) => handleInputChange('spacing', e.target.value)}
@@ -178,7 +176,7 @@ const StackupCalculator = () => {
               </div>
             )}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">T (Copper Weight)</label>
+              <label className="text-[10px] font-bold text-tertiary uppercase tracking-widest pl-1">T — Copper Thickness (mm)</label>
               <input 
                 type="number" step="0.001" value={activeStackup.thickness}
                 onChange={(e) => handleInputChange('thickness', e.target.value)}

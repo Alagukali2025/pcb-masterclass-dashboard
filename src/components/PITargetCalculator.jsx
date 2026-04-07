@@ -1,164 +1,116 @@
-import React, { useState, useEffect } from 'react';
-import { Calculator, Zap, AlertCircle, Info, CheckCircle2, TrendingDown, ShieldCheck, ShieldAlert, Radio } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Activity, Zap, ShieldAlert, Info, TrendingDown } from 'lucide-react';
 
 const PITargetCalculator = () => {
-  const [vrail, setVrail] = useState(1.0);
-  const [ripple, setRipple] = useState(5);
-  const [itransient, setItransient] = useState(10);
-  const [ztarget, setZtarget] = useState(0);
+  const [voltage, setVoltage] = useState(1.1); // Typical DDR5/Core voltage
+  const [ripple, setRipple] = useState(5);   // 5% standard
+  const [current, setCurrent] = useState(10); // 10A transient
 
-  useEffect(() => {
-    // Formula: Ztarget = (Vrail * (ripple / 100)) / Itransient
-    const result = (vrail * (ripple / 100)) / itransient;
-    // Convert to milliohms
-    setZtarget(result * 1000);
-  }, [vrail, ripple, itransient]);
+  const stats = useMemo(() => {
+    // Ztarget = (V * Ripple%) / I_transient
+    const vRipple = voltage * (ripple / 100);
+    const zTarget = (vRipple / current) * 1000; // in mΩ
 
-  const getStatus = () => {
-    if (ztarget < 5) return {
-      type: 'danger',
-      icon: <ShieldAlert size={18} />,
-      text: "Ultra-Low Target: 3D Field-Solver (Ansys HFSS/SIwave) and 10+ layers likely required.",
-      colorClass: 'text-red-400',
-      glowClass: 'glow-text-amber'
-    };
-    if (ztarget < 20) return {
-      type: 'warning',
-      icon: <Radio size={18} />,
-      text: "Challenging Target: Requires high-density decoupling (0201/01005) and thin dielectric layers.",
-      colorClass: 'text-amber-400',
-      glowClass: 'glow-text-amber'
-    };
-    return {
-      type: 'success',
-      icon: <ShieldCheck size={18} />,
-      text: "Standard Target: Achievable with high-quality MLCCs and solid power planes.",
-      colorClass: 'text-emerald-400',
-      glowClass: 'glow-text-blue'
-    };
-  };
+    let status = 'Standard';
+    let statusColor = 'var(--success)';
+    
+    if (zTarget < 10) {
+      status = 'Extreme (Requires VIP/Interposer)';
+      statusColor = 'var(--danger)';
+    } else if (zTarget < 30) {
+      status = 'Challenging (Low-ESL required)';
+      statusColor = 'var(--warning)';
+    }
 
-  const status = getStatus();
+    return { vRipple, zTarget, status, statusColor };
+  }, [voltage, ripple, current]);
 
   return (
-    <div className="calculator-card glass-morphism-premium p-8 my-8 slide-up relative overflow-hidden">
-      {/* Background Decoration */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-blue-600/20 rounded-xl text-blue-400 shadow-glow">
-          <Calculator size={28} />
+    <div className="si-tool-card" style={{
+      background: 'var(--bg-secondary)',
+      border: '1px solid var(--border-medium)',
+      borderRadius: 'var(--radius-xl)',
+      padding: 'var(--space-6)',
+      margin: 'var(--space-6) 0',
+      boxShadow: 'var(--shadow-lg)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+        <div style={{ padding: 'var(--space-2)', background: 'rgba(55, 138, 221, 0.1)', borderRadius: 'var(--radius-md)', color: '#378ADD' }}>
+          <TrendingDown size={24} />
         </div>
         <div>
-          <h3 className="text-2xl font-black text-white tracking-tight">PI Target Impedance</h3>
-          <p className="text-sm text-slate-400 font-medium">PDN design threshold for high-performance switching.</p>
+          <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>PDN Target Impedance Solver</h3>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>Power Integrity (PI) Limit Analysis</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
+        {/* Voltage Input */}
         <div className="input-group">
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Rail Voltage (Vrail)</label>
-          <div className="relative">
-            <input 
-              type="number" 
-              value={vrail} 
-              onChange={(e) => setVrail(parseFloat(e.target.value) || 0)}
-              className="w-full input-engineering py-3 px-4 focus:ring-2 focus:ring-blue-500/20"
-              step="0.01"
-            />
-            <span className="absolute right-4 top-3 text-slate-500 font-mono text-sm">V</span>
-          </div>
+          <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Rail Voltage (V)
+          </label>
+          <input 
+            type="number" step="0.1" value={voltage}
+            onChange={(e) => setVoltage(parseFloat(e.target.value) || 0)}
+            style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3)', color: 'var(--text-primary)' }}
+          />
         </div>
 
+        {/* Ripple Input */}
         <div className="input-group">
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Allowed Ripple (%)</label>
-          <div className="relative">
-            <input 
-              type="number" 
-              value={ripple} 
-              onChange={(e) => setRipple(parseFloat(e.target.value) || 0)}
-              className="w-full input-engineering py-3 px-4 focus:ring-2 focus:ring-blue-500/20"
-            />
-            <span className="absolute right-4 top-3 text-slate-500 font-mono text-sm text-opacity-50">%</span>
-          </div>
+          <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Max Ripple (%)
+          </label>
+          <input 
+            type="number" step="1" value={ripple}
+            onChange={(e) => setRipple(parseFloat(e.target.value) || 0)}
+            style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3)', color: 'var(--text-primary)' }}
+          />
         </div>
 
+        {/* Transient Current Input */}
         <div className="input-group">
-          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Transient Current (ΔI)</label>
-          <div className="relative">
-            <input 
-              type="number" 
-              value={itransient} 
-              onChange={(e) => setItransient(parseFloat(e.target.value) || 0)}
-              className="w-full input-engineering py-3 px-4 focus:ring-2 focus:ring-blue-500/20"
-            />
-            <span className="absolute right-4 top-3 text-slate-500 font-mono text-sm">A</span>
-          </div>
+          <label style={{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Transient Current (A)
+          </label>
+          <input 
+            type="number" step="1" value={current}
+            onChange={(e) => setCurrent(parseFloat(e.target.value) || 0)}
+            style={{ width: '100%', background: 'var(--bg-primary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: 'var(--space-2) var(--space-3)', color: 'var(--text-primary)' }}
+          />
         </div>
       </div>
 
-      <div className="result-card-premium rounded-2xl p-8 mb-8 flex flex-col items-center justify-center text-center shadow-lg border-opacity-40">
-        <div className="text-blue-400/60 mb-3 opacity-80">
-          <Zap size={40} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+      {/* Result Card */}
+      <div style={{ 
+        background: 'var(--bg-primary)', 
+        borderRadius: 'var(--radius-lg)', 
+        padding: 'var(--space-5)',
+        border: `1px solid ${stats.statusColor}33`,
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Target Impedance Limit</span>
+          <span style={{ color: stats.statusColor, fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>{stats.status}</span>
         </div>
-        <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Maximum System Impedance</div>
-        <div className={`text-6xl font-black text-white ${status.glowClass} flex items-baseline gap-2 transition-all duration-500`}>
-          {ztarget.toFixed(2)} <span className="text-2xl font-medium opacity-40">mΩ</span>
-        </div>
-        
-        <div className={`mt-6 px-4 py-2 rounded-full bg-slate-900/60 border border-slate-800 flex items-center gap-2 text-xs font-bold ${status.colorClass}`}>
-          {status.icon}
-          {status.text}
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="advice-card bg-slate-900/40 rounded-xl p-5 border border-slate-800 hover:border-blue-500/30 transition-all duration-300">
-          <div className="flex items-start gap-4">
-            <TrendingDown className="text-emerald-400 shrink-0" size={24} />
-            <div>
-              <h4 className="font-bold text-white text-sm mb-2">Loop Inductance Target</h4>
-              <p className="text-xs text-slate-400 leading-relaxed mb-3">To maintain stability at high frequencies (f &gt; 100 MHz), the loop inductance must be **&lt; 100 pH**.</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                  <CheckCircle2 size={12} className="text-blue-400" /> Use **Via-in-Pad (VIP)** techniques.
-                </div>
-                <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                  <CheckCircle2 size={12} className="text-blue-400" /> Place caps directly beneath BGA pins.
-                </div>
-                <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                  <CheckCircle2 size={12} className="text-blue-400" /> Keep Plane Spacing **&lt; 4 mils**.
-                </div>
-              </div>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div style={{ padding: 'var(--space-4)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)' }}>{stats.zTarget.toFixed(1)}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>mΩ (Max Z)</div>
+          </div>
+          <div style={{ padding: 'var(--space-4)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)' }}>{(stats.vRipple * 1000).toFixed(0)}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>mV (Budget)</div>
           </div>
         </div>
 
-        <div className="reference-card bg-slate-900/40 rounded-xl p-5 border border-slate-800">
-          <div className="flex items-start gap-4">
-            <Info className="text-blue-400 shrink-0" size={24} />
-            <div className="w-full">
-              <h4 className="font-bold text-white text-sm mb-3">Industry Benchmarks</h4>
-              <div className="space-y-2.5">
-                <div className="flex justify-between items-center px-3 py-2 bg-slate-950/50 rounded-lg border border-slate-900">
-                  <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Core FPGA / SoC</span>
-                  <span className="text-emerald-400 font-black text-sm">~2.5 mΩ</span>
-                </div>
-                <div className="flex justify-between items-center px-3 py-2 bg-slate-950/50 rounded-lg border border-slate-900">
-                  <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">DDR4 Memory Rail</span>
-                  <span className="text-amber-400 font-black text-sm">~24 mΩ</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div style={{ marginTop: 'var(--space-5)', padding: 'var(--space-4)', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)', display: 'flex', gap: 'var(--space-3)' }}>
+          <div style={{ color: '#378ADD', marginTop: '3px' }}><Info size={16} /></div>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+            PDN Impedance must remain below <strong>{stats.zTarget.toFixed(1)} mΩ</strong> from DC up to the 5th harmonic of the highest switching frequency to prevent rail collapse during high-speed transient events.
+          </p>
         </div>
-      </div>
-      
-      <div className="mt-8 p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-4">
-        <AlertCircle size={22} className="text-amber-500/60 shrink-0 mt-0.5" />
-        <p className="text-[11px] text-slate-500 leading-relaxed italic">
-          **Engineering Note**: Z-target calculation is the first step. For multi-Gbps links, anti-resonance peak detection via **Vector Network Analyzer (VNA)** or **Post-Layout P-SIM** is mandatory to prevent intermittent boot failures.
-        </p>
       </div>
     </div>
   );

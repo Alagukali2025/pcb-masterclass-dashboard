@@ -208,7 +208,7 @@ const IPCCalculator = () => {
             <h4 className="panel-title">2. Engineering Inputs (mm)</h4>
             <div className="input-group-grid">
               <div className="input-item">
-                <label>L (Length) / IPC L<sub>max</sub></label>
+                <label>L (Length) / L<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
                   <input 
                     type="number" 
@@ -221,7 +221,7 @@ const IPCCalculator = () => {
                 </div>
               </div>
               <div className="input-item">
-                <label>W (Width) / IPC W<sub>max</sub></label>
+                <label>W (Width) / W<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
                   <input 
                     type="number" 
@@ -234,7 +234,7 @@ const IPCCalculator = () => {
                 </div>
               </div>
               <div className="input-item">
-                <label>H (Height) / IPC H<sub>max</sub></label>
+                <label>H (Height) / H<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
                   <input 
                     type="number" 
@@ -247,7 +247,7 @@ const IPCCalculator = () => {
                 </div>
               </div>
               <div className="input-item">
-                <label>S (Gap) / IPC T<sub>min</sub></label>
+                <label>S (Gap) / T<sub>min</sub> (mm)</label>
                 <div className="input-with-desc">
                   <input 
                     type="number" 
@@ -261,7 +261,7 @@ const IPCCalculator = () => {
               </div>
               {packageType === 'GULL_WING' && (
                 <div className="input-item">
-                  <label>e (Lead Pitch)</label>
+                  <label>e (Lead Pitch) (mm)</label>
                   <div className="input-with-desc">
                     <input 
                       type="number" 

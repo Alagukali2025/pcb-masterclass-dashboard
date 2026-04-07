@@ -17,6 +17,7 @@ import EMICalculator from './EMICalculator';
 import EMIVisualizer from './EMIVisualizer';
 import EMIKnowledgeToggle from './EMIKnowledgeToggle';
 import PITargetCalculator from './PITargetCalculator';
+import ViaResonanceCalculator from './ViaResonanceCalculator';
 
 
 
@@ -315,6 +316,8 @@ export default function ContentViewer() {
                   {sec.type === 'emi-visualizer' && <EMIVisualizer />}
 
                   {sec.type === 'pi-target-calc' && <PITargetCalculator />}
+
+                  {sec.type === 'via-resonance-calc' && <ViaResonanceCalculator />}
 
 
 

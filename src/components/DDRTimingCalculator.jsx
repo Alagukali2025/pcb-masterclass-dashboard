@@ -14,8 +14,9 @@ const DDRTimingCalculator = () => {
   };
 
   const stats = useMemo(() => {
-    // UI = Unit Interval (Bit Time) in ps
-    const ui = 1000 / mts;
+    // UI = Unit Interval (Bit Time) in ps. UI = 1 / (DataRate * 10^6) seconds.
+    // In ps: UI = 1,000,000 / mts
+    const ui = 1000000 / mts;
     
     // Vp = Prop Velocity mil/ps
     // Vp = c / sqrt(Er) where c ≈ 11.8 mil/ps (in vacuum)

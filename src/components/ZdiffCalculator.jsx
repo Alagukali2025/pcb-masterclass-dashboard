@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, CheckCircle2, Info, AlertTriangle, X, ShieldCheck } from 'lucide-react';
+import { useDesign } from '../context/DesignContext';
 
 // ─── Interface Target Presets ─────────────────────────────────────────────────
 const INTERFACE_PRESETS = [

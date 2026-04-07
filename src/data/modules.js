@@ -1092,7 +1092,8 @@ export const modulesData = [
             { label: "Plane Capacitance", text: "Keep PWR and GND planes adjacent (e.g., 2–4 mils) to provide high-frequency buried capacitance." },
             { label: "Target Impedance", text: "Maintain Ztarget from DC to the 5th harmonic of the data rate." },
             { label: "Decoupling Loop", text: "Minimize the 'Loop Inductance' between the IC and the decoupling capacitor pins." }
-          ]
+          ],
+          type: "pi-target-calc"
         },
         {
           heading: "Routing Techniques & Geometry",
@@ -1123,9 +1124,9 @@ export const modulesData = [
             },
             {
               number: "03",
-              title: "Routing Corners",
+              title: "Routing Corners (DFM Priority)",
               severity: "info",
-              body: "Use 45° corners or arcs. 90° corners are mainly a risk for etch undercut, not signal integrity below 10GHz."
+              body: "Use 45° corners or arcs. Contrary to myths, 90° corners are primarily a DFM risk (acid traps/etch undercut) rather than an SI risk until well above 20 GHz."
             }
           ]
         },
@@ -1227,7 +1228,8 @@ export const modulesData = [
             { label: "Back-drilling", text: "Removes unused via stubs. Essential for >5 Gbps designs." },
             { label: "GND Proximity", text: "Place GND reference vias within 20 mils of high-speed signal vias." },
             { label: "Stitching", text: "Spacing ≤ λ/20 to suppress EMI and prevent plane separation." }
-          ]
+          ],
+          type: "via-resonance-calc"
         },
         {
           heading: "EMI / EMC Compliance",
