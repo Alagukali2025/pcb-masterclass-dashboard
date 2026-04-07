@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCB Output Files — Manufacturing Release System</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111420;
+    --surface2: #161b28;
+    --border: #1e2535;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #7fff00;
+    --text: #c8d0e0;
+    --text-dim: #6b7a99;
+    --text-bright: #eef2ff;
+    --mono: 'Share Tech Mono', monospace;
+    --head: 'Syne', sans-serif;
+    --body: 'DM Sans', sans-serif;
+    --glow: 0 0 20px rgba(0,229,255,0.15);
+    --glow-warm: 0 0 20px rgba(255,107,53,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    padding: 80px 40px 60px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-tag::before {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--head);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    max-width: 800px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-sub {
+    margin-top: 16px;
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 600px;
+    font-weight: 300;
+  }
+
+  .header-badges {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-dim);
+    background: var(--surface);
+    letter-spacing: 1px;
+  }
+
+  .badge.live { border-color: var(--accent3); color: var(--accent3); }
+  .badge.warn { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── LAYOUT ── */
+  .wrapper {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SIDEBAR ── */
+  nav {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    background: var(--surface);
+  }
+
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-track { background: transparent; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    padding: 0 24px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  nav a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 24px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    line-height: 1.4;
+  }
+
+  nav a:hover {
+    color: var(--text-bright);
+    background: rgba(0,229,255,0.04);
+    border-left-color: var(--accent);
+  }
+
+  nav a .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    min-width: 20px;
+    margin-top: 1px;
+  }
+
+  nav .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 24px;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 48px 56px;
+    max-width: 960px;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    margin-bottom: 80px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: var(--head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.5px;
+  }
+
+  h3 {
+    font-family: var(--head);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 28px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3::before {
+    content: '▸';
+    color: var(--accent2);
+    font-size: 12px;
+  }
+
+  h4 {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    margin: 20px 0 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  /* ── INFO CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+  }
+
+  .card.warn::before { background: var(--accent2); }
+  .card.ok::before { background: var(--accent3); }
+  .card.purple::before { background: #b388ff; }
+
+  .card-title {
+    font-family: var(--head);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 12px 16px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(30,37,53,0.8);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(0,229,255,0.02); }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin: 1px;
+    white-space: nowrap;
+  }
+
+  .tag-fab { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.2); }
+  .tag-asm { background: rgba(255,107,53,0.1); color: var(--accent2); border: 1px solid rgba(255,107,53,0.2); }
+  .tag-tst { background: rgba(127,255,0,0.1); color: var(--accent3); border: 1px solid rgba(127,255,0,0.2); }
+  .tag-crit { background: rgba(255,50,50,0.1); color: #ff5050; border: 1px solid rgba(255,50,50,0.2); }
+  .tag-ipc { background: rgba(179,136,255,0.1); color: #b388ff; border: 1px solid rgba(179,136,255,0.2); }
+
+  /* ── CODE BLOCKS ── */
+  pre, .code-block {
+    background: #080b10;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #8fbc8f;
+    overflow-x: auto;
+    line-height: 1.8;
+    margin: 16px 0;
+  }
+
+  .code-block .cm { color: var(--text-dim); }
+  .code-block .kw { color: var(--accent); }
+  .code-block .val { color: var(--accent2); }
+  .code-block .str { color: var(--accent3); }
+
+  /* ── LISTS ── */
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+  }
+
+  li {
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  li strong { color: var(--text-bright); }
+
+  /* ── FILE STRUCTURE DIAGRAM ── */
+  .tree {
+    background: #080b10;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  .tree-dir { color: var(--accent); font-weight: bold; }
+  .tree-file { color: var(--text); }
+  .tree-file.asm { color: var(--accent2); }
+  .tree-file.tst { color: var(--accent3); }
+  .tree-file.doc { color: #b388ff; }
+  .tree-indent { color: var(--text-dim); }
+
+  /* ── STACKUP DIAGRAM ── */
+  .stackup {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .stack-layer {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stack-layer:last-child { border-bottom: none; }
+
+  .stack-color { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+  .stack-name { color: var(--text-bright); min-width: 160px; }
+  .stack-detail { color: var(--text-dim); font-size: 11px; }
+  .stack-mat { margin-left: auto; color: var(--accent); font-size: 11px; }
+
+  /* ── FLOW STEPS ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 40px;
+    margin: 24px 0;
+  }
+
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 14px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .flow-step {
+    position: relative;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .flow-step::before {
+    content: attr(data-n);
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px; height: 26px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .flow-step-title {
+    font-family: var(--head);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .flow-step-desc { font-size: 13px; color: var(--text-dim); }
+
+  /* ── CHECKLIST ── */
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin: 16px 0; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 13.5px;
+  }
+
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .check-item.crit { border-left: 3px solid #ff5050; }
+  .check-item.crit .check-box { border-color: #ff5050; }
+
+  /* ── RISK TABLE ── */
+  .risk-level {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  .risk-high { background: rgba(255,50,50,0.15); color: #ff5050; }
+  .risk-med { background: rgba(255,107,53,0.15); color: var(--accent2); }
+  .risk-low { background: rgba(127,255,0,0.15); color: var(--accent3); }
+
+  /* ── TOC QUICK ── */
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .toc-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.2s;
+  }
+
+  .toc-item:hover {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+    transform: translateY(-2px);
+  }
+
+  .toc-n { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-bottom: 6px; }
+  .toc-title { font-family: var(--head); font-size: 13px; font-weight: 600; color: var(--text-bright); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .wrapper { grid-template-columns: 1fr; }
+    nav { display: none; }
+    main { padding: 32px 24px; }
+    header { padding: 48px 24px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">PCB Engineering Reference</div>
+  <h1>PCB Output Files<br><span>Manufacturing Release System</span></h1>
+  <p class="header-sub">A complete, implementation-ready knowledge system for PCB fabrication, assembly, and testing output files — aligned with IPC standards and real manufacturing flows.</p>
+  <div class="header-badges">
+    <span class="badge live">IPC-2581 ✓</span>
+    <span class="badge live">IPC-A-610 ✓</span>
+    <span class="badge live">Gerber RS-274X ✓</span>
+    <span class="badge warn">ODB++ Supported</span>
+    <span class="badge">Cadence Allegro</span>
+    <span class="badge">Altium Designer</span>
+  </div>
+</header>
+
+<div class="wrapper">
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <div class="nav-label">Contents</div>
+  <a href="#s1"><span class="num">01</span>Overview of PCB Output Files</a>
+  <a href="#s2"><span class="num">02</span>Fabrication Output Files</a>
+  <a href="#s3"><span class="num">03</span>Assembly Output Files</a>
+  <a href="#s4"><span class="num">04</span>Test Output Files</a>
+  <a href="#s5"><span class="num">05</span>Advanced Output Formats</a>
+  <a href="#s6"><span class="num">06</span>CAD Tool File Generation</a>
+  <div class="divider"></div>
+  <a href="#s7"><span class="num">07</span>Common Errors & Risks</a>
+  <a href="#s8"><span class="num">08</span>Validation & CAM Check</a>
+  <a href="#s9"><span class="num">09</span>Release Package Structure</a>
+  <a href="#s10"><span class="num">10</span>Real-World Release Flow</a>
+  <a href="#s11"><span class="num">11</span>Checklists</a>
+</nav>
+
+<!-- ── MAIN ── -->
+<main>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 1 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s1">
+  <div class="section-header">
+    <span class="section-num">SECTION 01</span>
+    <h2>Overview of PCB Output Files</h2>
+  </div>
+
+  <h3>What Are PCB Output Files?</h3>
+  <p>PCB output files are the complete set of digital data packages exported from a CAD design tool (Cadence Allegro, Altium Designer, etc.) that define every physical and electrical aspect of a printed circuit board. These files are the authoritative instructions handed to fabrication houses, assembly contractors, and test engineers.</p>
+  <p>A PCB design that exists only in a CAD tool cannot be manufactured. Output files translate the design intent into machine-readable and human-readable instructions for every stage of production.</p>
+
+  <h3>Why They Are Critical for Manufacturing</h3>
+  <ul>
+    <li><strong>Fabrication houses</strong> rely on Gerber/ODB++ files to image copper layers, drill holes, and cut board outlines with CNC equipment.</li>
+    <li><strong>Assembly houses</strong> rely on pick-and-place files and BOMs to load SMT machines and apply solder paste stencils.</li>
+    <li><strong>Test engineers</strong> use IPC-D-356 netlists and test point reports to configure automated test equipment (ATE).</li>
+    <li>A single error in any output file can result in scrapped boards, costly re-spins, or field failures.</li>
+  </ul>
+
+  <h3>Three Categories of Output Files</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Purpose</th>
+          <th>Key Recipients</th>
+          <th>Standards</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-fab">FABRICATION</span></td>
+          <td>Define the physical PCB structure: copper layers, holes, board shape, surface finish</td>
+          <td>PCB Fabrication House (FAB)</td>
+          <td>RS-274X, Excellon, IPC-2581</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-asm">ASSEMBLY</span></td>
+          <td>Define component placement, orientation, and procurement</td>
+          <td>PCB Assembly House (PCBA / CEM)</td>
+          <td>IPC-A-610, IPC-7711</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-tst">TEST</span></td>
+          <td>Define electrical connectivity and test access points for ATE/ICT/flying probe</td>
+          <td>Test Engineering / DFT Team</td>
+          <td>IPC-D-356A, BSDL (IEEE 1149.1)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="toc-grid">
+    <a href="#s2" class="toc-item"><div class="toc-n">02 →</div><div class="toc-title">Fabrication Files (Gerber, Drill, Stackup)</div></a>
+    <a href="#s3" class="toc-item"><div class="toc-n">03 →</div><div class="toc-title">Assembly Files (PnP, BOM, Drawing)</div></a>
+    <a href="#s4" class="toc-item"><div class="toc-n">04 →</div><div class="toc-title">Test Files (Netlist, Test Points)</div></a>
+    <a href="#s9" class="toc-item"><div class="toc-n">09 →</div><div class="toc-title">Release Package & Naming</div></a>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 2 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s2">
+  <div class="section-header">
+    <span class="section-num">SECTION 02</span>
+    <h2>Fabrication Output Files (DFM – Core)</h2>
+  </div>
+
+  <!-- 2.1 Gerber -->
+  <h3>2.1 Gerber Files (RS-274X / X2)</h3>
+  <p>Gerber is the universal photoplotter format used by virtually all PCB fabrication facilities. Each physical layer of the PCB is represented by a separate Gerber file. RS-274X (Extended Gerber) is the current standard; Gerber X2 adds structured metadata (layer type, polarity, etc.) embedded within the file itself.</p>
+
+  <h4>Layer File Map</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Typical Extension</th><th>Purpose</th><th>Critical Parameters</th><th>Impact If Missing</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Top Copper</td>
+          <td>.GTL / .Cu1</td>
+          <td>Top-side signal routing and pads</td>
+          <td>Copper weight (oz), min trace/space, annular ring</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> Board non-functional</td>
+        </tr>
+        <tr>
+          <td>Bottom Copper</td>
+          <td>.GBL / .Cu2</td>
+          <td>Bottom-side signal routing and pads</td>
+          <td>Copper weight (oz), min trace/space</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> Board non-functional</td>
+        </tr>
+        <tr>
+          <td>Inner Layers</td>
+          <td>.G2, .G3…</td>
+          <td>Power planes and inner signal layers (multilayer PCB)</td>
+          <td>Negative vs positive plane polarity</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> Short circuits or open nets</td>
+        </tr>
+        <tr>
+          <td>Top Solder Mask</td>
+          <td>.GTS</td>
+          <td>Defines where solder mask is removed (pads exposed)</td>
+          <td>Solder mask expansion (typically +0.1mm per side), LPI or dry-film</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> Shorts between pads during soldering</td>
+        </tr>
+        <tr>
+          <td>Bottom Solder Mask</td>
+          <td>.GBS</td>
+          <td>Bottom-side pad openings</td>
+          <td>Same as top solder mask</td>
+          <td><span class="risk-level risk-high">CRITICAL</span></td>
+        </tr>
+        <tr>
+          <td>Top Silkscreen</td>
+          <td>.GTO</td>
+          <td>Reference designators, polarity marks, logos</td>
+          <td>Min line width ≥0.1mm, min text height ≥0.8mm, no overlap with pads</td>
+          <td><span class="risk-level risk-med">MEDIUM</span> Assembly confusion, no functional impact</td>
+        </tr>
+        <tr>
+          <td>Bottom Silkscreen</td>
+          <td>.GBO</td>
+          <td>Bottom component labels</td>
+          <td>Same as top silkscreen</td>
+          <td><span class="risk-level risk-med">MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td>Top Paste Mask</td>
+          <td>.GTP</td>
+          <td>Defines solder paste apertures for SMT stencil</td>
+          <td>Aperture reduction (typically −10–20% area reduction), no paste on NPTH, vias</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> Solder bridging or insufficient solder</td>
+        </tr>
+        <tr>
+          <td>Bottom Paste Mask</td>
+          <td>.GBP</td>
+          <td>Bottom SMT stencil (if double-sided)</td>
+          <td>Same as top paste mask</td>
+          <td><span class="risk-level risk-high">CRITICAL</span></td>
+        </tr>
+        <tr>
+          <td>Board Outline</td>
+          <td>.GKO / .GM1</td>
+          <td>Board profile for routing/scoring</td>
+          <td>Closed polygon, 0-width lines acceptable for mechanical, tolerance ±0.1mm typical</td>
+          <td><span class="risk-level risk-high">CRITICAL</span> FAB cannot route board to size</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>Aperture Definition & Polarity</h4>
+  <div class="card">
+    <div class="card-title">📐 Aperture Definition (RS-274X)</div>
+    <p>In RS-274X, apertures (pad shapes, trace widths) are defined inline within the Gerber file itself using <code>%ADD</code> statements. This eliminates the need for a separate aperture file (.apt), which was required by the older RS-274D format.</p>
+    <ul>
+      <li><strong>Standard shapes:</strong> Circle (C), Rectangle (R), Oblong (O), Polygon (P)</li>
+      <li><strong>Custom macros:</strong> Defined with <code>%AM</code> for non-standard pad geometries</li>
+      <li>Always verify aperture list matches CAM tool expectation — mismatched apertures produce wrong pad sizes at FAB.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Polarity — Solder Mask & Planes</div>
+    <ul>
+      <li><strong>Positive polarity:</strong> Dark areas represent copper/material present. (Used for copper layers, silkscreen)</li>
+      <li><strong>Negative polarity:</strong> Dark areas represent material removed. (Historically used for internal power planes)</li>
+      <li>Sending a negative-polarity plane Gerber to a FAB expecting positive polarity = complete copper/void inversion. All traces and pads are swapped with clearances — catastrophic.</li>
+      <li>Gerber X2 includes polarity metadata in the header to prevent this.</li>
+    </ul>
+  </div>
+
+  <!-- 2.2 Drill Files -->
+  <h3>2.2 Drill Files (Excellon Format)</h3>
+  <p>The NC Drill file instructs the CNC drill machine on hole size, location, and type. The Excellon format is the industry standard. One drill file typically covers all plated holes; a separate file covers non-plated holes.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Value/Requirement</th><th>Impact If Incorrect</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Format</td>
+          <td>Excellon (Excellon 1 or 2)</td>
+          <td>FAB cannot parse file</td>
+        </tr>
+        <tr>
+          <td>Units</td>
+          <td>Metric (mm) or Imperial (inches) — must match header declaration</td>
+          <td>All hole positions scaled incorrectly (10× error with metric/imperial swap)</td>
+        </tr>
+        <tr>
+          <td>Zero Suppression</td>
+          <td>Leading or trailing zeros — must be consistent throughout file</td>
+          <td>Coordinate shift; holes placed at wrong XY locations</td>
+        </tr>
+        <tr>
+          <td>Tool List</td>
+          <td>Each tool ID (T01, T02…) defined with diameter</td>
+          <td>Wrong drill size; via-to-pad annular ring violation</td>
+        </tr>
+        <tr>
+          <td>Plated vs Non-Plated</td>
+          <td>Separate files: PTH (plated through-hole) and NPTH (non-plated)</td>
+          <td>Mounting holes drilled with copper — short circuit risk</td>
+        </tr>
+        <tr>
+          <td>Blind/Buried Vias</td>
+          <td>Separate drill file per via span (e.g., L1–L2, L2–L4)</td>
+          <td>Via drilled through wrong layer span; layer-to-layer short</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+<span class="cm">; Excellon NC Drill File Example</span>
+M48
+<span class="kw">METRIC,LZ,000.000</span>          <span class="cm">; Metric, Leading Zero suppressed</span>
+T01C<span class="val">0.300</span>                      <span class="cm">; Tool 1: 0.30mm via drill</span>
+T02C<span class="val">0.800</span>                      <span class="cm">; Tool 2: 0.80mm through-hole</span>
+T03C<span class="val">3.200</span>                      <span class="cm">; Tool 3: 3.20mm NPTH mounting</span>
+M95
+<span class="kw">G90 G05</span>                         <span class="cm">; Absolute mode, Drill mode</span>
+T01
+X<span class="str">025000</span>Y<span class="str">012500</span>              <span class="cm">; Via at X=25.000, Y=12.500</span>
+X<span class="str">036750</span>Y<span class="str">019000</span>
+T02
+X<span class="str">015000</span>Y<span class="str">025000</span>              <span class="cm">; PTH component hole</span>
+M30                              <span class="cm">; End of program</span>
+  </div>
+
+  <!-- 2.3 Stackup -->
+  <h3>2.3 Stackup & Fabrication Drawing</h3>
+  <p>The fabrication drawing (fab drawing) is a dimensioned engineering document that communicates everything that cannot be expressed in Gerber layers alone: stackup, materials, impedance requirements, surface finish, and tolerances.</p>
+
+  <h4>Example 4-Layer Stackup</h4>
+  <div class="stackup">
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#d4a017;"></div>
+      <div class="stack-name">L1 — Top Copper</div>
+      <div class="stack-detail">Signal / Component side, 1 oz Cu (35µm)</div>
+      <div class="stack-mat">35µm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#2e8b57;"></div>
+      <div class="stack-name">Prepreg (7628)</div>
+      <div class="stack-detail">FR-4 Prepreg, Dk=4.4 @ 1GHz</div>
+      <div class="stack-mat">0.21mm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#d4a017;"></div>
+      <div class="stack-name">L2 — Ground Plane</div>
+      <div class="stack-detail">GND reference plane, 1 oz Cu</div>
+      <div class="stack-mat">35µm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#1a5276;"></div>
+      <div class="stack-name">Core (FR-4)</div>
+      <div class="stack-detail">FR-4 Core, Dk=4.5, Df=0.02</div>
+      <div class="stack-mat">1.065mm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#d4a017;"></div>
+      <div class="stack-name">L3 — Power Plane</div>
+      <div class="stack-detail">3.3V / 5V power pour, 1 oz Cu</div>
+      <div class="stack-mat">35µm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#2e8b57;"></div>
+      <div class="stack-name">Prepreg (7628)</div>
+      <div class="stack-detail">FR-4 Prepreg, Dk=4.4 @ 1GHz</div>
+      <div class="stack-mat">0.21mm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#d4a017;"></div>
+      <div class="stack-name">L4 — Bottom Copper</div>
+      <div class="stack-detail">Signal / Bottom component side, 1 oz Cu</div>
+      <div class="stack-mat">35µm</div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-color" style="background:#004d40;"></div>
+      <div class="stack-name">Solder Mask (Top + Bottom)</div>
+      <div class="stack-detail">LPI Green, IPC-SM-840 Class T</div>
+      <div class="stack-mat">~25µm</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Fabrication Drawing — Mandatory Notes</div>
+    <ul>
+      <li><strong>Board dimensions:</strong> Length × Width ± tolerance (e.g., 120mm × 80mm ±0.15mm)</li>
+      <li><strong>Surface finish:</strong> HASL / ENIG / ENEPIG / OSP — specify clearly</li>
+      <li><strong>Controlled impedance:</strong> Specify layer, target Ω, tolerance (e.g., L1 50Ω ±10%, single-ended)</li>
+      <li><strong>Copper weight:</strong> Inner layers often 0.5 oz for high-density designs</li>
+      <li><strong>Min trace/space:</strong> e.g., 0.1mm/0.1mm (4mil/4mil)</li>
+      <li><strong>Via type:</strong> Through-hole, blind, buried — note span and fill (open, tented, plugged)</li>
+      <li><strong>UL/RoHS marking:</strong> Required for most consumer and industrial products</li>
+    </ul>
+  </div>
+
+  <!-- 2.4 Board Outline -->
+  <h3>2.4 Board Outline (Profile)</h3>
+  <p>The board outline defines the exact physical boundary of the PCB. It is drawn on a dedicated mechanical layer and exported as a separate Gerber layer or embedded in ODB++. All features must form a closed polygon with no gaps, overlaps, or duplicate lines.</p>
+  <ul>
+    <li><strong>Standard layer:</strong> GM1 (mechanical), GKO (keep-out/outline in Altium)</li>
+    <li><strong>Line width:</strong> 0mm (zero-width) is acceptable for profile; FAB reads centerline of outline</li>
+    <li><strong>Tolerances:</strong> Routed boards ±0.15mm; V-scored boards ±0.3mm</li>
+    <li><strong>Cutouts/slots:</strong> Must be drawn on same layer with tool compensation note in fab drawing</li>
+    <li><strong>Fiducial marks:</strong> 3× minimum on panel/board for SMT machine calibration</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 3 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s3">
+  <div class="section-header">
+    <span class="section-num">SECTION 03</span>
+    <h2>Assembly Output Files (DFM – Critical)</h2>
+  </div>
+
+  <!-- 3.1 PnP -->
+  <h3>3.1 Pick and Place File (Centroid File)</h3>
+  <p>The pick-and-place (PnP) or centroid file instructs SMT placement machines on the exact location and orientation of every component. Errors in this file cause misplaced, rotated, or skipped components — some of which are only discovered during functional test or in the field.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Column</th><th>Format</th><th>Notes</th><th>Impact If Wrong</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Reference Designator</td>
+          <td>Text (R1, C5, U12…)</td>
+          <td>Must match BOM and schematic exactly</td>
+          <td>Component mapped to wrong part</td>
+        </tr>
+        <tr>
+          <td>X Coordinate</td>
+          <td>Decimal mm or inches</td>
+          <td>Measured from board origin (typically bottom-left)</td>
+          <td>Component placed off-pad</td>
+        </tr>
+        <tr>
+          <td>Y Coordinate</td>
+          <td>Decimal mm or inches</td>
+          <td>Y-axis direction must match machine convention</td>
+          <td>Component placed off-pad</td>
+        </tr>
+        <tr>
+          <td>Rotation</td>
+          <td>Degrees (0–359)</td>
+          <td>CCW positive, IPC convention. CAD tool vs machine rotation offset is common source of error</td>
+          <td><span class="risk-level risk-high">Component rotated 90°/180°</span> — failure</td>
+        </tr>
+        <tr>
+          <td>Side</td>
+          <td>Top / Bottom</td>
+          <td>Must match assembly drawing</td>
+          <td>Component placed on wrong board side</td>
+        </tr>
+        <tr>
+          <td>Package</td>
+          <td>0402, SOT-23, QFN-64…</td>
+          <td>Helps machine operator validate nozzle selection</td>
+          <td>Wrong nozzle → component damage</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="code-block">
+<span class="cm">; Pick and Place CSV Example (Altium format)</span>
+<span class="kw">Designator,Footprint,MidX,MidY,RefX,RefY,TB,Rotation</span>
+<span class="str">C1</span>,C_0402,<span class="val">25.400</span>,<span class="val">18.300</span>,<span class="val">25.400</span>,<span class="val">18.300</span>,T,<span class="val">0</span>
+<span class="str">R5</span>,R_0603,<span class="val">42.100</span>,<span class="val">31.500</span>,<span class="val">42.100</span>,<span class="val">31.500</span>,T,<span class="val">90</span>
+<span class="str">U3</span>,QFN-64,<span class="val">65.000</span>,<span class="val">45.000</span>,<span class="val">65.000</span>,<span class="val">45.000</span>,T,<span class="val">270</span>
+<span class="str">D2</span>,SOD-123,<span class="val">12.700</span>,<span class="val">55.000</span>,<span class="val">12.700</span>,<span class="val">55.000</span>,B,<span class="val">180</span>
+  </div>
+
+  <!-- 3.2 BOM -->
+  <h3>3.2 Bill of Materials (BOM)</h3>
+  <p>The BOM is the complete parts list required to procure and assemble the board. It must be the single source of truth for all components. Errors cause wrong parts ordered, assembly with incorrect components, and procurement delays.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Field</th><th>Mandatory?</th><th>Example</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Reference Designator</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>C1, C2, C5</td>
+          <td>Comma-separated for same value/package group</td>
+        </tr>
+        <tr>
+          <td>Quantity</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>3</td>
+          <td>Total per board</td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>Cap, 100nF, 10V, X5R, 0402</td>
+          <td>Must include value, voltage/current rating, package</td>
+        </tr>
+        <tr>
+          <td>Manufacturer</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>Murata</td>
+          <td>Full company name</td>
+        </tr>
+        <tr>
+          <td>Manufacturer Part Number (MPN)</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>GRM155R71A104KA01D</td>
+          <td>Exact MPN — no generic values</td>
+        </tr>
+        <tr>
+          <td>Footprint / Package</td>
+          <td><span class="tag tag-crit">YES</span></td>
+          <td>0402 (1005 Metric)</td>
+          <td>Must match PCB land pattern</td>
+        </tr>
+        <tr>
+          <td>Approved Vendor List (AVL)</td>
+          <td>Recommended</td>
+          <td>Digi-Key, Mouser, Arrow</td>
+          <td>Prevents unauthorized substitution</td>
+        </tr>
+        <tr>
+          <td>DNP / DNI Flag</td>
+          <td>If applicable</td>
+          <td>DNP</td>
+          <td>Do Not Populate / Do Not Install — must be clearly marked</td>
+        </tr>
+        <tr>
+          <td>RoHS Compliance</td>
+          <td>Required for CE/FCC</td>
+          <td>Yes</td>
+          <td>Verify with manufacturer datasheet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3.3 Assembly Drawing -->
+  <h3>3.3 Assembly Drawing</h3>
+  <p>The assembly drawing is a human-readable document (typically PDF) that shows component placement, orientation marks (polarity, pin 1), and special assembly notes that SMT/THT operators need.</p>
+  <ul>
+    <li><strong>Component outline view:</strong> Top and bottom views with all reference designators labeled</li>
+    <li><strong>Polarity marks:</strong> Cathode stripe on diodes, pin 1 indicator on ICs, positive terminal on capacitors</li>
+    <li><strong>Special notes:</strong> Connectors facing direction, heat sink orientation, conformal coating keepout zones</li>
+    <li><strong>Revision block:</strong> Drawing number, revision, date, engineer approval signature</li>
+    <li><strong>Dimension reference:</strong> Overall board dimensions for quick sanity check</li>
+  </ul>
+
+  <!-- 3.4 Solder Paste -->
+  <h3>3.4 Solder Paste Layer (Stencil Design)</h3>
+  <p>The solder paste Gerber (.GTP / .GBP) is used by the stencil manufacturer to laser-cut or electroform the SMT stencil. Correct aperture design is critical to achieving reliable solder joints per IPC-A-610.</p>
+
+  <div class="card warn">
+    <div class="card-title">⚠️ Aperture Reduction Rules (IPC-7525)</div>
+    <ul>
+      <li><strong>Standard rule:</strong> Aperture area ratio ≥ 0.66 (area of aperture ÷ area of aperture walls) for good paste release</li>
+      <li><strong>Typical reduction:</strong> 10–20% area reduction per side for QFN/BGA pads</li>
+      <li><strong>Fine-pitch components (&lt;0.4mm pitch):</strong> Require home-plate or custom aperture shapes to prevent bridging</li>
+      <li><strong>BGA:</strong> Round apertures at 85–90% of pad diameter, avoid solder balling</li>
+      <li><strong>No paste on vias:</strong> Tented vias in paste layer cause solder wicking into the via</li>
+      <li><strong>Stencil thickness:</strong> Typically 0.12mm (5mil) for mixed technology; may require step stencil for fine-pitch + large pads</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 4 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s4">
+  <div class="section-header">
+    <span class="section-num">SECTION 04</span>
+    <h2>Test Output Files (DFT – Core)</h2>
+  </div>
+
+  <h3>4.1 Netlist File (IPC-D-356 Format)</h3>
+  <p>The IPC-D-356 netlist is the standard format for communicating PCB connectivity to In-Circuit Test (ICT) systems, flying probe testers, and DFT (Design for Test) analysis tools. It provides a pin-to-pin connection table derived from the schematic netlist, correlated with physical pad locations.</p>
+
+  <div class="card purple">
+    <div class="card-title">📡 IPC-D-356A Record Types</div>
+    <ul>
+      <li><strong>Record 317:</strong> Through-hole pad — net name, ref des, pin number, XY coordinate, drill size, access side</li>
+      <li><strong>Record 327:</strong> SMT pad — net name, ref des, pin number, XY coordinate, pad size, access side</li>
+      <li><strong>Record 999:</strong> End of file delimiter</li>
+    </ul>
+    <p style="margin-top:12px; font-size:13px; color:var(--text-dim)">IPC-D-356A is the revision used by modern ATE. Legacy IPC-D-356 (without revision A) may not support certain extended features — verify with test team.</p>
+  </div>
+
+  <div class="code-block">
+<span class="cm">C  IPC-D-356A Netlist Example</span>
+<span class="cm">C  Board: MOTOR_CTRL_V1 | Units: MM | Origin: Lower Left</span>
+317<span class="kw">GND</span>              <span class="str">C1</span>  -1        A00X+02540Y+01830X0600Y0600R000 S1
+317<span class="kw">VCC_3V3</span>          <span class="str">U3</span>  -VDD      A00X+06500Y+04500X0000Y0000R000 S1
+327<span class="kw">SPI_CLK</span>          <span class="str">J1</span>  -3        A00X+01000Y+02000X0800Y1200R090 S1
+999
+  </div>
+
+  <h3>4.2 Test Point Report</h3>
+  <p>The test point report lists all accessible test nodes — nets that have a physical probe point (test pad, via, or through-hole pin) reachable by ICT or flying probe. Test coverage is measured as the percentage of nets with at least one accessible test point.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>IPC Target</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Test point diameter</td>
+          <td>Min 1.0mm (ICT), 0.8mm (flying probe)</td>
+          <td>Smaller pads risk probe miss, solder mask damage</td>
+        </tr>
+        <tr>
+          <td>Clearance around test point</td>
+          <td>Min 2.54mm (100mil) pitch for ICT grid</td>
+          <td>Denser layouts require flying probe or bed-of-nails fixture</td>
+        </tr>
+        <tr>
+          <td>Net coverage target</td>
+          <td>≥80% of nets (aim for 95%+)</td>
+          <td>Low coverage = undetected opens/shorts, field escapes</td>
+        </tr>
+        <tr>
+          <td>Power/GND access</td>
+          <td>Mandatory</td>
+          <td>At minimum 1 test point per power rail</td>
+        </tr>
+        <tr>
+          <td>Component side access</td>
+          <td>Top preferred; bottom if no top TP</td>
+          <td>Bottom-only access adds fixture complexity</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.3 Boundary Scan Files (BSDL)</h3>
+  <p>Boundary Scan Description Language (BSDL) files describe the IEEE 1149.1 (JTAG) boundary scan architecture of each IC on the board. Used by boundary scan test tools (XJTAG, Goepel, JTAG Technologies) to test connectivity between JTAG-capable devices without physical probe access.</p>
+  <ul>
+    <li>BSDL files are supplied by the IC manufacturer — not generated by the PCB CAD tool</li>
+    <li>Board-level BSDL (.bsd) may be generated by tools like XJTAG Board Designer</li>
+    <li>Applicable only when design contains JTAG-capable devices (FPGAs, DSPs, modern MCUs)</li>
+    <li>If no JTAG-capable devices are present: <em>Not applicable — Data Not Available from SSOT</em></li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 5 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s5">
+  <div class="section-header">
+    <span class="section-num">SECTION 05</span>
+    <h2>Advanced Output Formats</h2>
+  </div>
+
+  <h3>5.1 ODB++ (Open Database++)</h3>
+  <p>ODB++ is a complete manufacturing database developed by Valor (now Siemens EDA). Unlike individual Gerber/Excellon files, ODB++ is a single compressed archive (.tgz or directory) that contains all PCB manufacturing data — layers, drill, netlist, stackup, components — in a structured, relational database.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Gerber + Excellon</th><th>ODB++</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data format</td>
+          <td>Multiple separate flat files</td>
+          <td>Single unified database</td>
+        </tr>
+        <tr>
+          <td>Embedded netlist</td>
+          <td>No (separate IPC-D-356)</td>
+          <td>Yes, included natively</td>
+        </tr>
+        <tr>
+          <td>DFM analysis</td>
+          <td>Limited — FAB must correlate files</td>
+          <td>Full DFM possible from single file</td>
+        </tr>
+        <tr>
+          <td>Layer correlation errors</td>
+          <td>Possible (human error)</td>
+          <td>Eliminated — layers internally correlated</td>
+        </tr>
+        <tr>
+          <td>Assembly data</td>
+          <td>Separate PnP + BOM files</td>
+          <td>Included in database</td>
+        </tr>
+        <tr>
+          <td>Industry adoption</td>
+          <td>Universal (all FABs accept)</td>
+          <td>High (most major FABs; verify before sending)</td>
+        </tr>
+        <tr>
+          <td>File corruption risk</td>
+          <td>Low per file; high across file set</td>
+          <td>Checksum validation possible per archive</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 IPC-2581 (Unified Data Format)</h3>
+  <p>IPC-2581 (also called DPMX — Design to Process Management Exchange) is an XML-based open standard developed by the IPC industry consortium to replace both Gerber and ODB++ as a vendor-neutral, fully structured PCB data format. Adoption is increasing rapidly, particularly among companies with multi-FAB sourcing strategies.</p>
+
+  <div class="card ok">
+    <div class="card-title">✅ IPC-2581 Key Advantages</div>
+    <ul>
+      <li><strong>Vendor-neutral:</strong> No proprietary license required (unlike ODB++)</li>
+      <li><strong>Single file:</strong> All fabrication, assembly, and test data in one XML file</li>
+      <li><strong>Bidirectional:</strong> FAB can send DFM feedback in the same format</li>
+      <li><strong>BOM linkage:</strong> Component data directly linked to footprints — eliminates BOM/PnP mismatch</li>
+      <li><strong>Version B (2014+):</strong> Adds rigid-flex support, improved assembly data</li>
+      <li><strong>CAD support:</strong> Cadence Allegro 17.4+, Altium 23+, Zuken CR-8000</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 6 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s6">
+  <div class="section-header">
+    <span class="section-num">SECTION 06</span>
+    <h2>File Generation in CAD Tools</h2>
+  </div>
+
+  <h3>Cadence Allegro PCB Designer</h3>
+  <h4>Artwork (Gerber) Generation</h4>
+  <ol>
+    <li>Navigate to <code>File → Export → Artwork</code></li>
+    <li>In the Artwork Control Form, verify each layer is mapped to the correct film name</li>
+    <li>Set format to <strong>Gerber RS-274X</strong></li>
+    <li>Configure plot origin (board datum), units, and decimal precision</li>
+    <li>Enable <em>Suppress unconnected pads</em> if required by FAB</li>
+    <li>Generate each layer individually or use <em>Create Artwork</em> batch mode</li>
+    <li>Verify output: open generated .gbr files in a Gerber viewer (Gerbv, ViewMate)</li>
+  </ol>
+
+  <h4>Drill File Generation (NC Drill)</h4>
+  <ol>
+    <li>Navigate to <code>Manufacture → NC → NC Drill</code></li>
+    <li>Select output format: <strong>Excellon</strong></li>
+    <li>Set units (metric recommended), coordinate format, zero suppression mode</li>
+    <li>Generate separate files for PTH and NPTH</li>
+    <li>Generate separate files for each blind/buried via span if applicable</li>
+    <li>Cross-check drill chart: tool count and sizes must match FAB requirements</li>
+  </ol>
+
+  <h3>Altium Designer</h3>
+  <p>Altium uses an <strong>Output Job File (.OutJob)</strong> to define and batch-generate all output files in a single, version-controlled configuration.</p>
+
+  <h4>Setting Up the .OutJob File</h4>
+  <ol>
+    <li>Go to <code>File → New → Output Job File</code></li>
+    <li>Under <em>Fabrication Outputs</em>, add: Gerber Files, NC Drill Files, ODB++ (optional), IPC-2581 (optional)</li>
+    <li>Under <em>Assembly Outputs</em>, add: Pick and Place Files, Assembly Drawings (PDF)</li>
+    <li>Under <em>Report Outputs</em>, add: Bill of Materials (BOM), Test Point Report</li>
+    <li>Under <em>Netlist Outputs</em>, add: IPC-D-356A Netlist</li>
+    <li>Configure each output: layer selection, format settings, output directory</li>
+    <li>Run all outputs via <em>Validate All</em> then <em>Generate Content</em></li>
+  </ol>
+
+  <div class="card">
+    <div class="card-title">💡 Altium Gerber Layer Configuration (Critical Settings)</div>
+    <ul>
+      <li><strong>Plot Layer:</strong> Ensure all copper, mask, silkscreen, paste layers are checked — not just active layers</li>
+      <li><strong>Mirror layers:</strong> Bottom layers must be mirrored correctly for FAB (verify with viewer)</li>
+      <li><strong>Apertures:</strong> Use <em>Embedded apertures (RS-274X)</em> — never RS-274D</li>
+      <li><strong>Resolution:</strong> Set to 4:5 or 5:6 decimal format — 2.5 is legacy and insufficient for modern designs</li>
+      <li><strong>Include pad holes in solder mask:</strong> Ensure controlled — should NOT have solder mask on via pads if tenting not specified</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 7 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s7">
+  <div class="section-header">
+    <span class="section-num">SECTION 07</span>
+    <h2>Common Errors & Risks</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Error Type</th><th>Risk Level</th><th>Root Cause</th><th>Detection Method</th><th>Prevention</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Missing Layers</strong></td>
+          <td><span class="risk-level risk-high">HIGH</span></td>
+          <td>Layer not checked in Gerber export; inner layers omitted from multilayer design</td>
+          <td>Gerber viewer layer count verification; FAB CAM audit</td>
+          <td>Use a layer checklist; always verify in Gerber viewer before sending</td>
+        </tr>
+        <tr>
+          <td><strong>Incorrect Polarity (Inner Planes)</strong></td>
+          <td><span class="risk-level risk-high">HIGH</span></td>
+          <td>Negative-plane Gerber sent as positive; FAB interprets inverted</td>
+          <td>Visual inspection in Gerber viewer — copper and clearances appear swapped</td>
+          <td>Use Gerber X2 with embedded polarity metadata; confirm polarity in fab notes</td>
+        </tr>
+        <tr>
+          <td><strong>Drill Mismatch</strong></td>
+          <td><span class="risk-level risk-high">HIGH</span></td>
+          <td>Drill file units/zero suppression inconsistency; separate PTH/NPTH not generated</td>
+          <td>Overlay drill file on Gerber copper layers — all pads should have coincident holes</td>
+          <td>Always overlay-check drill vs. copper artwork in CAM tool</td>
+        </tr>
+        <tr>
+          <td><strong>Rotation Offset in PnP</strong></td>
+          <td><span class="risk-level risk-high">HIGH</span></td>
+          <td>CAD tool uses different 0° reference than SMT machine convention</td>
+          <td>First article inspection (FAI); 3D assembly preview tools</td>
+          <td>Verify rotation with assembly house before first run; confirm polarity components</td>
+        </tr>
+        <tr>
+          <td><strong>BOM/PnP Ref Des Mismatch</strong></td>
+          <td><span class="risk-level risk-high">HIGH</span></td>
+          <td>BOM and PnP file generated from different design revisions; manual editing errors</td>
+          <td>Cross-reference BOM ref des list against PnP ref des list in a spreadsheet or script</td>
+          <td>Generate BOM and PnP from same tool in same release run; use IPC-2581 which links both</td>
+        </tr>
+        <tr>
+          <td><strong>Solder Mask Sliver</strong></td>
+          <td><span class="risk-level risk-med">MED</span></td>
+          <td>Two adjacent pads' solder mask openings too close — mask web less than 0.1mm</td>
+          <td>DRC solder mask sliver rule; CAM DFM check</td>
+          <td>Enforce minimum solder mask web of ≥0.1mm (0.075mm for advanced FAB) in DRC rules</td>
+        </tr>
+        <tr>
+          <td><strong>Silkscreen Over Pads</strong></td>
+          <td><span class="risk-level risk-med">MED</span></td>
+          <td>Reference designator overlaps exposed pad; ink causes solderability issue</td>
+          <td>DRC silk-over-pad rule; visual review of assembly drawing</td>
+          <td>Enable <em>Remove silkscreen over pads</em> in CAD Gerber export settings</td>
+        </tr>
+        <tr>
+          <td><strong>Incorrect Board Origin</strong></td>
+          <td><span class="risk-level risk-med">MED</span></td>
+          <td>PnP file and Gerber use different coordinate origins; offsets all component positions</td>
+          <td>Overlay PnP centroids on Gerber copper in CAM — should align with pad centers</td>
+          <td>Set a fixed, documented board origin datum before output generation; lock it</td>
+        </tr>
+        <tr>
+          <td><strong>Missing DNP in BOM</strong></td>
+          <td><span class="risk-level risk-med">MED</span></td>
+          <td>DNP (Do Not Populate) components included in BOM without flag; assembler populates them</td>
+          <td>BOM review against schematic DNP notation</td>
+          <td>Explicit DNP column in BOM; remove DNP parts from PnP file or clearly annotate</td>
+        </tr>
+        <tr>
+          <td><strong>Wrong Surface Finish Specified</strong></td>
+          <td><span class="risk-level risk-low">LOW–MED</span></td>
+          <td>Default HASL specified when design requires ENIG (e.g., for fine-pitch BGA)</td>
+          <td>Fab drawing review; FAB will often query</td>
+          <td>Explicitly state surface finish in fab drawing notes and confirm with FAB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 8 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s8">
+  <div class="section-header">
+    <span class="section-num">SECTION 08</span>
+    <h2>Validation & CAM Check</h2>
+  </div>
+
+  <h3>Design Rule Check (DRC) — In CAD Tool</h3>
+  <p>DRC must be run and pass with zero critical violations before any output files are generated. DRC enforces the design against a rules file that contains FAB and assembly constraints.</p>
+  <ul>
+    <li><strong>Clearance rules:</strong> Trace-to-trace, trace-to-pad, pad-to-board-edge, via-to-via</li>
+    <li><strong>Annular ring rules:</strong> Minimum copper ring remaining after drilling (typically ≥0.1mm)</li>
+    <li><strong>Solder mask rules:</strong> Mask expansion, solder mask slivers, via tenting consistency</li>
+    <li><strong>Silk rules:</strong> Text height, line width, no silk over bare copper (pads)</li>
+    <li><strong>Impedance rules:</strong> Trace width on controlled-impedance layers within spec</li>
+  </ul>
+
+  <h3>CAM Verification Steps</h3>
+  <div class="card">
+    <div class="card-title">🔍 Mandatory CAM Checks (Valor NPI / CAM350)</div>
+    <ul>
+      <li><strong>Layer alignment:</strong> Load all Gerber layers in CAM tool; verify copper, mask, silk, paste all align with board outline. Check drill overlay on copper — all pad centers must have a coincident drill hit.</li>
+      <li><strong>Drill-to-copper alignment:</strong> Drill file overlaid on copper Gerbers — annular ring must meet spec on all layers for all drill hits.</li>
+      <li><strong>Netlist comparison:</strong> Import IPC-D-356 netlist into CAM tool; run netlist-versus-Gerber compare — all nets must match with no opens or shorts detected.</li>
+      <li><strong>Silkscreen cleanup:</strong> Verify no silkscreen features overlap solder mask openings.</li>
+      <li><strong>Board outline closed:</strong> Confirm outline polygon is fully closed with no gaps, overlaps, or T-intersections.</li>
+      <li><strong>Fiducial check:</strong> Minimum 3 global fiducials on panel; correct shape (1mm circle in 3mm clear area).</li>
+    </ul>
+  </div>
+
+  <h3>CAM Tools Reference</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>Vendor</th><th>Primary Use</th><th>Key Capabilities</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Valor NPI (Genesis 2000)</td>
+          <td>Siemens EDA</td>
+          <td>Production CAM; DFM analysis</td>
+          <td>Full DFM suite, netlist compare, panelization, ODB++ native</td>
+        </tr>
+        <tr>
+          <td>CAM350</td>
+          <td>DownStream Technologies</td>
+          <td>Pre-release CAM verification</td>
+          <td>Gerber/Excellon edit, DRC, Gerber-to-Gerber compare, panelization</td>
+        </tr>
+        <tr>
+          <td>Gerbv</td>
+          <td>Open Source (gEDA)</td>
+          <td>Visual Gerber inspection</td>
+          <td>Free, multi-layer viewer, overlay mode — for quick sanity checks</td>
+        </tr>
+        <tr>
+          <td>ViewMate</td>
+          <td>Pentalogix</td>
+          <td>Gerber viewing + measurement</td>
+          <td>Free viewer with measurement tools; widely used for cross-checking</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 9 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s9">
+  <div class="section-header">
+    <span class="section-num">SECTION 09</span>
+    <h2>Release Package Structure</h2>
+  </div>
+
+  <h3>Folder Structure & Naming Convention</h3>
+  <div class="tree">
+<span class="tree-dir">PROJECT_NAME_v1.0_REL/</span>
+│
+├── <span class="tree-dir">Fabrication/</span>
+│   ├── <span class="tree-file">PROJNAME_Top_Copper.gbr</span>            <span class="cm">; .GTL</span>
+│   ├── <span class="tree-file">PROJNAME_Bottom_Copper.gbr</span>         <span class="cm">; .GBL</span>
+│   ├── <span class="tree-file">PROJNAME_Inner_L2_GND.gbr</span>         <span class="cm">; .G2</span>
+│   ├── <span class="tree-file">PROJNAME_Inner_L3_PWR.gbr</span>         <span class="cm">; .G3</span>
+│   ├── <span class="tree-file">PROJNAME_Top_SolderMask.gbr</span>       <span class="cm">; .GTS</span>
+│   ├── <span class="tree-file">PROJNAME_Bottom_SolderMask.gbr</span>    <span class="cm">; .GBS</span>
+│   ├── <span class="tree-file">PROJNAME_Top_Silkscreen.gbr</span>       <span class="cm">; .GTO</span>
+│   ├── <span class="tree-file">PROJNAME_Bottom_Silkscreen.gbr</span>    <span class="cm">; .GBO</span>
+│   ├── <span class="tree-file">PROJNAME_Board_Outline.gbr</span>        <span class="cm">; .GKO</span>
+│   ├── <span class="tree-file">PROJNAME_Drill_PTH.drl</span>            <span class="cm">; Excellon, plated holes</span>
+│   ├── <span class="tree-file">PROJNAME_Drill_NPTH.drl</span>           <span class="cm">; Excellon, non-plated</span>
+│   └── <span class="tree-file">PROJNAME_FabricationDrawing_v1.0.pdf</span>
+│
+├── <span class="tree-dir tree-file asm">Assembly/</span>
+│   ├── <span class="tree-file asm">PROJNAME_PickAndPlace_Top.csv</span>     <span class="cm">; Centroid, top side</span>
+│   ├── <span class="tree-file asm">PROJNAME_PickAndPlace_Bottom.csv</span>  <span class="cm">; Centroid, bottom side</span>
+│   ├── <span class="tree-file asm">PROJNAME_Top_PasteMask.gbr</span>        <span class="cm">; .GTP — stencil</span>
+│   ├── <span class="tree-file asm">PROJNAME_Bottom_PasteMask.gbr</span>     <span class="cm">; .GBP — stencil</span>
+│   ├── <span class="tree-file asm">PROJNAME_BOM_v1.0.xlsx</span>            <span class="cm">; Bill of Materials</span>
+│   └── <span class="tree-file asm">PROJNAME_AssemblyDrawing_v1.0.pdf</span>
+│
+├── <span class="tree-dir tree-file tst">Test/</span>
+│   ├── <span class="tree-file tst">PROJNAME_Netlist_IPC356A.ipc</span>      <span class="cm">; IPC-D-356A netlist</span>
+│   ├── <span class="tree-file tst">PROJNAME_TestPoint_Report.csv</span>     <span class="cm">; Test points and coverage</span>
+│   └── <span class="tree-file tst">PROJNAME_BSDL_Combined.bsd</span>        <span class="cm">; Boundary scan (if applicable)</span>
+│
+└── <span class="tree-dir tree-file doc">Documentation/</span>
+    ├── <span class="tree-file doc">PROJNAME_Schematic_v1.0.pdf</span>
+    ├── <span class="tree-file doc">PROJNAME_ReleaseNotes_v1.0.txt</span>   <span class="cm">; Change log, known issues</span>
+    ├── <span class="tree-file doc">PROJNAME_DRC_Report_v1.0.txt</span>     <span class="cm">; DRC pass evidence</span>
+    └── <span class="tree-file doc">PROJNAME_Checklist_Completed.pdf</span>
+  </div>
+
+  <h3>Naming Convention Rules</h3>
+  <ul>
+    <li><strong>Format:</strong> <code>PROJECTNAME_LAYER_TYPE_vMAJOR.MINOR.YYYYMMDD</code></li>
+    <li><strong>Versioning:</strong> Increment minor version (v1.1, v1.2) for non-stackup changes; major version (v2.0) for stackup changes or re-spins</li>
+    <li><strong>No spaces in filenames:</strong> Use underscores only — FAB CAM scripts break on spaces</li>
+    <li><strong>Archive format:</strong> ZIP or TAR.GZ with checksum (MD5/SHA256) for integrity verification</li>
+    <li><strong>Release tag:</strong> Append <code>_REL</code> for released packages; <code>_PROTO</code> for prototype-only releases</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 10 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s10">
+  <div class="section-header">
+    <span class="section-num">SECTION 10</span>
+    <h2>Real-World Release Flow</h2>
+  </div>
+
+  <div class="flow">
+    <div class="flow-step" data-n="1">
+      <div class="flow-step-title">Final DRC Check in CAD Tool</div>
+      <div class="flow-step-desc">Run full DRC in Cadence Allegro or Altium. Achieve zero critical violations. Document results in DRC report. Lock the design — no further changes after DRC pass.</div>
+    </div>
+    <div class="flow-step" data-n="2">
+      <div class="flow-step-title">Generate Fabrication Files</div>
+      <div class="flow-step-desc">Export all Gerber layers, NC drill files (PTH + NPTH), and fabrication drawing PDF. Verify file count matches expected layer count. Open in Gerber viewer immediately after generation.</div>
+    </div>
+    <div class="flow-step" data-n="3">
+      <div class="flow-step-title">Generate Assembly Files</div>
+      <div class="flow-step-desc">Export pick-and-place (top and bottom), paste mask Gerbers, and assembly drawing PDF. Generate BOM from the same design revision. Cross-validate BOM ref des list against PnP ref des list.</div>
+    </div>
+    <div class="flow-step" data-n="4">
+      <div class="flow-step-title">Generate Test Files</div>
+      <div class="flow-step-desc">Export IPC-D-356A netlist and test point report. Calculate test coverage percentage. If coverage &lt;80%, flag to DFT engineer before release. Export BSDL if boundary scan is in scope.</div>
+    </div>
+    <div class="flow-step" data-n="5">
+      <div class="flow-step-title">CAM Validation (Internal)</div>
+      <div class="flow-step-desc">Load full output package into CAM tool (CAM350 or Valor). Run layer alignment, drill-to-copper overlay, and netlist compare. Resolve any discrepancies before sending to manufacturer.</div>
+    </div>
+    <div class="flow-step" data-n="6">
+      <div class="flow-step-title">Manufacturer DFM Review</div>
+      <div class="flow-step-desc">Send package to FAB and assembly house. Request DFM report from FAB (Valor NPI). Review all FAB queries and DFM violations within 24 hours. Resolve or accept with written justification.</div>
+    </div>
+    <div class="flow-step" data-n="7">
+      <div class="flow-step-title">Release Package Archival</div>
+      <div class="flow-step-desc">Package all outputs into versioned ZIP archive with MD5 checksum. Tag release in version control (Git). Distribute to FAB, PCBA house, and test team via secure file share — not email attachments.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────── -->
+<!-- SECTION 11 -->
+<!-- ─────────────────────────────────────────── -->
+<section id="s11">
+  <div class="section-header">
+    <span class="section-num">SECTION 11</span>
+    <h2>Checklists</h2>
+  </div>
+
+  <h3>Pre-Release Checklist</h3>
+  <div class="checklist">
+    <div class="check-item crit"><div class="check-box"></div>DRC completed with ZERO critical violations — report saved</div>
+    <div class="check-item crit"><div class="check-box"></div>Design revision/version number updated in title block</div>
+    <div class="check-item crit"><div class="check-box"></div>All ECOs (Engineering Change Orders) incorporated and verified</div>
+    <div class="check-item"><div class="check-box"></div>Schematic cross-checked against PCB layout for all critical nets</div>
+    <div class="check-item"><div class="check-box"></div>Component footprints verified against manufacturer datasheet land patterns</div>
+    <div class="check-item"><div class="check-box"></div>Board outline verified as closed polygon — no gaps</div>
+    <div class="check-item"><div class="check-box"></div>Silkscreen: no text/lines overlapping exposed pads</div>
+    <div class="check-item"><div class="check-box"></div>All DNP components annotated in both schematic and layout</div>
+  </div>
+
+  <h3>Fabrication Checklist</h3>
+  <div class="checklist">
+    <div class="check-item crit"><div class="check-box"></div>All copper layers exported (count = stackup layer count)</div>
+    <div class="check-item crit"><div class="check-box"></div>Top and bottom solder mask layers present and verified in viewer</div>
+    <div class="check-item crit"><div class="check-box"></div>Drill file: PTH and NPTH as separate files</div>
+    <div class="check-item crit"><div class="check-box"></div>Drill overlay on copper in Gerber viewer — all pads have holes</div>
+    <div class="check-item crit"><div class="check-box"></div>Inner plane polarity confirmed (positive vs negative)</div>
+    <div class="check-item"><div class="check-box"></div>Fabrication drawing: stackup, finish, impedance, dimensions specified</div>
+    <div class="check-item"><div class="check-box"></div>Board outline layer present (GKO or mechanical layer)</div>
+    <div class="check-item"><div class="check-box"></div>Controlled impedance traces: width matches impedance calculator result</div>
+    <div class="check-item"><div class="check-box"></div>Fiducials: minimum 3 global, correct shape, clear area around them</div>
+    <div class="check-item"><div class="check-box"></div>Gerber format: RS-274X (not RS-274D)</div>
+    <div class="check-item"><div class="check-box"></div>File naming: all files clearly labeled by layer name, no ambiguity</div>
+  </div>
+
+  <h3>Assembly Checklist</h3>
+  <div class="checklist">
+    <div class="check-item crit"><div class="check-box"></div>BOM: every component has MPN, manufacturer, quantity, and description</div>
+    <div class="check-item crit"><div class="check-box"></div>BOM ref des list cross-checked against PnP ref des list — no mismatches</div>
+    <div class="check-item crit"><div class="check-box"></div>PnP rotation values verified for at minimum polar components (diodes, ICs, caps)</div>
+    <div class="check-item crit"><div class="check-box"></div>Paste mask: no apertures on vias or NPTH holes</div>
+    <div class="check-item"><div class="check-box"></div>DNP parts removed from PnP file or clearly flagged</div>
+    <div class="check-item"><div class="check-box"></div>Assembly drawing: polarity marks visible for diodes, ICs, capacitors</div>
+    <div class="check-item"><div class="check-box"></div>BOM: RoHS compliance column populated</div>
+    <div class="check-item"><div class="check-box"></div>AVL (Approved Vendor List) specified for all critical or long-lead components</div>
+    <div class="check-item"><div class="check-box"></div>Stencil thickness and aperture reduction rules communicated to assembler</div>
+  </div>
+
+  <h3>Test Readiness Checklist</h3>
+  <div class="checklist">
+    <div class="check-item crit"><div class="check-box"></div>IPC-D-356A netlist exported and validated against CAD netlist</div>
+    <div class="check-item crit"><div class="check-box"></div>Test coverage calculated — ≥80% of nets have accessible test points</div>
+    <div class="check-item"><div class="check-box"></div>All power rails have at least one test point</div>
+    <div class="check-item"><div class="check-box"></div>Test point pads: minimum 1.0mm diameter (ICT) or 0.8mm (flying probe)</div>
+    <div class="check-item"><div class="check-box"></div>Test point report reviewed by test engineer</div>
+    <div class="check-item"><div class="check-box"></div>BSDL files collected from IC vendors (if boundary scan applicable)</div>
+    <div class="check-item"><div class="check-box"></div>ICT fixture design initiated (if required) — long lead time item</div>
+  </div>
+
+  <div class="card ok" style="margin-top:32px;">
+    <div class="card-title">✅ Final Release Gate</div>
+    <p>All three checklists must be completed and signed off before the release package is sent to any external manufacturer. The release engineer must archive:</p>
+    <ul>
+      <li>Completed checklist (PDF or signed document)</li>
+      <li>DRC report (pass evidence)</li>
+      <li>CAM validation screenshots or report</li>
+      <li>FAB DFM response (when received)</li>
+      <li>Release archive with checksum</li>
+    </ul>
+    <p style="margin-top:10px; font-family: var(--mono); font-size:11px; color:var(--accent)">STANDARD: IPC-A-600 (FAB acceptability) | IPC-A-610 (Assembly acceptability)</p>
+  </div>
+
+</section>
+
+</main>
+</div>
+
+</body>
+</html>
