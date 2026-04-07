@@ -28,15 +28,15 @@ const CalculatorDiagram = ({ type, activeField }) => {
         <rect x="50" y="30" width="100" height="60" rx="4" className="svg-body" />
         <rect x="50" y="30" width="20" height="60" rx="1" className="svg-terminal" />
         <rect x="130" y="30" width="20" height="60" rx="1" className="svg-terminal" />
-        
+
         {/* L Max Label */}
         <line x1="50" y1="105" x2="150" y2="105" className={`svg-dim-line ${activeField === 'lMax' ? 'active' : ''}`} />
         <text x="100" y="115" textAnchor="middle" className={`svg-dim-text ${activeField === 'lMax' ? 'active' : ''}`}>L (Body Length)</text>
-        
+
         {/* T Min (S) Label */}
         <line x1="70" y1="60" x2="130" y2="60" className={`svg-dim-line ${activeField === 'tMin' ? 'active' : ''}`} />
         <text x="100" y="55" textAnchor="middle" className={`svg-dim-text ${activeField === 'tMin' ? 'active' : ''}`}>S (Separation)</text>
-        
+
         {/* W Max Label */}
         <line x1="170" y1="30" x2="170" y2="90" className={`svg-dim-line ${activeField === 'wMax' ? 'active' : ''}`} />
         <text x="175" y="60" transform="rotate(90, 175, 60)" className={`svg-dim-text ${activeField === 'wMax' ? 'active' : ''}`}>W (Width)</text>
@@ -49,15 +49,15 @@ const CalculatorDiagram = ({ type, activeField }) => {
       {/* IC Leads */}
       {[0, 1, 2].map(i => (
         <React.Fragment key={i}>
-          <rect x="40" y={40 + i*15} width="20" height="10" rx="1" className="svg-lead" />
-          <rect x="140" y={40 + i*15} width="20" height="10" rx="1" className="svg-lead" />
+          <rect x="40" y={40 + i * 15} width="20" height="10" rx="1" className="svg-lead" />
+          <rect x="140" y={40 + i * 15} width="20" height="10" rx="1" className="svg-lead" />
         </React.Fragment>
       ))}
-      
+
       {/* L Max (Overall Span) */}
       <line x1="40" y1="105" x2="160" y2="105" className={`svg-dim-line ${activeField === 'lMax' ? 'active' : ''}`} />
       <text x="100" y="115" textAnchor="middle" className={`svg-dim-text ${activeField === 'lMax' ? 'active' : ''}`}>L (Overall Span)</text>
-      
+
       {/* T Min (Heel Span) */}
       <line x1="60" y1="65" x2="140" y2="65" className={`svg-dim-line ${activeField === 'tMin' ? 'active' : ''}`} />
       <text x="100" y="60" textAnchor="middle" className={`svg-dim-text ${activeField === 'tMin' ? 'active' : ''}`}>T (Heel Span)</text>
@@ -83,9 +83,9 @@ const IPCCalculator = () => {
     const { lMax, wMax, tMin } = inputs;
     const { jt, jh, js } = IPC_CONSTANTS.FILLET_GOALS[packageType][densityLevel];
     const { CL, CS, CP } = IPC_CONSTANTS.TOLERANCES;
-    
+
     const rms = Math.sqrt(Math.pow(CL, 2) + Math.pow(CS, 2) + Math.pow(CP, 2));
-    
+
     // Safety check for empty inputs
     const l = parseFloat(lMax || 0);
     const t = parseFloat(tMin || 0);
@@ -94,7 +94,7 @@ const IPCCalculator = () => {
     const Z = l + 2 * jt + rms;
     const G = t - 2 * jh - rms;
     const X = w + 2 * js + rms;
-    
+
     const padLength = (Z - G) / 2;
     const centerToCenter = G + padLength;
 
@@ -136,14 +136,14 @@ const IPCCalculator = () => {
             <CheckCircle2 className="text-secondary-status" size={14} />
           </div>
           <div className="tooltip-container">
-            <button 
+            <button
               className="text-xs text-text-dim hover:text-accent-primary flex items-center gap-1 bg-white/5 px-3 py-1.5 rounded-md transition-colors"
               onClick={() => setShowTooltip(!showTooltip)}
             >
               <Info size={14} />
               Technical Reference
             </button>
-            
+
             {showTooltip && (
               <div className="calc-tooltip animate-fade-in">
                 <div className="tooltip-arrow"></div>
@@ -157,7 +157,7 @@ const IPCCalculator = () => {
                   <div className="formula-line">X = W<sub>max</sub> + 2J<sub>s</sub> + RMS</div>
                   <div className="tooltip-divider"></div>
                   <div className="tooltip-stats">
-                    Active Goals (Density {densityLevel}):<br/>
+                    Active Goals (Density {densityLevel}):<br />
                     Jt: {results.jt} | Jh: {results.jh} | Js: {results.js}
                   </div>
                 </div>
@@ -174,13 +174,13 @@ const IPCCalculator = () => {
           <div className="panel-section">
             <h4 className="panel-title">1. Configuration</h4>
             <div className="toggle-group">
-              <button 
+              <button
                 className={`toggle-btn ${packageType === 'GULL_WING' ? 'active' : ''}`}
                 onClick={() => setPackageType('GULL_WING')}
               >
                 Leaded IC (Gull-wing)
               </button>
-              <button 
+              <button
                 className={`toggle-btn ${packageType === 'CHIP' ? 'active' : ''}`}
                 onClick={() => setPackageType('CHIP')}
               >
@@ -189,7 +189,7 @@ const IPCCalculator = () => {
             </div>
             <div className="toggle-group mt-3">
               {['A', 'B', 'C'].map(level => (
-                <button 
+                <button
                   key={level}
                   className={`toggle-btn ${densityLevel === level ? 'active' : ''}`}
                   onClick={() => setDensityLevel(level)}
@@ -201,7 +201,7 @@ const IPCCalculator = () => {
           </div>
 
           <div className="panel-section diagram-wrapper no-select py-4">
-             <CalculatorDiagram type={packageType} activeField={activeField} />
+            <CalculatorDiagram type={packageType} activeField={activeField} />
           </div>
 
           <div className="panel-section mt-2">
@@ -210,10 +210,10 @@ const IPCCalculator = () => {
               <div className="input-item">
                 <label>L (Length) / L<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    value={inputs.lMax} 
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={inputs.lMax}
                     onFocus={() => setActiveField('lMax')}
                     onBlur={() => setActiveField(null)}
                     onChange={(e) => handleInputChange('lMax', e.target.value)}
@@ -223,10 +223,10 @@ const IPCCalculator = () => {
               <div className="input-item">
                 <label>W (Width) / W<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    value={inputs.wMax} 
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={inputs.wMax}
                     onFocus={() => setActiveField('wMax')}
                     onBlur={() => setActiveField(null)}
                     onChange={(e) => handleInputChange('wMax', e.target.value)}
@@ -236,10 +236,10 @@ const IPCCalculator = () => {
               <div className="input-item">
                 <label>H (Height) / H<sub>max</sub> (mm)</label>
                 <div className="input-with-desc">
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    value={inputs.height} 
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={inputs.height}
                     onFocus={() => setActiveField('height')}
                     onBlur={() => setActiveField(null)}
                     onChange={(e) => handleInputChange('height', e.target.value)}
@@ -249,10 +249,10 @@ const IPCCalculator = () => {
               <div className="input-item">
                 <label>S (Gap) / T<sub>min</sub> (mm)</label>
                 <div className="input-with-desc">
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    value={inputs.tMin} 
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={inputs.tMin}
                     onFocus={() => setActiveField('tMin')}
                     onBlur={() => setActiveField(null)}
                     onChange={(e) => handleInputChange('tMin', e.target.value)}
@@ -263,10 +263,10 @@ const IPCCalculator = () => {
                 <div className="input-item">
                   <label>e (Lead Pitch) (mm)</label>
                   <div className="input-with-desc">
-                    <input 
-                      type="number" 
-                      step="0.01" 
-                      value={inputs.pitch} 
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={inputs.pitch}
                       onFocus={() => setActiveField('pitch')}
                       onBlur={() => setActiveField(null)}
                       onChange={(e) => handleInputChange('pitch', e.target.value)}
@@ -283,7 +283,7 @@ const IPCCalculator = () => {
         <div className="calc-panel result-panel">
           <div className="panel-section">
             <h4 className="panel-title text-accent">3. Calculated Pad Dimensions</h4>
-            
+
             <div className="result-main">
               <div className="result-card glow-cyan">
                 <span className="res-label">PAD LENGTH (Y)</span>
@@ -300,7 +300,7 @@ const IPCCalculator = () => {
                 <span className="block text-[10px] text-text-dim uppercase tracking-wider mb-1">IPC-7351B Standard Name</span>
                 <code className="text-accent-primary font-mono text-sm">{results.ipcName}</code>
               </div>
-              <button 
+              <button
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${copied ? 'bg-secondary-status text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
                 onClick={copyToClipboard}
               >
@@ -336,7 +336,7 @@ const IPCCalculator = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="calc-footer">
         <Info size={14} className="mr-2 text-accent" />
         <span>Values calculated per IPC-7351B methodologies. Formulas include fabrication (CL), placement (CS), and stencil (CP) tolerances.</span>

@@ -1761,7 +1761,7 @@ a:hover {
   margin: var(--space-8) 0;
   backdrop-filter: blur(10px);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ipc-calculator::after {
@@ -2081,7 +2081,7 @@ a:hover {
 .calc-tooltip {
   position: absolute;
   bottom: calc(100% + 12px);
-  left: 0;
+  right: 0;
   width: 260px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-medium);
@@ -2096,7 +2096,7 @@ a:hover {
 .tooltip-arrow {
   position: absolute;
   bottom: -6px;
-  left: 12px;
+  right: 12px;
   width: 12px;
   height: 12px;
   background: var(--bg-elevated);
