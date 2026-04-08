@@ -320,7 +320,7 @@ export default function ContentViewer() {
 
                   {sec.type === 'emi-visualizer' && <EMIVisualizer />}
 
-                  {sec.type === 'pi-target-calc' && <PITargetCalculator />}
+
 
                   {sec.type === 'via-resonance-calc' && <ViaResonanceCalculator />}
 

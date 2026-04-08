@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Ruler, Activity, AlertTriangle, CheckCircle2, Drill, ShieldCheck, Waves } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
@@ -23,7 +24,8 @@ const AspectRatioCalculator = () => {
   }, [thickness, drill, stubLength, dk]);
 
   const handleInputChange = (key, value) => {
-    const rawValue = parseFloat(value) || 0;
+    if (value === "" || isNaN(parseFloat(value))) return;
+    const rawValue = parseFloat(value);
     const mmValue = unitSystem === 'mil' ? rawValue / MM_TO_MIL : rawValue;
     
     if (key === 'thickness') setThickness(mmValue);
@@ -102,25 +104,42 @@ const AspectRatioCalculator = () => {
 
             {mode === 'aspect' ? (
               <>
-                <div className="zdiff-input-group">
-                  <label className="zdiff-label">Board Thickness ({unitSystem})</label>
-                  <input type="number" step="0.1" value={convertValue(thickness)} onChange={e => handleInputChange('thickness', e.target.value)} className="zdiff-input" />
-                </div>
-                <div className="zdiff-input-group">
-                  <label className="zdiff-label zdiff-label--orange">Drill Diameter ({unitSystem})</label>
-                  <input type="number" step="0.1" value={convertValue(drill)} onChange={e => handleInputChange('drill', e.target.value)} className="zdiff-input zdiff-input--orange" />
-                </div>
+                <EngineeringInput
+                  label="Board Thickness"
+                  unit={unitSystem}
+                  value={convertValue(thickness)}
+                  onChange={e => handleInputChange('thickness', e.target.value)}
+                  step="0.1"
+                />
+                <EngineeringInput
+                  label="Drill Diameter"
+                  unit={unitSystem}
+                  value={convertValue(drill)}
+                  onChange={e => handleInputChange('drill', e.target.value)}
+                  step="0.1"
+                  className="zdiff-input-group--orange"
+                />
               </>
             ) : (
               <>
-                <div className="zdiff-input-group">
-                  <label className="zdiff-label">Unused Stub ({unitSystem})</label>
-                  <input type="number" step="0.1" value={convertValue(stubLength)} onChange={e => handleInputChange('stub', e.target.value)} className="zdiff-input" />
-                </div>
-                <div className="zdiff-input-group">
-                  <label className="zdiff-label">εr (Dk)</label>
-                  <input type="number" step="0.1" value={dk} onChange={e => setDk(parseFloat(e.target.value) || 1)} className="zdiff-input" />
-                </div>
+                <EngineeringInput
+                  label="Unused Stub"
+                  unit={unitSystem}
+                  value={convertValue(stubLength)}
+                  onChange={e => handleInputChange('stub', e.target.value)}
+                  step="0.1"
+                />
+                <EngineeringInput
+                  label="εr (Dielectric Constant)"
+                  unit="Dk"
+                  value={dk}
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (val === "" || isNaN(parseFloat(val))) return;
+                    setDk(parseFloat(val));
+                  }}
+                  step="0.1"
+                />
               </>
             )}
           </div>

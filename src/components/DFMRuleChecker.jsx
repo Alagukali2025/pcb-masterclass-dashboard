@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle2, AlertCircle, ShieldCheck, Zap, Ruler, Sliders, Activity } from 'lucide-react';
 import { useDesign } from '../context/DesignContext';
+import EngineeringInput from './EngineeringInput';
 
 // ─── Status helpers ────────────────────────────────────────────────────────────
 function StatusBadge({ level }) {
@@ -41,75 +42,85 @@ function RulePanel({ title, icon: Icon, accentClass, status, result, children })
 }
 
 export default function DFMRuleChecker() {
-  const { activeStackup } = useDesign();
+  const { activeStackup, updateStackup } = useDesign();
 
-  // Rule 1 — Aspect Ratio
+  // 1. Core Component States (Hooks ALWAYS at the top)
   const [thickness, setThickness] = useState(1.6);
   const [drill, setDrill]         = useState(0.2);
-
-  // Sync board thickness with global stackup (if H is very small, we assume it's just one layer, 
-  // but usually "Board Thickness" is the sum. For this DFM check, we'll use a standard 1.6mm 
-  // unless the stackup height implies a thinner core).
-  useEffect(() => {
-    // If H indicates a thin core flex or similar
-    if (activeStackup.height < 0.1) {
-      setThickness(0.8);
-    }
-  }, [activeStackup.height]);
-
-  // Rule 2 — Copper vs Trace
   const [copperOz, setCopperOz]   = useState(1);
   const [traceWidth, setTraceWidth] = useState(5); // mil
+  const [topCopper, setTopCopper] = useState(60); // %
+  const [padDia, setPadDia]       = useState(0.5); // mm
 
-  // Sync trace width from global (mm to mil conversion)
+  // 2. SSOT Synchronizers
+  useEffect(() => {
+    if (activeStackup.height < 0.1) setThickness(0.8);
+  }, [activeStackup.height]);
+
   useEffect(() => {
     const widthMil = parseFloat((activeStackup.width * 39.37).toFixed(1));
     setTraceWidth(widthMil);
     
-    // Auto-detect copper weight based on thickness in mm
     if (activeStackup.thickness >= 0.07) setCopperOz(2);
     else if (activeStackup.thickness >= 0.03) setCopperOz(1);
     else setCopperOz(0.5);
   }, [activeStackup.width, activeStackup.thickness]);
 
-  // Rule 3 — Copper Balance
-  const [topCopper, setTopCopper] = useState(60); // %
+  // 3. Derived Engineering Variables
   const bottomCopper = 100 - topCopper;
 
-  // ─── Rule 1 calculations ──────────────────────────────────────────
+  // ─── Rule 1: Aspect Ratio ────────────────────────────────
   const aspectRatio  = drill > 0 ? parseFloat((thickness / drill).toFixed(2)) : 0;
-  const arStatus     = aspectRatio > 10 ? 'fail' : aspectRatio > 8 ? 'warn' : 'pass';
-  const arMessage    = aspectRatio > 10
-    ? 'High Risk for Plating Voids — Consult Fabricator. The drill hole cannot be reliably plated at this depth-to-diameter ratio.'
-    : aspectRatio > 8
-    ? 'Marginal zone (8–10:1). Achievable with controlled-depth drilling or Class 3 vendors, but confirm fab capability.'
-    : 'Aspect ratio is within IPC-2221B standard limits. Suitable for Class 2 production at all Tier 1 fabricators.';
+  const arLimits = activeStackup.ipcClass === 3 ? { fail: 8, warn: 6 } : activeStackup.ipcClass === 1 ? { fail: 12, warn: 10 } : { fail: 10, warn: 8 };
+  const arStatus = aspectRatio > arLimits.fail ? 'fail' : aspectRatio > arLimits.warn ? 'warn' : 'pass';
+  const arMessage = aspectRatio > arLimits.fail
+    ? `CRITICAL ASPECT RATIO. IPC Class ${activeStackup.ipcClass} limit is ${arLimits.fail}:1. Plating voids likely.`
+    : aspectRatio > arLimits.warn
+    ? `Marginal Aspect Ratio (${arLimits.warn}-${arLimits.fail}:1). Confirm with Tier 1 fabs.`
+    : `Aspect ratio ${aspectRatio}:1 satisfies IPC Class ${activeStackup.ipcClass} standards.`;
 
-  // ─── Rule 2 calculations ──────────────────────────────────────────
-  const minTrace = { 0.5: 3, 1: 4, 2: 6 };
-  const minSafe  = minTrace[copperOz] || 4;
+  // ─── Rule 2: Trace vs Copper ─────────────────────────────
+  const baseMinTrace = { 0.5: 3, 1: 4, 2: 6 };
+  const classBuffer = activeStackup.ipcClass === 3 ? 2 : activeStackup.ipcClass === 1 ? -1 : 0;
+  const minSafe = (baseMinTrace[copperOz] || 4) + classBuffer;
   const traceStatus = traceWidth < minSafe ? (copperOz >= 2 ? 'fail' : 'alert') : 'pass';
   const traceMessage = traceWidth < minSafe
-    ? `Etch factor may reduce yield. At ${copperOz}oz copper, traces narrower than ${minSafe} mil tend to over-etch during chemical process, causing opens. Consider increasing trace width or reducing copper weight.`
-    : `Trace width is safe for ${copperOz}oz copper. Minimum safe width of ${minSafe} mil satisfied.`;
+    ? `Etch factor risk. For Class ${activeStackup.ipcClass}, min safe width is ${minSafe} mil.`
+    : `Trace width safe for IPC Class ${activeStackup.ipcClass} reliability.`;
 
-  // ─── Rule 3 calculations ──────────────────────────────────────────
-  const imbalance   = Math.abs(topCopper - bottomCopper);
-  const balStatus   = imbalance > 30 ? 'fail' : imbalance > 15 ? 'warn' : 'pass';
-  const balMessage  = imbalance > 30
-    ? 'Severe copper imbalance. High risk of board bow/twist (>0.75%) during reflow. Add copper thieving to the sparse layer side immediately.'
-    : imbalance > 15
-    ? 'Moderate imbalance detected. Consider copper thieving fills on the sparser side to equalise resin flow during lamination press.'
-    : 'Copper density is well-balanced. Board symmetry meets IPC-6012 bow & twist criteria (<0.75%).';
+  // ─── Rule 3: Copper Balance ──────────────────────────────
+  const imbalance = Math.abs(topCopper - bottomCopper);
+  const balLimits = activeStackup.ipcClass === 3 ? { fail: 20, warn: 10 } : activeStackup.ipcClass === 1 ? { fail: 40, warn: 20 } : { fail: 30, warn: 15 };
+  const balStatus = imbalance > balLimits.fail ? 'fail' : imbalance > balLimits.warn ? 'warn' : 'pass';
+  const balMessage = imbalance > balLimits.fail
+    ? `EXCESSIVE IMBALANCE. Bow/Twist likely to exceed 0.75% for Class ${activeStackup.ipcClass}.`
+    : imbalance > balLimits.warn
+    ? `Moderate imbalance. Consider thieving for Class ${activeStackup.ipcClass} flatness.`
+    : `Copper balance satisfies IPC-6012E requirements.`;
 
-  // ─── Rule 4 calculations (New: High-Speed Coupling) ──────────────
+  // ─── Rule 4: High-Speed Coupling ─────────────────────────
   const shRatio = activeStackup.height > 0 ? activeStackup.spacing / activeStackup.height : 0;
-  const cpStatus = shRatio > 3 ? 'alert' : shRatio < 1 ? 'pass' : 'warn';
-  const cpMessage = shRatio > 3
-    ? `LOOSE COUPLING RISK (S > 3H). The pair is too far apart relative to the ground plane height. High risk of crosstalk and EMI. Consider reducing spacing or increasing height.`
-    : shRatio < 1
-    ? `TIGHT COUPLING (S < H). Optimal for noise immunity and signal integrity. High common-mode rejection achieved.`
-    : `MODERATE COUPLING (1 < S < 3H). Typical for standard routing, but verify crosstalk margins if adjacent pairs are close.`;
+  const cpLimit = activeStackup.ipcClass === 3 ? 2.5 : 3.0;
+  const cpStatus = shRatio > cpLimit ? 'alert' : shRatio < 1 ? 'pass' : 'warn';
+  const cpMessage = shRatio > cpLimit
+    ? `LOOSE COUPLING. Crosstalk risk for Class ${activeStackup.ipcClass} High-Speed protocols.`
+    : shRatio < 1 ? `TIGHT COUPLING. Optimal SI and EMI suppression.` : `MODERATE COUPLING. Verify crosstalk margins.`;
+
+  // ─── Rule 5: Annular Ring ───────────────────────────────
+  const annularRing = (padDia - drill) / 2;
+  const ringLimit = activeStackup.ipcClass === 3 ? 0.1 : 0.05; 
+  const ringStatus = annularRing < ringLimit ? 'fail' : annularRing < ringLimit + 0.05 ? 'warn' : 'pass';
+  const ringMessage = annularRing < ringLimit
+    ? `CRITICAL ANNULAR RING. Breakout risk. IPC Class ${activeStackup.ipcClass} requires min ${ringLimit}mm.`
+    : `Annular ring satisfies IPC Class ${activeStackup.ipcClass} minimums.`;
+
+  // ─── Rule 6: Solder Mask Dam ────────────────────────────
+  const maskDam = activeStackup.spacing; 
+  const damLimit = activeStackup.ipcClass === 3 ? 0.125 : activeStackup.ipcClass === 1 ? 0.075 : 0.1; 
+  const damStatus = maskDam < damLimit ? 'fail' : maskDam < damLimit + 0.05 ? 'warn' : 'pass';
+  const damMessage = maskDam < damLimit
+    ? `BRIDGE RISK. Solder mask dam < ${damLimit}mm fails Class ${activeStackup.ipcClass} standards.`
+    : `Solder mask dam satisfies ${damLimit}mm reliability threshold.`;
 
   return (
     <div className="dfm-card slide-up">
@@ -123,188 +134,146 @@ export default function DFMRuleChecker() {
             <h4 className="dfm-title">Real-Time DFM Rule Checker</h4>
             <span className="px-2 py-0.5 rounded-full bg-blue-10 text-[8px] font-black text-blue-500 border border-blue-20 animate-pulse">SSOT SYNC ACTIVE</span>
           </div>
-          <p className="dfm-subtitle">IPC-2221B · 4 Active Rule Engines · Live Validation</p>
+          <p className="dfm-subtitle">IPC-2221B & 6012E · 6 Active Rule Engines · Live Validation</p>
+        </div>
+        <div className="ml-auto">
+          <div className="zdiff-toggle-group">
+            {[1, 2, 3].map(cls => (
+              <button
+                key={cls}
+                type="button"
+                className={`zdiff-toggle-btn text-[10px] font-bold ${activeStackup.ipcClass === cls ? 'zdiff-toggle-btn--active-green' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateStackup({ ipcClass: cls });
+                }}
+              >
+                Class {cls}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="dfm-rules-grid">
 
-        {/* ─── Rule 1: Aspect Ratio ──────────────────────────────── */}
-        <RulePanel
-          title="Rule 1 — Drill Aspect Ratio"
-          icon={Ruler}
-          accentClass="dfm-accent-blue"
-          status={arStatus}
-          result={`${aspectRatio}:1`}
-        >
+        {/* Rule 1: Aspect Ratio */}
+        <RulePanel title="Rule 1 — Drill Aspect Ratio" icon={Ruler} accentClass="dfm-accent-blue" status={arStatus} result={`${aspectRatio}:1`}>
           <div className="dfm-inputs-row">
-            <div className="dfm-input-group">
-              <label className="dfm-input-label">Board Thickness (mm)</label>
-              <div className="dfm-input-wrap">
-                <input
-                  type="number" min="0.4" max="6" step="0.1"
-                  value={thickness}
-                  onChange={e => setThickness(Number(e.target.value))}
-                  className="dfm-input"
-                />
-                <span className="dfm-unit">mm</span>
-              </div>
-            </div>
-            <div className="dfm-input-group">
-              <label className="dfm-input-label">Smallest Drill Diameter (mm)</label>
-              <div className="dfm-input-wrap">
-                <input
-                  type="number" min="0.05" max="3" step="0.05"
-                  value={drill}
-                  onChange={e => setDrill(Number(e.target.value))}
-                  className="dfm-input"
-                />
-                <span className="dfm-unit">mm</span>
-              </div>
-            </div>
+            <EngineeringInput 
+              label="Board Thickness" unit="mm" value={thickness} 
+              onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setThickness(Number(val)); }}
+              step="0.1" min="0.4" max="6" 
+            />
+            <EngineeringInput 
+              label="Smallest Drill" unit="mm" value={drill} 
+              onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setDrill(Number(val)); }}
+              step="0.05" min="0.05" max="3" 
+            />
           </div>
-
-          {/* Visual ratio bar */}
           <div className="dfm-bar-wrap">
             <div className="dfm-bar-track">
-              <div
-                className={`dfm-bar-fill dfm-bar-${arStatus}`}
-                style={{ width: `${Math.min((aspectRatio / 14) * 100, 100)}%` }}
-              />
-              <div className="dfm-bar-marker" style={{ left: `${(8/14)*100}%` }} title="8:1 Marginal" />
-              <div className="dfm-bar-marker dfm-bar-marker-red" style={{ left: `${(10/14)*100}%` }} title="10:1 Limit" />
+              <div className={`dfm-bar-fill dfm-bar-${arStatus}`} style={{ width: `${Math.min((aspectRatio / 14) * 100, 100)}%` }} />
+              <div className="dfm-bar-marker" style={{ left: `${(arLimits.warn/14)*100}%` }} title="Warning" />
+              <div className="dfm-bar-marker dfm-bar-marker-red" style={{ left: `${(arLimits.fail/14)*100}%` }} title="Limit" />
             </div>
             <div className="dfm-bar-labels">
-              <span>0:1</span><span>8:1 Marginal</span><span>10:1 Limit</span><span>14:1+</span>
+              <span>0:1</span><span>{arLimits.warn}:1 Warn</span><span>{arLimits.fail}:1 Fail</span><span>14:1+</span>
             </div>
           </div>
-
           <p className="dfm-message">{arMessage}</p>
         </RulePanel>
 
-        {/* ─── Rule 2: Copper vs Trace ────────────────────────────── */}
-        <RulePanel
-          title="Rule 2 — Copper Weight vs. Trace Width"
-          icon={Zap}
-          accentClass="dfm-accent-amber"
-          status={traceStatus}
-          result={`${traceWidth} mil / ${copperOz}oz Cu`}
-        >
+        {/* Rule 2: Copper vs Trace */}
+        <RulePanel title="Rule 2 — Copper Weight vs. Trace Width" icon={Zap} accentClass="dfm-accent-amber" status={traceStatus} result={`${traceWidth} mil / ${copperOz}oz Cu`}>
           <p className="text-[10px] text-blue-500 font-bold mb-3 italic">⚡ Auto-synced from Stackup Engine</p>
           <div className="dfm-inputs-row">
             <div className="dfm-input-group">
               <label className="dfm-input-label">Copper Weight</label>
               <div className="dfm-select-group">
                 {[0.5, 1, 2].map(oz => (
-                  <button
-                    key={oz}
-                    className={`dfm-oz-btn ${copperOz === oz ? 'dfm-oz-active' : ''}`}
-                    disabled
-                  >
-                    {oz} oz
-                  </button>
+                  <button key={oz} className={`dfm-oz-btn ${copperOz === oz ? 'dfm-oz-active' : ''}`} disabled> {oz} oz </button>
                 ))}
               </div>
             </div>
             <div className="dfm-input-group">
-              <label className="dfm-input-label">Minimum Trace Width (mil)</label>
-              <div className="dfm-input-wrap">
-                <input
-                  type="number" value={traceWidth}
-                  disabled
-                  className="dfm-input opacity-60 cursor-not-allowed"
-                />
-                <span className="dfm-unit">mil</span>
-              </div>
+              <label className="dfm-input-label">Current Width</label>
+              <div className="dfm-input-wrap"><div className="dfm-input opacity-60 bg-transparent">{traceWidth} mil</div></div>
             </div>
           </div>
-
           <div className="dfm-etch-guide">
             {[0.5, 1, 2].map(oz => (
-              <div key={oz} className={`dfm-etch-item ${copperOz === oz ? 'dfm-etch-active' : ''}`}>
+              <div key={oz} className={`dfm-etch-item ${copperOz === oz ? 'dfm-etch-active' : 'opacity-40'}`}>
                 <span className="dfm-etch-oz">{oz}oz Cu</span>
-                <span className="dfm-etch-min">Min safe: {minTrace[oz]} mil</span>
+                <span className="dfm-etch-min">Safe Min: {(baseMinTrace[oz] || 4) + classBuffer} mil</span>
               </div>
             ))}
           </div>
-
           <p className="dfm-message">{traceMessage}</p>
         </RulePanel>
 
-        {/* ─── Rule 3: Copper Density Balance ─────────────────────── */}
-        <RulePanel
-          title="Rule 3 — Copper Density Balance (Bow/Twist)"
-          icon={Sliders}
-          accentClass="dfm-accent-cyan"
-          status={balStatus}
-          result={`${imbalance}% Δ`}
-        >
+        {/* Rule 3: Copper Density Balance */}
+        <RulePanel title="Rule 3 — Copper Balance (Bow/Twist)" icon={Sliders} accentClass="dfm-accent-cyan" status={balStatus} result={`${imbalance}% Δ`}>
           <div className="dfm-balance-group">
-            <label className="dfm-input-label">
-              Top Layer Copper Density: <strong>{topCopper}%</strong> &nbsp;|&nbsp; Bottom: <strong>{bottomCopper}%</strong>
-            </label>
-            <input
-              type="range" min="10" max="90" value={topCopper}
-              onChange={e => setTopCopper(Number(e.target.value))}
-              className="dfm-slider"
-            />
-            <div className="dfm-balance-bar">
-              <div
-                className="dfm-balance-top"
-                style={{ width: `${topCopper}%` }}
-              />
-            </div>
-            <div className="dfm-balance-labels">
-              <span>Top ({topCopper}%)</span>
-              <span>Bottom ({bottomCopper}%)</span>
-            </div>
+            <label className="dfm-input-label">Top: <strong>{topCopper}%</strong> | Bottom: <strong>{bottomCopper}%</strong></label>
+            <input type="range" min="10" max="90" value={topCopper} onChange={e => setTopCopper(Number(e.target.value))} className="dfm-slider" />
+            <div className="dfm-balance-bar"><div className="dfm-balance-top" style={{ width: `${topCopper}%` }} /></div>
           </div>
-
           <p className="dfm-message">{balMessage}</p>
-          <p className="dfm-rule-ref">Ref: IPC-6012E — Bow &amp; Twist ≤ 0.75% for SMT population</p>
         </RulePanel>
 
-        {/* ─── Rule 4: High-Speed Spacing (New) ───────────────────── */}
-        <RulePanel
-          title="Rule 4 — Differential Spacing / Coupling"
-          icon={Activity}
-          accentClass="dfm-accent-red"
-          status={cpStatus}
-          result={`${shRatio.toFixed(2)} S/H`}
-        >
+        {/* Rule 4: High-Speed Coupling */}
+        <RulePanel title="Rule 4 — Signal Coupling (S/H Ratio)" icon={Activity} accentClass="dfm-accent-red" status={cpStatus} result={`${shRatio.toFixed(2)} S/H`}>
           <div className="p-4 bg-black-20 rounded-xl border border-white-05 mb-4">
-            <div className="flex justify-between text-[10px] font-bold text-tertiary uppercase tracking-widest mb-2">
-              <span>Tight Coupling</span>
-              <span>Loose Coupling</span>
-            </div>
+            <div className="flex justify-between text-[10px] font-bold text-tertiary uppercase tracking-widest mb-2"><span>Tight</span><span>Loose</span></div>
             <div className="h-2 bg-black-40 rounded-full overflow-hidden relative border border-white-05">
-              <div 
-                className={`h-full transition-all duration-500 ${shRatio > 3 ? 'bg-red-500' : shRatio < 1 ? 'bg-green-500' : 'bg-orange-500'}`}
-                style={{ width: `${Math.min((shRatio / 5) * 100, 100)}%` }}
-              />
-              <div className="absolute top-0 left-[20%] w-0.5 h-full bg-white-20" />
-              <div className="absolute top-0 left-[60%] w-0.5 h-full bg-white-20" />
-            </div>
-            <div className="flex justify-between text-[8px] text-tertiary mt-1 px-1">
-              <span>S=H</span>
-              <span>S=3H Limit</span>
+              <div className={`h-full transition-all duration-500 ${shRatio > 3 ? 'bg-red-500' : shRatio < 1 ? 'bg-green-500' : 'bg-orange-500'}`} style={{ width: `${Math.min((shRatio / 5) * 100, 100)}%` }} />
             </div>
           </div>
           <p className="dfm-message">{cpMessage}</p>
         </RulePanel>
 
+        {/* Rule 5: Annular Ring */}
+        <RulePanel title="Rule 5 — Annular Ring Support" icon={ShieldCheck} accentClass="dfm-accent-green" status={ringStatus} result={`${annularRing.toFixed(3)} mm`}>
+          <p className="text-[10px] text-blue-500 font-bold mb-3 italic">⚡ Validating against IPC Class {activeStackup.ipcClass}</p>
+          <div className="dfm-inputs-row">
+            <EngineeringInput 
+              label="Pad Diameter" unit="mm" value={padDia} 
+              onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setPadDia(Number(val)); }}
+              step="0.05" min="0.1" max="5" 
+            />
+            <div className="dfm-input-group">
+                <label className="dfm-input-label">Min Threshold</label>
+                <div className="dfm-input-wrap opacity-60"><div className="dfm-input bg-transparent">{ringLimit}mm</div></div>
+            </div>
+          </div>
+          <p className="dfm-message">{ringMessage}</p>
+        </RulePanel>
+
+        {/* Rule 6: Solder Mask Dam */}
+        <RulePanel title="Rule 6 — Mask Bridge / Dam" icon={AlertTriangle} accentClass="dfm-accent-purple" status={damStatus} result={`${maskDam.toFixed(2)} mm`}>
+          <div className="p-4 bg-black-20 rounded-xl border border-white-05 mb-4 flex items-center gap-4">
+              <div className="flex-1">
+                <div className="h-1 bg-black-40 rounded-full overflow-hidden">
+                    <div className={`h-full ${damStatus === 'fail' ? 'bg-red-500' : 'bg-purple-500'}`} style={{ width: `${Math.min((maskDam / 0.3) * 100, 100)}%` }} />
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-tertiary">LVL: {(damStatus || '').toUpperCase()}</span>
+          </div>
+          <p className="dfm-message">{damMessage}</p>
+        </RulePanel>
+
       </div>
 
-      {/* Summary bar */}
       <div className="dfm-summary">
-        <span className="dfm-summary-label">Overall DFM Status:</span>
-        {[arStatus, traceStatus, balStatus, cpStatus].some(s => s === 'fail' || s === 'alert')
+        <span className="dfm-summary-label">Aggregate DFM Health:</span>
+        {[arStatus, traceStatus, balStatus, cpStatus, ringStatus, damStatus].some(s => s === 'fail' || s === 'alert')
           ? <StatusBadge level="fail" />
-          : [arStatus, traceStatus, balStatus, cpStatus].some(s => s === 'warn')
+          : [arStatus, traceStatus, balStatus, cpStatus, ringStatus, damStatus].some(s => s === 'warn')
           ? <StatusBadge level="warn" />
           : <StatusBadge level="pass" />
         }
-        <span className="dfm-summary-note">All rules evaluated per IPC-2221B Class 2 standards.</span>
+        <span className="dfm-summary-note">Verification active for Design ID: <strong>DFM-7351A-PRO</strong></span>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Activity, Zap, ShieldAlert, Info, Layers, CheckCircle2 } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
@@ -26,7 +27,8 @@ const ViaResonanceCalculator = () => {
   }, [stub, er]);
 
   const handleInputChange = (value) => {
-    const rawValue = parseFloat(value) || 0;
+    if (value === "" || isNaN(parseFloat(value))) return;
+    const rawValue = parseFloat(value);
     const milValue = unitSystem === 'mm' ? rawValue * MM_TO_MIL : rawValue;
     setStub(milValue);
   };
@@ -81,22 +83,27 @@ const ViaResonanceCalculator = () => {
           </div>
 
           <div className="zdiff-input-grid">
-            <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label">Unused Stub Length ({unitSystem})</label>
-              <input 
-                type="number" step="0.1" value={convertValue(stub)}
-                onChange={e => handleInputChange(e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label">εr (Dk)</label>
-              <input 
-                type="number" step="0.1" value={er}
-                onChange={e => setEr(parseFloat(e.target.value) || 1)}
-                className="zdiff-input"
-              />
-            </div>
+            <EngineeringInput
+              label="Unused Stub Length"
+              unit={unitSystem}
+              value={convertValue(stub)}
+              onChange={e => handleInputChange(e.target.value)}
+              step="0.1"
+              style={{ gridColumn: 'span 2' }}
+            />
+            <EngineeringInput
+              label="εr (Dielectric Constant)"
+              unit="Dk"
+              value={er}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setEr(parseFloat(val));
+              }}
+              step="0.1"
+              min="1"
+              style={{ gridColumn: 'span 2' }}
+            />
           </div>
         </div>
 

@@ -23,7 +23,9 @@ export const DesignProvider = ({ children }) => {
     dk: 4.17,         // Dielectric Constant Er
     df: 0.016,        // Loss Tangent
     surfaceRoughness: 2.0, // Copper roughness Rz (um)
-    material: 'Isola 370HR'
+    material: 'Isola 370HR',
+    ipcClass: 2,      // 1: General, 2: Dedicated, 3: High Reliability
+    targetImpedance: 100 // Ohms
   });
 
   const updateStackup = useCallback((updates) => {

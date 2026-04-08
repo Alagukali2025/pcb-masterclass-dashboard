@@ -1,7 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, ShieldAlert, Waves, CheckCircle2, AlertTriangle, Ruler } from 'lucide-react';
+import { useDesign } from '../context/DesignContext';
+import EngineeringInput from './EngineeringInput';
 
 const EMICalculator = () => {
+  const { activeStackup } = useDesign();
   const [riseTime, setRiseTime] = useState(1); // Default 1ns
   const [trUnit, setTrUnit] = useState('ns'); // 'ns' | 'ps'
   const [distanceUnit, setDistanceUnit] = useState('mm'); // 'mm' | 'mil'
@@ -17,8 +20,8 @@ const EMICalculator = () => {
     const fmax = 0.35 / tr; // GHz
     const fmaxMhz = fmax * 1000;
 
-    // Speed of Light in FR4 (Er ~ 4.3)
-    const er = 4.3;
+    // Speed of Light in Board Material (Using SSOT Dk)
+    const er = activeStackup.dk;
     const v = 300 / Math.sqrt(er); // mm/ns
     const lambda = v / fmax; // mm
 
@@ -84,27 +87,32 @@ const EMICalculator = () => {
 
           <div className="zdiff-input-grid">
             <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label">Signal Rise/Fall Time (10-90%)</label>
-              <div className="flex gap-2">
-                <input
-                  type="number" step="0.1" value={riseTime}
-                  onChange={e => setRiseTime(parseFloat(e.target.value) || 0)}
-                  className="zdiff-input flex-1"
-                />
+              <EngineeringInput
+                label="Significant Rise/Fall Time"
+                unit={trUnit}
+                value={riseTime}
+                onChange={e => {
+                  const val = e.target.value;
+                  if (val === "" || isNaN(parseFloat(val))) return;
+                  setRiseTime(parseFloat(val));
+                }}
+                step="0.01"
+              />
+              <div className="flex gap-2 mt-2">
                 <select 
                   value={trUnit} 
                   onChange={e => setTrUnit(e.target.value)}
-                  className="zdiff-input w-20 px-2"
+                  className="zdiff-toggle-btn w-full"
                   style={{ fontSize: '0.75rem' }}
                 >
-                  <option value="ns">ns</option>
-                  <option value="ps">ps</option>
+                  <option value="ns">ns (Nanoseconds)</option>
+                  <option value="ps">ps (Picoseconds)</option>
                 </select>
               </div>
             </div>
             
             <div className="zdiff-input-group zdiff-input-group--action" style={{ gridColumn: 'span 2' }}>
-               <label className="zdiff-label">Protocol Note</label>
+               <label className="engineering-label">Protocol Note</label>
                <div className="p-3 bg-white/5 rounded-lg text-[0.7rem] text-tertiary italic">
                  "High-speed design is governed by Edge Rate, not clock frequency."
                </div>

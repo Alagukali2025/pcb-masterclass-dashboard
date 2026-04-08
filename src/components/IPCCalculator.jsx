@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Calculator, Ruler, Info, CheckCircle2, X, MousePointer2 } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
@@ -61,6 +62,10 @@ const IPCCalculator = () => {
     const pType = packageType === 'CHIP' ? 'RESC' : 'SOP';
     const name = `${pType}${formatDim(lMax)}${formatDim(wMax)}X${formatDim(inputs.height)}${densityLevel}`;
 
+    // Industrial Standard Mask Expansions (IPC-7351B)
+    const solderMaskExpansion = 0.05; // 2 mil per side
+    const pasteMaskExpansion = 0.00;  // 1:1 for standard components
+
     return {
       z: Z,
       g: G,
@@ -69,12 +74,17 @@ const IPCCalculator = () => {
       padLength: padLength,
       centerToCenter: centerToCenter,
       rms: rms,
-      jt, jh, js
+      jt, jh, js,
+      solderMaskX: X + (solderMaskExpansion * 2),
+      solderMaskY: padLength + (solderMaskExpansion * 2),
+      pasteMaskX: X + (pasteMaskExpansion * 2),
+      pasteMaskY: padLength + (pasteMaskExpansion * 2)
     };
   }, [inputs, packageType, densityLevel]);
 
   const handleInputChange = (key, value) => {
-    const rawValue = parseFloat(value) || 0;
+    if (value === "" || isNaN(parseFloat(value))) return;
+    const rawValue = parseFloat(value);
     const mmValue = unitSystem === 'mil' ? rawValue / MM_TO_MIL : rawValue;
     setInputs(prev => ({ ...prev, [key]: mmValue }));
   };
@@ -167,22 +177,34 @@ const IPCCalculator = () => {
               </div>
             </div>
 
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">L<sub>max</sub> ({unitSystem})</label>
-              <input type="number" step="0.01" value={convertValue(inputs.lMax)} onChange={e => handleInputChange('lMax', e.target.value)} className="zdiff-input" />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">W<sub>max</sub> ({unitSystem})</label>
-              <input type="number" step="0.01" value={convertValue(inputs.wMax)} onChange={e => handleInputChange('wMax', e.target.value)} className="zdiff-input" />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">T<sub>min</sub> ({unitSystem})</label>
-              <input type="number" step="0.01" value={convertValue(inputs.tMin)} onChange={e => handleInputChange('tMin', e.target.value)} className="zdiff-input" />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">H<sub>max</sub> ({unitSystem})</label>
-              <input type="number" step="0.01" value={convertValue(inputs.height)} onChange={e => handleInputChange('height', e.target.value)} className="zdiff-input" />
-            </div>
+            <EngineeringInput
+              id="ipc-l"
+              label="Length (L)"
+              unit={unitSystem}
+              value={convertValue(inputs.lMax)}
+              onChange={e => handleInputChange('lMax', e.target.value)}
+            />
+            <EngineeringInput
+              id="ipc-w"
+              label="Width (W)"
+              unit={unitSystem}
+              value={convertValue(inputs.wMax)}
+              onChange={e => handleInputChange('wMax', e.target.value)}
+            />
+            <EngineeringInput
+              id="ipc-t"
+              label="Term (T)"
+              unit={unitSystem}
+              value={convertValue(inputs.tMin)}
+              onChange={e => handleInputChange('tMin', e.target.value)}
+            />
+            <EngineeringInput
+              id="ipc-h"
+              label="Height (H)"
+              unit={unitSystem}
+              value={convertValue(inputs.height)}
+              onChange={e => handleInputChange('height', e.target.value)}
+            />
           </div>
         </div>
 
@@ -206,28 +228,36 @@ const IPCCalculator = () => {
               </div>
             </div>
 
+            {/* Technical Sub-Grid including Masks */}
             <div className="zdiff-result-sub-grid">
               <div className="zdiff-result-sub">
-                <div className="zdiff-result-sub-label">Outer Boundary (Z)</div>
+                <div className="zdiff-result-sub-label">Solder Mask (X/Y)</div>
+                <div className="zdiff-result-sub-val" style={{ color: 'var(--success)' }}>
+                  {convertValue(results.solderMaskX)} x {convertValue(results.solderMaskY)} <small>{unitSystem}</small>
+                </div>
+              </div>
+              <div className="zdiff-result-sub">
+                <div className="zdiff-result-sub-label">Paste Mask (X/Y)</div>
+                <div className="zdiff-result-sub-val" style={{ color: 'var(--warning)' }}>
+                  {convertValue(results.pasteMaskX)} x {convertValue(results.pasteMaskY)} <small>{unitSystem}</small>
+                </div>
+              </div>
+              <div className="zdiff-result-sub">
+                <div className="zdiff-result-sub-label">Clearance (Z)</div>
                 <div className="zdiff-result-sub-val">{convertValue(results.z)} <small>{unitSystem}</small></div>
               </div>
               <div className="zdiff-result-sub">
-                <div className="zdiff-result-sub-label">Center-to-Center</div>
-                <div className="zdiff-result-sub-val">{convertValue(results.centerToCenter)} <small>{unitSystem}</small></div>
-              </div>
-              <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Inner Gap (G)</div>
-                <div className="zdiff-result-sub-val" style={{ color: 'var(--warning)' }}>{convertValue(results.g)} <small>{unitSystem}</small></div>
-              </div>
-              <div className="zdiff-result-sub">
-                <div className="zdiff-result-sub-label">RMS Tolerance</div>
-                <div className="zdiff-result-sub-val">{results.rms.toFixed(3)} <small>mm</small></div>
+                <div className="zdiff-result-sub-val">{convertValue(results.g)} <small>{unitSystem}</small></div>
               </div>
             </div>
 
             {/* IPC Naming Code */}
             <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10 flex items-center justify-between">
-              <code className="text-accent-primary font-mono text-sm">{results.ipcName}</code>
+              <div>
+                <div className="text-[10px] text-tertiary uppercase font-bold mb-1 opacity-60">IPC-7251/7351 Identification</div>
+                <code className="text-accent-primary font-mono text-sm">{results.ipcName}</code>
+              </div>
               <button 
                 className={`text-[10px] uppercase font-bold px-3 py-1 rounded transition-colors ${copied ? 'bg-secondary-status text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
                 onClick={copyToClipboard}
@@ -239,8 +269,8 @@ const IPCCalculator = () => {
             <div className="zdiff-verdict zdiff-verdict--ok">
               <div className="zdiff-verdict-icon"><CheckCircle2 size={16} /></div>
               <div>
-                <p className="zdiff-verdict-title">Standards Verified</p>
-                <p className="zdiff-verdict-body">Results optimized for <strong>Density {densityLevel}</strong> using fabrication RMS tolerance of 0.115mm.</p>
+                <p className="zdiff-verdict-title">IPC-7351B Compliance Verdict</p>
+                <p className="zdiff-verdict-body">Optimized for <strong>Density {densityLevel}</strong>. Mask expansion set to +0.05mm per industrial fab standard.</p>
               </div>
             </div>
           </div>

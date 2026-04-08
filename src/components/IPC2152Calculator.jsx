@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, Thermometer, Ruler, ShieldAlert, CheckCircle2, Waves } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
@@ -76,25 +77,31 @@ const IPC2152Calculator = () => {
           </div>
 
           <div className="zdiff-input-grid">
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Current (Amps)</label>
-              <input
-                type="number" step="0.5" value={current}
-                onChange={e => setCurrent(parseFloat(e.target.value) || 0)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Temp Rise (°C)</label>
-              <input
-                type="number" step="1" value={tempRise}
-                onChange={e => setTempRise(parseFloat(e.target.value) || 0)}
-                className="zdiff-input"
-              />
-            </div>
+            <EngineeringInput
+              label="Transient Current"
+              unit="Amps"
+              value={current}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setCurrent(parseFloat(val));
+              }}
+              step="0.5"
+            />
+            <EngineeringInput
+              label="Temp Rise Limit"
+              unit="°C"
+              value={tempRise}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setTempRise(parseFloat(val));
+              }}
+              step="1"
+            />
             
             <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label">Routing Layer Profile</label>
+              <label className="engineering-label">Routing Layer Profile</label>
               <div className="zdiff-toggle-group w-full">
                 <button className={`zdiff-toggle-btn flex-1 ${isInternal ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setIsInternal(true)}>Internal (Stripline)</button>
                 <button className={`zdiff-toggle-btn flex-1 ${!isInternal ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setIsInternal(false)}>External (Microstrip)</button>
@@ -102,12 +109,12 @@ const IPC2152Calculator = () => {
             </div>
 
             <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label zdiff-label--orange">Copper Weight (oz)</label>
+              <label className="engineering-label">Copper Weight (oz)</label>
               <select 
                 value={copperWeight} 
                 onChange={e => setCopperWeight(parseFloat(e.target.value))}
-                className="zdiff-input zdiff-input--orange w-full"
-                style={{ fontSize: '0.8rem' }}
+                className="input-engineering w-full"
+                style={{ fontSize: '0.9rem', appearance: 'auto' }}
               >
                 <option value={0.5}>0.5 oz (Plated/Thin)</option>
                 <option value={1}>1.0 oz (Standard)</option>

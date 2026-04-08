@@ -1,14 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { Activity, Zap, ShieldAlert, Info, Layers, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { useDesign } from '../context/DesignContext';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
 const DDRTimingCalculator = () => {
+  const { activeStackup, updateStackup } = useDesign();
   const [unitSystem, setUnitSystem] = useState('mil'); // 'mm' | 'mil'
   const [generation, setGeneration] = useState('DDR4');
   const [mts, setMts] = useState(3200);
   const [skew, setSkew] = useState(25); // Internal in MILS
-  const [er, setEr] = useState(4.2);
+
+  const er = activeStackup.dk;
 
   const generations = {
     DDR3: { minMts: 800, maxMts: 2133, defaultMts: 1600, color: '#0ea5e9' },
@@ -35,8 +39,15 @@ const DDRTimingCalculator = () => {
     return { ui, skewPs, closurePct, status, statusColor, vp };
   }, [mts, skew, er]);
 
-  const handleInputChange = (value) => {
-    const rawValue = parseFloat(value) || 0;
+  const handleInputChange = (key, value) => {
+    if (value === "" || isNaN(parseFloat(value))) return;
+    const rawValue = parseFloat(value);
+    
+    if (key === 'dk') {
+      updateStackup({ dk: rawValue });
+      return;
+    }
+
     const milValue = unitSystem === 'mm' ? rawValue * MM_TO_MIL : rawValue;
     setSkew(milValue);
   };
@@ -139,22 +150,21 @@ const DDRTimingCalculator = () => {
               />
             </div>
 
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Total PCB Skew ({unitSystem})</label>
-              <input 
-                type="number" step="0.1" value={convertValue(skew)}
-                onChange={e => handleInputChange(e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">εr (Dk)</label>
-              <input 
-                type="number" step="0.1" value={er}
-                onChange={e => setEr(parseFloat(e.target.value) || 1)}
-                className="zdiff-input"
-              />
-            </div>
+            <EngineeringInput
+              label="Total PCB Row Skew"
+              unit={unitSystem}
+              value={convertValue(skew)}
+              onChange={e => handleInputChange('skew', e.target.value)}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="εr (Dielectric Constant)"
+              unit="Dk"
+              value={er}
+              onChange={e => handleInputChange('dk', e.target.value)}
+              step="0.1"
+              min="1"
+            />
           </div>
         </div>
 

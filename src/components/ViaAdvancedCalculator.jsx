@@ -1,18 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, ShieldAlert, Info, Maximize2, CheckCircle2, Waves } from 'lucide-react';
+import { useDesign } from '../context/DesignContext';
+import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
 
 const ViaAdvancedCalculator = () => {
-  const [unitSystem, setUnitSystem] = useState('mil'); // Vias are often mil-specific, but we support both
+  const { activeStackup, updateStackup } = useDesign();
+  const [unitSystem, setUnitSystem] = useState('mil'); 
   
   // Internal values kept in MILS for standard via formulas
   const [drill, setDrill] = useState(10); 
   const [pad, setPad] = useState(20); 
   const [antiPad, setAntiPad] = useState(30); 
-  const [thickness, setThickness] = useState(62);
   const [stub, setStub] = useState(40);
-  const [er, setEr] = useState(4.2);
+
+  // Sync board thickness and er from SSOT
+  const thickness = activeStackup.height * MM_TO_MIL;
+  const er = activeStackup.dk;
 
   const stats = useMemo(() => {
     // 1. Resonance (Quarter-wave)
@@ -42,13 +47,20 @@ const ViaAdvancedCalculator = () => {
   }, [stub, drill, pad, antiPad, thickness, er]);
 
   const handleInputChange = (key, value) => {
-    const rawValue = parseFloat(value) || 0;
-    const milValue = unitSystem === 'mm' ? rawValue * MM_TO_MIL : rawValue;
+    if (value === "" || isNaN(parseFloat(value))) return;
+    const rawValue = parseFloat(value);
     
+    if (key === 'thickness' || key === 'dk') {
+      const mmValue = (key === 'thickness' && unitSystem === 'mil') ? rawValue / MM_TO_MIL : rawValue;
+      const ssotKey = key === 'thickness' ? 'height' : 'dk';
+      updateStackup({ [ssotKey]: mmValue });
+      return;
+    }
+
+    const milValue = unitSystem === 'mm' ? rawValue * MM_TO_MIL : rawValue;
     if (key === 'drill') setDrill(milValue);
     if (key === 'pad') setPad(milValue);
     if (key === 'antiPad') setAntiPad(milValue);
-    if (key === 'thickness') setThickness(milValue);
     if (key === 'stub') setStub(milValue);
   };
 
@@ -118,54 +130,49 @@ const ViaAdvancedCalculator = () => {
           </div>
 
           <div className="zdiff-input-grid">
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Drill Diameter ({unitSystem})</label>
-              <input
-                type="number" step="0.1" value={convertValue(drill)}
-                onChange={e => handleInputChange('drill', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Pad Diameter ({unitSystem})</label>
-              <input
-                type="number" step="0.1" value={convertValue(pad)}
-                onChange={e => handleInputChange('pad', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Anti-Pad Dia. ({unitSystem})</label>
-              <input
-                type="number" step="0.1" value={convertValue(antiPad)}
-                onChange={e => handleInputChange('antiPad', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label zdiff-label--orange">Stub Length ({unitSystem})</label>
-              <input
-                type="number" step="0.1" value={convertValue(stub)}
-                onChange={e => handleInputChange('stub', e.target.value)}
-                className="zdiff-input zdiff-input--orange"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Board Thick. ({unitSystem})</label>
-              <input
-                type="number" step="0.1" value={convertValue(thickness)}
-                onChange={e => handleInputChange('thickness', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">εr (Dk)</label>
-              <input
-                type="number" step="0.01" value={er}
-                onChange={e => setEr(parseFloat(e.target.value) || 0)}
-                className="zdiff-input"
-              />
-            </div>
+            <EngineeringInput
+              label="Drill Diameter"
+              unit={unitSystem}
+              value={convertValue(drill)}
+              onChange={e => handleInputChange('drill', e.target.value)}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="Pad Diameter"
+              unit={unitSystem}
+              value={convertValue(pad)}
+              onChange={e => handleInputChange('pad', e.target.value)}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="Anti-Pad Dia."
+              unit={unitSystem}
+              value={convertValue(antiPad)}
+              onChange={e => handleInputChange('antiPad', e.target.value)}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="Stub Length"
+              unit={unitSystem}
+              value={convertValue(stub)}
+              onChange={e => handleInputChange('stub', e.target.value)}
+              step="0.1"
+              className="zdiff-input-group--orange"
+            />
+            <EngineeringInput
+              label="Board Thick."
+              unit={unitSystem}
+              value={convertValue(thickness)}
+              onChange={e => handleInputChange('thickness', e.target.value)}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="εr (Dk)"
+              value={er}
+              onChange={e => handleInputChange('dk', e.target.value)}
+              step="0.01"
+              min="1"
+            />
           </div>
         </div>
 

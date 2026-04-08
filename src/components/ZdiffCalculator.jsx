@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, CheckCircle2, Info, AlertTriangle, X, ShieldCheck } from 'lucide-react';
 import { useDesign } from '../context/DesignContext';
+import EngineeringInput from './EngineeringInput';
 
 // ─── Interface Target Presets ─────────────────────────────────────────────────
 const INTERFACE_PRESETS = [
@@ -206,7 +207,12 @@ export default function ZdiffCalculator() {
 
   const handleChange = (key, val) => {
     setActivePreset(null);
-    const rawValue = parseFloat(val) || 0;
+    if (val === "" || isNaN(parseFloat(val))) {
+      // Allow local state in EngineeringInput to stay empty without
+      // being snapped back to "0" by the parent state.
+      return;
+    }
+    const rawValue = parseFloat(val);
     const mmValue = unitSystem === 'mil' ? rawValue / MM_TO_MIL : rawValue;
     updateStackup({ [key]: mmValue });
   };
@@ -361,53 +367,46 @@ export default function ZdiffCalculator() {
 
           {/* Input grid */}
           <div className="zdiff-input-grid">
-            <div className="zdiff-input-group">
-              <label htmlFor="zdiff-h" className="zdiff-label">H — Height ({unitSystem})</label>
-              <input
-                id="zdiff-h"
-                type="number" step="0.001" min="0.01" value={convertValue(activeStackup.height)}
-                onChange={e => handleChange('height', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label htmlFor="zdiff-w" className="zdiff-label">W — Width ({unitSystem})</label>
-              <input
-                id="zdiff-w"
-                type="number" step="0.001" min="0.01" value={convertValue(activeStackup.width)}
-                onChange={e => handleChange('width', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label htmlFor="zdiff-s" className="zdiff-label zdiff-label--orange">S — Spacing ({unitSystem})</label>
-              <input
-                id="zdiff-s"
-                type="number" step="0.001" min="0.01" value={convertValue(activeStackup.spacing)}
-                onChange={e => handleChange('spacing', e.target.value)}
-                className="zdiff-input zdiff-input--orange"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label htmlFor="zdiff-t" className="zdiff-label">T — Thickness ({unitSystem})</label>
-              <input
-                id="zdiff-t"
-                type="number" step="0.001" min="0.001" value={convertValue(activeStackup.thickness)}
-                onChange={e => handleChange('thickness', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label htmlFor="zdiff-dk" className="zdiff-label">εr — Dielectric Constant (Dk)</label>
-              <input
-                id="zdiff-dk"
-                type="number" step="0.01" min="1" value={activeStackup.dk}
-                onChange={e => handleChange('dk', e.target.value)}
-                className="zdiff-input"
-              />
-            </div>
+            <EngineeringInput
+              id="zdiff-h"
+              label="H — Height"
+              unit={unitSystem}
+              value={convertValue(activeStackup.height)}
+              onChange={e => handleChange('height', e.target.value)}
+            />
+            <EngineeringInput
+              id="zdiff-w"
+              label="W — Width"
+              unit={unitSystem}
+              value={convertValue(activeStackup.width)}
+              onChange={e => handleChange('width', e.target.value)}
+            />
+            <EngineeringInput
+              id="zdiff-s"
+              label="S — Spacing"
+              unit={unitSystem}
+              value={convertValue(activeStackup.spacing)}
+              onChange={e => handleChange('spacing', e.target.value)}
+              className="zdiff-input-group--orange"
+            />
+            <EngineeringInput
+              id="zdiff-t"
+              label="T — Thickness"
+              unit={unitSystem}
+              value={convertValue(activeStackup.thickness)}
+              onChange={e => handleChange('thickness', e.target.value)}
+            />
+            <EngineeringInput
+              id="zdiff-dk"
+              label="εr — Dielectric Constant"
+              unit="Dk"
+              step="0.01"
+              min="1"
+              value={activeStackup.dk}
+              onChange={e => handleChange('dk', e.target.value)}
+            />
             <div className="zdiff-input-group zdiff-input-group--action">
-              <label className="zdiff-label">Standards Info</label>
+              <label className="engineering-label">Standards Info</label>
               <button 
                 ref={infoBtnRef}
                 className="zdiff-info-btn" 

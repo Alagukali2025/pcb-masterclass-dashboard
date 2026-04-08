@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Thermometer, Zap, Info, ShieldAlert, Layers, Wind } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const ThermalAnalysisTool = () => {
   // Via Thermal Inputs
@@ -69,10 +70,17 @@ const ThermalAnalysisTool = () => {
             <Layers size={16} /> Via Thermal Resistance
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            <div className="input-group">
-              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-tertiary)' }}>Plating Thickness (µm)</label>
-              <input type="number" value={platingUm} onChange={(e) => setPlatingUm(parseFloat(e.target.value) || 0)} style={{ width: '100%', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: '4px 8px', color: 'var(--text-primary)', marginTop: '4px' }} />
-            </div>
+            <EngineeringInput
+              label="Plating Thickness"
+              unit="µm"
+              value={platingUm}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setPlatingUm(parseFloat(val));
+              }}
+              step="1"
+            />
             <div style={{ padding: 'var(--space-4)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)', textAlign: 'center', border: '1px solid var(--border-light)' }}>
               <div style={{ fontSize: '2rem', fontWeight: 900, color: '#EF4444' }}>{stats.rThVia.toFixed(1)} <small style={{ fontSize: '0.8rem' }}>°C/W</small></div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', marginTop: '4px' }}>Thermal Resistance (R_θja)</div>
@@ -90,14 +98,27 @@ const ThermalAnalysisTool = () => {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-              <div className="input-group">
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-tertiary)' }}>Spoke Width (mil)</label>
-                <input type="number" value={spokeWidthMil} onChange={(e) => setSpokeWidthMil(parseFloat(e.target.value) || 0)} style={{ width: '100%', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: '4px 8px', color: 'var(--text-primary)', marginTop: '4px' }} />
-              </div>
-              <div className="input-group">
-                <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-tertiary)' }}>Spoke Count</label>
-                <input type="number" value={spokeCount} onChange={(e) => setSpokeCount(parseInt(e.target.value) || 0)} style={{ width: '100%', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: '4px 8px', color: 'var(--text-primary)', marginTop: '4px' }} />
-              </div>
+              <EngineeringInput
+                label="Spoke Width"
+                unit="mil"
+                value={spokeWidthMil}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "" || isNaN(parseFloat(val))) return;
+                  setSpokeWidthMil(parseFloat(val));
+                }}
+                step="1"
+              />
+              <EngineeringInput
+                label="Spoke Count"
+                value={spokeCount}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "" || isNaN(parseInt(val))) return;
+                  setSpokeCount(parseInt(val));
+                }}
+                step="1"
+              />
             </div>
             <div style={{ padding: 'var(--space-4)', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)', textAlign: 'center', border: `1px solid ${stats.reliefColor}33` }}>
               <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)' }}>{stats.reliefEfficiency.toFixed(1)}%</div>

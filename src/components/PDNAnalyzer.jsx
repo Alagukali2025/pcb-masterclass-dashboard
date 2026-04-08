@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ShieldCheck, Zap, Info, TrendingDown, LayoutPanelLeft, Waves, CheckCircle2 } from 'lucide-react';
+import EngineeringInput from './EngineeringInput';
 
 const PDNAnalyzer = () => {
   const [voltage, setVoltage] = useState(1.1); 
@@ -64,32 +65,43 @@ const PDNAnalyzer = () => {
           </div>
 
           <div className="zdiff-input-grid">
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Rail Voltage (V)</label>
-              <input
-                type="number" step="0.1" value={voltage}
-                onChange={e => setVoltage(parseFloat(e.target.value) || 0)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group">
-              <label className="zdiff-label">Max Ripple (%)</label>
-              <input
-                type="number" step="1" value={ripple}
-                onChange={e => setRipple(parseFloat(e.target.value) || 0)}
-                className="zdiff-input"
-              />
-            </div>
-            <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
-              <label className="zdiff-label zdiff-label--orange">Transient Current Load (A)</label>
-              <input
-                type="number" step="1" value={current}
-                onChange={e => setCurrent(parseFloat(e.target.value) || 0)}
-                className="zdiff-input zdiff-input--orange"
-              />
-            </div>
+            <EngineeringInput
+              label="Rail Voltage"
+              unit="V"
+              value={voltage}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setVoltage(parseFloat(val));
+              }}
+              step="0.1"
+            />
+            <EngineeringInput
+              label="Max Ripple"
+              unit="%"
+              value={ripple}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setRipple(parseFloat(val));
+              }}
+              step="1"
+            />
+            <EngineeringInput
+              label="Transient Current Load"
+              unit="A"
+              value={current}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setCurrent(parseFloat(val));
+              }}
+              step="1"
+              className="zdiff-input-group--orange"
+              style={{ gridColumn: 'span 2' }}
+            />
             <div className="zdiff-input-group zdiff-input-group--action" style={{ gridColumn: 'span 2' }}>
-               <label className="zdiff-label">Engineering Rule</label>
+               <label className="engineering-label">Engineering Rule</label>
                <div className="p-3 bg-white/5 rounded-lg text-[0.7rem] text-tertiary">
                  "Z_target = (Voltage × Ripple%) / Current_Transient"
                </div>
