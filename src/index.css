@@ -2364,14 +2364,15 @@ a:hover {
     width: 280px;
   }
 
+@media (max-width: 1250px) {
   .toc-container {
     display: none;
   }
-
   .reading-column {
     width: 100% !important;
     padding: 0 !important;
   }
+}
 
   .sidebar-overlay {
     position: fixed;
@@ -4462,7 +4463,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: wrap !important;
   gap: var(--space-4);
   margin-bottom: var(--space-6);
   padding-bottom: var(--space-4);
@@ -4506,7 +4507,8 @@ a:hover {
 
 /* Topology toggle */
 .zdiff-toggle-group {
-  display: flex;
+  display: flex !important;
+  flex-wrap: wrap !important;
   background: var(--bg-primary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
@@ -4538,15 +4540,33 @@ a:hover {
 /* Body layout */
 .zdiff-body {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-8);
   align-items: start;
+  width: 100%;
 }
 
-@media (max-width: 1024px) {
-  .zdiff-body { grid-template-columns: 1fr; }
+.zdiff-left, .zdiff-right {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 1250px) {
+  .zdiff-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-4) !important;
+  }
+  .zdiff-body { 
+    grid-template-columns: 1fr !important; 
+    gap: var(--space-6) !important;
+  }
   .zdiff-input-grid { 
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: 1fr !important; 
+    gap: var(--space-4) !important;
+  }
+  .zdiff-panel {
+    min-width: 0 !important;
   }
 }
 
@@ -4712,9 +4732,10 @@ a:hover {
 }
 
 .zdiff-result-unit {
-  font-size: clamp(0.9rem, 4vw, 1.4rem);
+  font-size: clamp(0.7rem, 3vw, 1.1rem);
   font-weight: 700;
   color: var(--accent-secondary);
+  white-space: nowrap;
 }
 
 .zdiff-result-main-grid {
@@ -4766,12 +4787,14 @@ a:hover {
   font-weight: 700;
   color: var(--text-primary);
   font-family: monospace;
+  white-space: nowrap;
 }
 
 .zdiff-result-sub-val small {
   font-size: 0.65rem;
   color: var(--text-tertiary);
   font-weight: 600;
+  margin-left: 2px;
 }
 
 /* Design verdict */

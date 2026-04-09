@@ -12,25 +12,28 @@ Every calculator must follow the **Two-Column Layout Module**:
 
 - **Header**:
     - `bg-primary` container with a clean icon (`Zap`, `Calculator`, etc.).
-    - Title (e.g., "Zdiff Engine") and Subtitle (Engineering Protocol).
-    - Top-level Switches (e.g., "Refined Math") and Topology Toggles (Microstrip/Stripline).
-- **Body Section** (`display: grid` or flex-based 2-column):
+    - Title (e.g., "IPC-7351B Solver") and Subtitle (Engineering Protocol).
+    - **Unit Selection Toggle**: Mandatory `.zdiff-toggle-group` for `mm/mil` selection in the top right.
+- **Body Section** (`zdiff-body`):
+    - **Architecture**: Must use a single-column reflow for widths `< 1000px`.
     - **Left Column (Analysis)**:
         - **Interactive Diagram**: High-fidelity SVG cross-section inside a `zdiff-diagram-box`.
-        - **Input Grid**: 2-column grid of numeric inputs with clear parameter labels (H, W, S, T, Dk).
+        - **Input Grid**: 2-column grid (`zdiff-input-grid`) of numeric inputs with clear parameter labels (H, W, S, T, Dk).
     - **Right Column (Intelligence)**:
-        - **Hero Result Card**: Large, monospaced primary value (e.g., 50.0Ω) followed by a 4-item sub-grid of secondary metrics (Prop Delay, Eff Dk, coupling).
-        - **Design Verdict**: A high-contrast alert box (`zdiff-verdict`) providing technical feedback.
-        - **Presets**: A quick-selection grid for industrial standards (USB, PCIe, HDMI).
+        - **Hero Result Card**: Large primary value (`zdiff-result-num`) followed by a technical sub-grid of secondary metrics.
+        - **Compliance Verdict**: A high-contrast alert box (`zdiff-verdict`) providing technical feedback (e.g., IPC-7351B Verdict).
+        - **Presets/Metrics**: A grid for metrics like Solder Fillet Goals or standard presets.
 
 ## 2. Visual System
-- **Contrast**: Use project-native CSS variables for themed backgrounds. Avoid utility classes that cause "white-background" regressions.
+- **Contrast**: Use Dark Navy Base (`#0d1b2e`) for foundations. Avoid generic white backgrounds.
 - **Color Palette**:
-    - **Solder Mask Green**: `#1a6b3a` (Primary foundation/indicators).
-    - **Copper Gold/Orange**: `#c87533` or `#f59e0b` (Active traces/primary results).
-- **Typography**:
-    - Monospaced fonts for all numeric values and formulas.
-    - Bold, uppercase tracking for labels and technical badges.
+    - **Solder Mask Green**: `#1a6b3a` (Primary indicator/Success).
+    - **Copper Gold**: `#c87533` (Secondary accents/Warnings).
+    - **Signal Red**: `#ef4444` (Critical errors/High-speed traces).
+- **Aesthetics**:
+    - **Subtle Glassmorphism**: Use `backdrop-filter: blur(12px)` and thin borders.
+    - **Rounded Corners**: Use `var(--radius-2xl)` for main calculator cards.
+    - **Typography**: Inter (sans-serif) for UI, monospaced fonts for numeric output values.
 
 ## 3. UI/UX Principles
 - **Immediate Feedback**: Results must update in real-time as inputs change.

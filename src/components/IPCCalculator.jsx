@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Calculator, Ruler, Info, CheckCircle2, X, MousePointer2 } from 'lucide-react';
+import { Calculator, Ruler, Info, CheckCircle2, X, MousePointer2, Copy } from 'lucide-react';
 import EngineeringInput from './EngineeringInput';
 
 const MM_TO_MIL = 39.3701;
@@ -29,7 +29,6 @@ const IPCCalculator = () => {
   const [packageType, setPackageType] = useState('CHIP');
   const [densityLevel, setDensityLevel] = useState('B');
   const [copied, setCopied] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
 
   // Inputs are stored in mm (Internal SI)
   const [inputs, setInputs] = useState({
@@ -110,19 +109,19 @@ const IPCCalculator = () => {
           </div>
           <div>
             <h3 className="zdiff-title">IPC-7351B Land Pattern Solver</h3>
-            <p className="zdiff-subtitle">Standards-verified pad dimension mapping — Datasheet to IPC</p>
+            <p className="zdiff-subtitle">IPC-7251 Engineering Protocol — High-Precision Mode</p>
           </div>
         </div>
 
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mil')}
           >
             mil
@@ -133,10 +132,10 @@ const IPCCalculator = () => {
       <div className="zdiff-body">
         {/* ── Left Side: Diagram & Inputs ── */}
         <div className="zdiff-left">
-          <div className="zdiff-diagram-box">
-             <span className="zdiff-diagram-label">Component Geometry Mapping</span>
-             <div className="flex justify-center py-4">
-                <svg viewBox="0 0 200 120" className="w-full max-w-[200px]">
+          <div className="zdiff-diagram-box" style={{ background: 'radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
+             <span className="zdiff-diagram-label">X-SECTION MECHANICAL SCAN</span>
+             <div className="flex justify-center py-6">
+                <svg viewBox="0 0 200 120" className="zdiff-svg">
                    {packageType === 'CHIP' ? (
                      <>
                         <rect x="50" y="30" width="100" height="60" rx="4" fill="var(--success)" fillOpacity="0.05" stroke="var(--border-light)" />
@@ -163,59 +162,37 @@ const IPCCalculator = () => {
 
           <div className="zdiff-input-grid">
             <div className="zdiff-input-group zdiff-input-group--full">
+              <label className="engineering-label">Package Topology</label>
               <div className="zdiff-toggle-group w-full">
-                <button className={`zdiff-toggle-btn flex-1 ${packageType === 'CHIP' ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setPackageType('CHIP')}>Passive/Chip</button>
-                <button className={`zdiff-toggle-btn flex-1 ${packageType === 'GULL_WING' ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setPackageType('GULL_WING')}>Leaded IC</button>
+                <button className={`zdiff-toggle-btn flex-1 ${packageType === 'CHIP' ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setPackageType('CHIP')}>Passive/Chip</button>
+                <button className={`zdiff-toggle-btn flex-1 ${packageType === 'GULL_WING' ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setPackageType('GULL_WING')}>Leaded IC</button>
               </div>
             </div>
 
             <div className="zdiff-input-group zdiff-input-group--full">
+              <label className="engineering-label">Assembly Density</label>
               <div className="zdiff-toggle-group w-full">
                 {['A', 'B', 'C'].map(level => (
-                  <button key={level} className={`zdiff-toggle-btn flex-1 ${densityLevel === level ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setDensityLevel(level)}>Density {level}</button>
+                  <button key={level} className={`zdiff-toggle-btn flex-1 ${densityLevel === level ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setDensityLevel(level)}>Density {level}</button>
                 ))}
               </div>
             </div>
 
-            <EngineeringInput
-              id="ipc-l"
-              label="Length (L)"
-              unit={unitSystem}
-              value={convertValue(inputs.lMax)}
-              onChange={e => handleInputChange('lMax', e.target.value)}
-            />
-            <EngineeringInput
-              id="ipc-w"
-              label="Width (W)"
-              unit={unitSystem}
-              value={convertValue(inputs.wMax)}
-              onChange={e => handleInputChange('wMax', e.target.value)}
-            />
-            <EngineeringInput
-              id="ipc-t"
-              label="Term (T)"
-              unit={unitSystem}
-              value={convertValue(inputs.tMin)}
-              onChange={e => handleInputChange('tMin', e.target.value)}
-            />
-            <EngineeringInput
-              id="ipc-h"
-              label="Height (H)"
-              unit={unitSystem}
-              value={convertValue(inputs.height)}
-              onChange={e => handleInputChange('height', e.target.value)}
-            />
+            <EngineeringInput label="L — Max Length" unit={unitSystem} value={convertValue(inputs.lMax)} onChange={e => handleInputChange('lMax', e.target.value)} />
+            <EngineeringInput label="W — Max Width" unit={unitSystem} value={convertValue(inputs.wMax)} onChange={e => handleInputChange('wMax', e.target.value)} />
+            <EngineeringInput label="T — Min Term" unit={unitSystem} value={convertValue(inputs.tMin)} onChange={e => handleInputChange('tMin', e.target.value)} />
+            <EngineeringInput label="H — Height" unit={unitSystem} value={convertValue(inputs.height)} onChange={e => handleInputChange('height', e.target.value)} />
           </div>
         </div>
 
         {/* ── Right Side: Standard Pad Results ── */}
         <div className="zdiff-right">
-          <div className="zdiff-result-card">
+          <div className="zdiff-result-card" style={{ borderColor: 'var(--success-border)' }}>
             <div className="zdiff-result-main-grid">
               <div>
                 <div className="zdiff-result-label">Pad Width (X)</div>
                 <div className="zdiff-result-value">
-                  <span className="zdiff-result-num">{convertValue(results.x)}</span>
+                  <span className="zdiff-result-num" style={{ color: 'var(--success)' }}>{convertValue(results.x)}</span>
                   <span className="zdiff-result-unit">{unitSystem}</span>
                 </div>
               </div>
@@ -228,19 +205,14 @@ const IPCCalculator = () => {
               </div>
             </div>
 
-            {/* Technical Sub-Grid including Masks */}
             <div className="zdiff-result-sub-grid">
-              <div className="zdiff-result-sub">
+              <div className="zdiff-result-sub" title={`${(results.solderMaskX * (unitSystem === 'mm' ? MM_TO_MIL : 1/MM_TO_MIL)).toFixed(1)} x ${(results.solderMaskY * (unitSystem === 'mm' ? MM_TO_MIL : 1/MM_TO_MIL)).toFixed(1)} alternate units`}>
                 <div className="zdiff-result-sub-label">Solder Mask (X/Y)</div>
-                <div className="zdiff-result-sub-val" style={{ color: 'var(--success)' }}>
-                  {convertValue(results.solderMaskX)} x {convertValue(results.solderMaskY)} <small>{unitSystem}</small>
-                </div>
+                <div className="zdiff-result-sub-val" style={{ color: 'var(--success)' }}>{convertValue(results.solderMaskX)} × {convertValue(results.solderMaskY)} <small>{unitSystem}</small></div>
               </div>
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Paste Mask (X/Y)</div>
-                <div className="zdiff-result-sub-val" style={{ color: 'var(--warning)' }}>
-                  {convertValue(results.pasteMaskX)} x {convertValue(results.pasteMaskY)} <small>{unitSystem}</small>
-                </div>
+                <div className="zdiff-result-sub-val" style={{ color: 'var(--warning)' }}>{convertValue(results.pasteMaskX)} × {convertValue(results.pasteMaskY)} <small>{unitSystem}</small></div>
               </div>
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Clearance (Z)</div>
@@ -252,43 +224,39 @@ const IPCCalculator = () => {
               </div>
             </div>
 
-            {/* IPC Naming Code */}
-            <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10 flex items-center justify-between">
+            <div className="mt-4 p-4 bg-black-20 rounded-xl border border-white-10 flex items-center justify-between">
               <div>
-                <div className="text-[10px] text-tertiary uppercase font-bold mb-1 opacity-60">IPC-7251/7351 Identification</div>
-                <code className="text-accent-primary font-mono text-sm">{results.ipcName}</code>
+                <div className="text-[10px] text-tertiary uppercase font-bold mb-1 tracking-widest opacity-60">IPC-7251/7351 Identification</div>
+                <code className="text-blue-400 font-mono text-sm font-bold">{results.ipcName}</code>
               </div>
-              <button 
-                className={`text-[10px] uppercase font-bold px-3 py-1 rounded transition-colors ${copied ? 'bg-secondary-status text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
-                onClick={copyToClipboard}
-              >
-                {copied ? 'Copied!' : 'Copy Code'}
+              <button className={`p-2 rounded-lg transition-all ${copied ? 'bg-success text-white' : 'bg-white-05 text-white hover:bg-white-10 border border-white-10'}`} onClick={copyToClipboard} title="Copy Code">
+                {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
               </button>
             </div>
 
-            <div className="zdiff-verdict zdiff-verdict--ok">
+            <div className="zdiff-verdict zdiff-verdict--ok mt-4">
               <div className="zdiff-verdict-icon"><CheckCircle2 size={16} /></div>
               <div>
-                <p className="zdiff-verdict-title">IPC-7351B Compliance Verdict</p>
-                <p className="zdiff-verdict-body">Optimized for <strong>Density {densityLevel}</strong>. Mask expansion set to +0.05mm per industrial fab standard.</p>
+                <p className="zdiff-verdict-title">Technical Verdict</p>
+                <p className="zdiff-verdict-body">Standard matching logic for <strong>Density {densityLevel}</strong> assembly environments.</p>
               </div>
             </div>
           </div>
 
           <div className="zdiff-presets-box">
-             <h5 className="zdiff-presets-title">Solder Fillet Goals (mm)</h5>
-             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-2)' }}>
+             <h5 className="zdiff-presets-title">Solder Fillet Goals (mm / mil)</h5>
+             <div className="zdiff-presets-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                 <div className="zdiff-metric-badge">
                    <div className="zdiff-metric-label">Toe (Jt)</div>
-                   <div className="zdiff-metric-value">{results.jt.toFixed(2)}</div>
+                   <div className="zdiff-metric-value">{results.jt.toFixed(2)} <span className="text-[9px] opacity-40">/ {(results.jt * MM_TO_MIL).toFixed(1)}</span></div>
                 </div>
                 <div className="zdiff-metric-badge">
                    <div className="zdiff-metric-label">Heel (Jh)</div>
-                   <div className="zdiff-metric-value">{results.jh.toFixed(2)}</div>
+                   <div className="zdiff-metric-value">{results.jh.toFixed(2)} <span className="text-[9px] opacity-40">/ {(results.jh * MM_TO_MIL).toFixed(1)}</span></div>
                 </div>
                 <div className="zdiff-metric-badge">
                    <div className="zdiff-metric-label">Side (Js)</div>
-                   <div className="zdiff-metric-value">{results.js.toFixed(2)}</div>
+                   <div className="zdiff-metric-value">{results.js.toFixed(2)} <span className="text-[9px] opacity-40">/ {(results.js * MM_TO_MIL).toFixed(1)}</span></div>
                 </div>
              </div>
           </div>

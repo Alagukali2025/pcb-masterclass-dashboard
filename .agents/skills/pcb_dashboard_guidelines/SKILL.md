@@ -17,6 +17,15 @@ This document outlines the core principles and standards that MUST be followed w
 - **Styling**: Use the existing design tokens in `src/index.css` and `src/App.css`.
 - **Consistency**: Ensure all new components mirror the aesthetic of the existing `ContentViewer`, `Dashboard`, and `Header`.
 
+## 3. Mobile-First Responsiveness
+- **Vertical Reflow**: Content must collapse to a single column on mobile. Avoid `min-width` constraints that cause horizontal scrolling.
+- **Breakpoints**: 
+    - `1024px`: Desktop to Tablet transition (Sidebar becomes a drawer).
+    - `768px`: Tablet to Mobile transition (Layout reflows to vertical stack).
+    - `480px`: Ultra-mobile optimization (Spacing and font-size reductions).
+- **Touch Targets**: Use `--touch-target` (44px) for all interactive buttons.
+- **Tables**: Wrap tables in `.table-wrapper` for horizontal scrolling and provide `.table-hint` for mobile users.
+
 ## 3. Fact-Based Development (No Assumptions)
 - **Research First**: Before implementing a feature or fixing a bug, perform thorough research.
 - **Evidence-Based**: All changes must be backed by facts and evidence from the codebase or project documentation.
@@ -41,23 +50,23 @@ This document outlines the core principles and standards that MUST be followed w
 - **Centralized Content**: The `src/data/modules.js` file is the Single Source of Truth for all module content. Any updates to course material should happen here.
 - **Content Component (`ContentViewer.jsx`)**:
     - **Progress Tracking**: Uses a sticky `.reading-progress-bar` at the top of the page-content.
-    - **TOC Navigation**: Implements an `IntersectionObserver` to highlight the active section in the right-hand Table of Contents.
+    - **TOC Navigation**: Implements an `IntersectionObserver`; hidden on mobile to prioritize read-space.
     - **Interactive Elements**: Includes a "Milestone Checklist" with session-based local state tracking.
-- **Dashboard Component (`Dashboard.jsx`)**: Uses a grid layout with dynamic animation delays based on module index for a smooth entrance effect.
+- **Dashboard Component (`Dashboard.jsx`)**: Uses a grid layout with dynamic animation delays; reflows from 4 columns (desktop) to 1 column (mobile).
 
 ### Design System (Vanilla CSS)
-- **Color Palette**: Dark mode foundation using Slate (`#0f172a`) and Blue/Sky accents.
-- **Tokens**: Extensive use of CSS variables (e.g., `--bg-primary`, `--accent-primary`) in `src/index.css`.
+- **Color Palette**: Domain-driven aesthetic using Dark Navy Base (`#0d1b2e`), Solder Mask Green (`#1a6b3a`), and Copper Gold (`#c87533`).
+- **Tokens**: Extensive use of CSS variables in `src/index.css`. Standardize on `--space-1` through `--space-20`.
 - **Layout Integrity**:
-    - Fixed Sidebar width: `280px`.
+    - Fixed Sidebar width: `280px` (desktop), `0` (closed/mobile).
     - Main scroll container: `.page-content`.
-    - Content Layout: Uses CSS Grid with `minmax(0, 1fr) 280px` (Reading column + TOC) on desktop.
-    - Sticky Elements: Back button and progress bar have `sticky` positioning with blur backgrounds.
+    - Content Layout: Uses CSS Grid with `minmax(0, 1fr) 280px` (Reading column + TOC) on desktop; single column on mobile.
+- **Utility Suite**: Use the custom utility classes in `index.css` (e.g., `.zdiff-calc`, `.flex`, `.gap-4`) instead of ad-hoc styles.
 
 ### Development Environment
 - **Shell**: The user prefers `zsh` with `Oh My Zsh`.
 - **Branch**: Currently on `footprint-creation`.
-- **Dependencies**: React 19, Vite, Lucide-React for icons.
+- **Modern Standards**: React 19, Vite, Lucide-React.
 
 ### Source Materials
-- **Footprint Guides**: `pcb_footprint_guide.html` and `IPC_PCB_Footprint_Design_Guide.pdf` in the root directory serve as the primary reference for technical data and standards used in the modules.
+- **Footprint Guides**: `pcb_footprint_guide.html` and `IPC_PCB_Footprint_Design_Guide.pdf` serve as the primary engineering reference.

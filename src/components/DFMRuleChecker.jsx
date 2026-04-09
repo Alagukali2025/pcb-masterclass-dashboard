@@ -109,18 +109,21 @@ export default function DFMRuleChecker() {
   // ─── Rule 5: Annular Ring ───────────────────────────────
   const annularRing = (padDia - drill) / 2;
   const ringLimit = activeStackup.ipcClass === 3 ? 0.1 : 0.05; 
+  const ringLimitMil = (ringLimit * 39.3701).toFixed(1);
+  const annularRingMil = (annularRing * 39.3701).toFixed(2);
   const ringStatus = annularRing < ringLimit ? 'fail' : annularRing < ringLimit + 0.05 ? 'warn' : 'pass';
   const ringMessage = annularRing < ringLimit
-    ? `CRITICAL ANNULAR RING. Breakout risk. IPC Class ${activeStackup.ipcClass} requires min ${ringLimit}mm.`
+    ? `CRITICAL ANNULAR RING. Breakout risk. IPC Class ${activeStackup.ipcClass} requires min ${ringLimit}mm (${ringLimitMil} mil).`
     : `Annular ring satisfies IPC Class ${activeStackup.ipcClass} minimums.`;
 
   // ─── Rule 6: Solder Mask Dam ────────────────────────────
   const maskDam = activeStackup.spacing; 
   const damLimit = activeStackup.ipcClass === 3 ? 0.125 : activeStackup.ipcClass === 1 ? 0.075 : 0.1; 
+  const damLimitMil = (damLimit * 39.3701).toFixed(1);
   const damStatus = maskDam < damLimit ? 'fail' : maskDam < damLimit + 0.05 ? 'warn' : 'pass';
   const damMessage = maskDam < damLimit
-    ? `BRIDGE RISK. Solder mask dam < ${damLimit}mm fails Class ${activeStackup.ipcClass} standards.`
-    : `Solder mask dam satisfies ${damLimit}mm reliability threshold.`;
+    ? `BRIDGE RISK. Solder mask dam < ${damLimit}mm (${damLimitMil} mil) fails Class ${activeStackup.ipcClass} standards.`
+    : `Solder mask dam satisfies ${damLimit}mm (${damLimitMil} mil) reliability threshold.`;
 
   return (
     <div className="dfm-card slide-up">
@@ -142,7 +145,7 @@ export default function DFMRuleChecker() {
               <button
                 key={cls}
                 type="button"
-                className={`zdiff-toggle-btn text-[10px] font-bold ${activeStackup.ipcClass === cls ? 'zdiff-toggle-btn--active-green' : ''}`}
+                className={`zdiff-toggle-btn text-[10px] font-bold ${activeStackup.ipcClass === cls ? 'zdiff-toggle-btn--active-orange' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   updateStackup({ ipcClass: cls });
@@ -161,12 +164,12 @@ export default function DFMRuleChecker() {
         <RulePanel title="Rule 1 — Drill Aspect Ratio" icon={Ruler} accentClass="dfm-accent-blue" status={arStatus} result={`${aspectRatio}:1`}>
           <div className="dfm-inputs-row">
             <EngineeringInput 
-              label="Board Thickness" unit="mm" value={thickness} 
+              label={`Board Thickness (${(thickness * 39.37).toFixed(0)} mil)`} unit="mm" value={thickness} 
               onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setThickness(Number(val)); }}
               step="0.1" min="0.4" max="6" 
             />
             <EngineeringInput 
-              label="Smallest Drill" unit="mm" value={drill} 
+              label={`Smallest Drill (${(drill * 39.37).toFixed(1)} mil)`} unit="mm" value={drill} 
               onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setDrill(Number(val)); }}
               step="0.05" min="0.05" max="3" 
             />
@@ -234,24 +237,24 @@ export default function DFMRuleChecker() {
         </RulePanel>
 
         {/* Rule 5: Annular Ring */}
-        <RulePanel title="Rule 5 — Annular Ring Support" icon={ShieldCheck} accentClass="dfm-accent-green" status={ringStatus} result={`${annularRing.toFixed(3)} mm`}>
+        <RulePanel title="Rule 5 — Annular Ring Support" icon={ShieldCheck} accentClass="dfm-accent-green" status={ringStatus} result={`${annularRing.toFixed(3)} mm (${(annularRing * 39.37).toFixed(1)} mil)`}>
           <p className="text-[10px] text-blue-500 font-bold mb-3 italic">⚡ Validating against IPC Class {activeStackup.ipcClass}</p>
           <div className="dfm-inputs-row">
             <EngineeringInput 
-              label="Pad Diameter" unit="mm" value={padDia} 
+              label={`Pad Diameter (${(padDia * 39.37).toFixed(1)} mil)`} unit="mm" value={padDia} 
               onChange={e => { const val = e.target.value; if (val === "" || isNaN(parseFloat(val))) return; setPadDia(Number(val)); }}
               step="0.05" min="0.1" max="5" 
             />
             <div className="dfm-input-group">
                 <label className="dfm-input-label">Min Threshold</label>
-                <div className="dfm-input-wrap opacity-60"><div className="dfm-input bg-transparent">{ringLimit}mm</div></div>
+                <div className="dfm-input-wrap opacity-60"><div className="dfm-input bg-transparent">{ringLimit}mm ({(ringLimit * 39.37).toFixed(1)} mil)</div></div>
             </div>
           </div>
           <p className="dfm-message">{ringMessage}</p>
         </RulePanel>
 
         {/* Rule 6: Solder Mask Dam */}
-        <RulePanel title="Rule 6 — Mask Bridge / Dam" icon={AlertTriangle} accentClass="dfm-accent-purple" status={damStatus} result={`${maskDam.toFixed(2)} mm`}>
+        <RulePanel title="Rule 6 — Mask Bridge / Dam" icon={AlertTriangle} accentClass="dfm-accent-purple" status={damStatus} result={`${maskDam.toFixed(2)} mm (${(maskDam * 39.37).toFixed(1)} mil)`}>
           <div className="p-4 bg-black-20 rounded-xl border border-white-05 mb-4 flex items-center gap-4">
               <div className="flex-1">
                 <div className="h-1 bg-black-40 rounded-full overflow-hidden">

@@ -77,13 +77,13 @@ const DDRTimingCalculator = () => {
 
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mil')}
           >
             mil
@@ -130,7 +130,7 @@ const DDRTimingCalculator = () => {
                 {Object.keys(generations).map(gen => (
                   <button 
                     key={gen} 
-                    className={`zdiff-toggle-btn flex-1 ${generation === gen ? 'zdiff-toggle-btn--active-green' : ''}`}
+                    className={`zdiff-toggle-btn flex-1 ${generation === gen ? 'zdiff-toggle-btn--active-orange' : ''}`}
                     onClick={() => handleGenChange(gen)}
                     style={{ color: generation === gen ? 'white' : 'inherit' }}
                   >

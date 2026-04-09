@@ -84,13 +84,13 @@ const ViaAdvancedCalculator = () => {
 
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mil')}
           >
             mil

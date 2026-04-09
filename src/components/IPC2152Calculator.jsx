@@ -45,13 +45,13 @@ const IPC2152Calculator = () => {
 
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mil')}
           >
             mil
@@ -103,8 +103,8 @@ const IPC2152Calculator = () => {
             <div className="zdiff-input-group" style={{ gridColumn: 'span 2' }}>
               <label className="engineering-label">Routing Layer Profile</label>
               <div className="zdiff-toggle-group w-full">
-                <button className={`zdiff-toggle-btn flex-1 ${isInternal ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setIsInternal(true)}>Internal (Stripline)</button>
-                <button className={`zdiff-toggle-btn flex-1 ${!isInternal ? 'zdiff-toggle-btn--active-green' : ''}`} onClick={() => setIsInternal(false)}>External (Microstrip)</button>
+                <button className={`zdiff-toggle-btn flex-1 ${isInternal ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setIsInternal(true)}>Internal (Stripline)</button>
+                <button className={`zdiff-toggle-btn flex-1 ${!isInternal ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setIsInternal(false)}>External (Microstrip)</button>
               </div>
             </div>
 

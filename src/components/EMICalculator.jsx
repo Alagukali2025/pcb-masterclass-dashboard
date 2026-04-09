@@ -55,13 +55,13 @@ const EMICalculator = () => {
 
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${distanceUnit === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${distanceUnit === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setDistanceUnit('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${distanceUnit === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${distanceUnit === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setDistanceUnit('mil')}
           >
             mil
@@ -75,7 +75,7 @@ const EMICalculator = () => {
           <div className="zdiff-diagram-box">
              <span className="zdiff-diagram-label">Spectral Distribution Theory</span>
              <div className="flex justify-center py-6">
-                <svg viewBox="0 0 200 100" className="w-full max-w-[240px]">
+                <svg viewBox="-40 0 240 110" className="w-full max-w-[240px]">
                    <path d="M20 80 Q 50 20, 180 20" stroke="var(--accent-primary)" strokeWidth="2" fill="none" fillOpacity="0.2" />
                    <rect x="20" y="20" width="30" height="60" fill="var(--warning)" fillOpacity="0.1" />
                    <text x="35" y="95" textAnchor="middle" fill="var(--text-tertiary)" fontSize="8">Significant Bandwidth (0.35/Tr)</text>

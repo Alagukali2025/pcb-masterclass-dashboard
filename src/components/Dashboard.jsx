@@ -11,7 +11,7 @@ export default function Dashboard() {
   // Mapping flow phase to module IDs
   const phaseToModules = {
     'Library': ['footprint'],
-    'Stackup': ['stackup'],
+    'Stackup': ['stackup', 'thermal'],
     'Routing': ['diff_pair', 'high_speed', 'ddr', 'si_pi'],
     'DFM': ['dfm_dft', 'emi_emc'],
     'Output': ['pcb_output_system']

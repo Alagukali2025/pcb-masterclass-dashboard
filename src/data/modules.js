@@ -66,7 +66,7 @@ export const modulesData = [
             headers: ["Constraint", "Basis", "Footprint Impact"],
             rows: [
               ["Pad-to-pad clearance", "IPC-7351B / CM capability", "Prevents solder bridging on fine-pitch components"],
-              ["Courtyard clearance", "IPC-7351B §4.1", "Ensures pick-and-place nozzle clearance (min 0.25mm)"],
+              ["Courtyard clearance", "IPC-7351B §4.1", "Ensures pick-and-place nozzle clearance (min 0.25mm (9.8 mil))"],
               ["Pin-1 marking", "IPC-7351B §3.5", "Mandatory on all polarized/IC components in silkscreen"],
               ["Via-in-pad restrictions", "IPC-7095C §8", "Requires plugging/capping — must be flagged in notes"],
               ["Stencil aperture ratio", "IPC-7525B", "Minimum pad size constrains stencil aperture design (≥ 0.66)"]
@@ -145,7 +145,7 @@ export const modulesData = [
             rows: [
               ["Fillet goals (Jt, Jh, Js)", "IPC-7351B Table 3-1", "Selected based on density"],
               ["Calculated tolerances", "IPC-7351B §3.1", "Statistical RSS combination"],
-              ["Silkscreen clearance", "IPC-7351B §3.6", "Min 0.10mm from copper"],
+              ["Silkscreen clearance", "IPC-7351B §3.6", "Min 0.10mm (3.9 mil) from copper"],
               ["Via-in-pad rules", "IPC-7095C §8", "Mandatory plugging for VIP"],
               ["Thermal via array", "IPC-7093A §4.2", "Exposed pad design"]
             ]
@@ -167,10 +167,10 @@ export const modulesData = [
           table: {
             headers: ["Constraint", "Min Value", "Standard", "Risk"],
             rows: [
-              ["Min pad width", "0.20 mm", "CM Capability", "Trace definition failure"],
-              ["Min pad-to-pad gap", "0.15 mm", "IPC-2221A", "Solder bridging"],
-              ["Min annular ring", "0.05 mm", "IPC-2221A", "Breakout / Open circuit"],
-              ["Min drill size", "0.20 mm", "IPC-2221A", "Drill breakage"]
+              ["Min pad width", "0.20 mm (7.9 mil)", "CM Capability", "Trace definition failure"],
+              ["Min pad-to-pad gap", "0.15 mm (5.9 mil)", "IPC-2221A", "Solder bridging"],
+              ["Min annular ring", "0.05 mm (1.97 mil)", "IPC-2221A", "Breakout / Open circuit"],
+              ["Min drill size", "0.20 mm (7.9 mil)", "IPC-2221A", "Drill breakage"]
             ]
           }
         },
@@ -180,14 +180,14 @@ export const modulesData = [
           table: {
             headers: ["Source", "Symbol", "Value (Density B)", "Description"],
             rows: [
-              ["Fabrication", "CL", "±0.10 mm", "Copper dimensional accuracy"],
-              ["Placement", "CS", "±0.05 mm", "Pick-and-place precision"],
-              ["Stencil", "CP", "±0.025 mm", "Paste printing registration"]
+              ["Fabrication", "CL", "±0.10 mm (3.9 mil)", "Copper dimensional accuracy"],
+              ["Placement", "CS", "±0.05 mm (1.97 mil)", "Pick-and-place precision"],
+              ["Stencil", "CP", "±0.025 mm (0.98 mil)", "Paste printing registration"]
             ]
           },
           formula: {
             title: "RSS Combined Tolerance",
-            equations: ["RMS = √(CL² + CS² + CP²) ≈ 0.114 mm"],
+            equations: ["RMS = √(CL² + CS² + CP²) ≈ 0.114 mm (4.49 mil)"],
             variables: []
           }
         },
@@ -224,9 +224,9 @@ export const modulesData = [
           list: [
             "Create New Component in .PcbLib and enter metadata.",
             "Place SMD Pads at exact coordinates from IPC calculation.",
-            "Draw Top Overlay (Silkscreen) with 0.10mm pad clearance.",
+            "Draw Top Overlay (Silkscreen) with 0.10mm (3.9 mil) pad clearance.",
             "Draw Assembly Outline on Mechanical layer at body dimensions.",
-            "Draw Courtyard at +0.25mm boundary (Density B).",
+            "Draw Courtyard at +0.25mm (9.8 mil) boundary (Density B).",
             "Set Origin to Component Centroid.",
             "Align manufacturer STEP model to assembly outline.",
             "Run Component Rule Check and release to library."
@@ -288,7 +288,7 @@ export const modulesData = [
           category: "3. IPC Compliance",
           items: [
             "Density level (A/B/C) confirmed to match project assembly spec.",
-            "Courtyard boundary drawn at correct clearance (0.25mm default).",
+            "Courtyard boundary drawn at correct clearance (0.25mm (9.8 mil) default).",
             "Pad-to-pad clearance meets IPC-2221A minimums for voltage class.",
             "Through-hole annular ring meets IPC-2221A Table 9-2 (Class 2/3).",
             "Any deviation from IPC-7351B documented with justification."
@@ -297,10 +297,10 @@ export const modulesData = [
         {
           category: "4. Layer Content Verification",
           items: [
-            "Silkscreen: Body outline present; clearance ≥ 0.10mm from pads.",
+            "Silkscreen: Body outline present; clearance ≥ 0.10mm (3.9 mil) from pads.",
             "Assembly: Exact component body outline at datasheet dimensions.",
             "Courtyard: Closed rectangle encompassing all pads and body.",
-            "RefDes present on silkscreen; height ≥ 0.8mm; inside courtyard.",
+            "RefDes present on silkscreen; height ≥ 0.8mm (31.5 mil); inside courtyard.",
             "Verification: No geometry exists on incorrect layers."
           ]
         },
@@ -2198,6 +2198,43 @@ export const modulesData = [
             "Differential pair length matching verified in output report.",
             "Thermal pad stencil reduction (40-60%) applied to all QFNs.",
             "Fab Drawing specifies impedance tolerances (±10%) and surface finish (ENIG/OSP)."
+          ]
+        }
+      ]
+    }
+  },
+  {
+    id: "thermal",
+    icon: Zap,
+    title: "Thermal Management",
+    desc: "Calculate trace current capacity per IPC-2152 standards.",
+    content: {
+      intro: "Thermal management is the most overlooked phase of high-power PCB design. Modern traces must be sized not just for resistance, but for steady-state temperature rise (ΔT) limits to ensure dielectric reliability and prevent catastrophic delamination. IPC-2152 provides the industrial-standard mathematical models for current-carrying capacity.",
+      sections: [
+        {
+          heading: "IPC-2152 Standard Fundamentals",
+          content: "IPC-2152 replaces the legacy IPC-2221 charts with a physics-based approach to thermal profiles. It accounts for material conductivity, board thickness, and copper plane proximity.",
+          type: "calculator"
+        },
+        {
+          heading: "Design Rules for Power Rails",
+          content: "When designing high-current planes and traces (e.g. 10A+), standard layout rules are superseded by thermal constraints:",
+          list: [
+            { label: "Internal vs External", text: "Internal traces (Stripline) require ~2x the width of external traces for the same current due to poor heat dissipation through FR4." },
+            { label: "Copper Weight impact", text: "Moving from 1oz to 2oz copper does NOT double the current capacity—it increases it by ~1.6x due to non-linear thermal spreading." },
+            { label: "Plane Proximity", text: "Traces adjacent to large copper planes can carry significantly more current as the plane acts as a lateral heat sink." }
+          ]
+        }
+      ],
+      checklists: [
+        {
+          category: "Thermal Verification",
+          items: [
+            "Current requirements gathered for all power rails.",
+            "Maximum allowable temperature rise established (default +10°C).",
+            "Trace widths calculated using IPC-2152 (not legacy 2221).",
+            "Thermal relief pads used on power planes for solderability.",
+            "Heat dissipation paths (vias to planes) verified in layout."
           ]
         }
       ]

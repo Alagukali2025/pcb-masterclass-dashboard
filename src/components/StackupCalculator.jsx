@@ -98,10 +98,11 @@ const StackupCalculator = () => {
       ? `Impedance ${absDelta.toFixed(1)}Ω too low. Suggest reducing Trace Width (W) or increasing Dielectric Distance (H).`
       : `Impedance ${absDelta.toFixed(1)}Ω excessive. Recommendation: Expand Trace Width (W) or compact Dielectric Layer (H).`;
 
+  const delayPsMm = (parseFloat(results.delay) / IN_TO_MM).toFixed(2);
+  const delayPsIn = parseFloat(results.delay).toFixed(2);
   const displayDelay = unitSystem === 'mm' 
-    ? (parseFloat(results.delay) / IN_TO_MM).toFixed(2) 
-    : results.delay;
-  const delayUnit = unitSystem === 'mm' ? 'ps/mm' : 'ps/in';
+    ? `${delayPsMm} ps/mm (${delayPsIn} ps/in)` 
+    : `${delayPsIn} ps/in (${delayPsMm} ps/mm)`;
 
   return (
     <div className="zdiff-calc slide-up" id="impedance-solver">
@@ -136,13 +137,13 @@ const StackupCalculator = () => {
         {/* Unit Selection Toggle */}
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mm' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mm')}
           >
             mm
           </button>
           <button
-            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${unitSystem === 'mil' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setUnitSystem('mil')}
           >
             mil
@@ -152,13 +153,13 @@ const StackupCalculator = () => {
         {/* Topology Toggle */}
         <div className="zdiff-toggle-group">
           <button
-            className={`zdiff-toggle-btn ${topology === 'microstrip' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${topology === 'microstrip' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setTopology('microstrip')}
           >
             Microstrip
           </button>
           <button
-            className={`zdiff-toggle-btn ${topology === 'stripline' ? 'zdiff-toggle-btn--active-green' : ''}`}
+            className={`zdiff-toggle-btn ${topology === 'stripline' ? 'zdiff-toggle-btn--active-orange' : ''}`}
             onClick={() => setTopology('stripline')}
           >
             Stripline
@@ -268,7 +269,7 @@ const StackupCalculator = () => {
             <div className="zdiff-result-sub-grid">
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Prop. Delay</div>
-                <div className="zdiff-result-sub-val">{displayDelay} <small>{delayUnit}</small></div>
+                <div className="zdiff-result-sub-val">{displayDelay}</div>
               </div>
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Eff. Dk (εr,eff)</div>
