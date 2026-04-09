@@ -1,4 +1,4 @@
-import { Cpu, Layers, Merge, Zap, MemoryStick, ShieldAlert, Factory, Activity, Terminal, ShieldCheck, FileSpreadsheet, FolderTree } from 'lucide-react';
+import { Cpu, Layers, Merge, Zap, MemoryStick, ShieldAlert, Factory, Activity, Terminal, ShieldCheck, FileSpreadsheet, Thermometer } from 'lucide-react';
 
 export const modulesData = [
   { 
@@ -554,6 +554,24 @@ export const modulesData = [
           type: 'ipc2152-calc'
         },
         {
+          heading: "Copper Weight Reference (IPC-4562A)",
+          content: "Copper weight (oz/ft²) is the industry-standard unit defining copper foil thickness. This table provides the definitive SSOT mapping between weight designations, physical thickness, and nominal current capacity for standard trace geometries.",
+          table: {
+            headers: ["Copper Weight", "Thickness (µm)", "Thickness (mil)", "Approx. Capacity (10mil trace, +10°C)", "Typical Application"],
+            rows: [
+              ["0.25 oz (Quarter)", "8.75", "0.34", "~0.5 A", "RF shields, impedance tuning"],
+              ["0.5 oz (Half)", "17.5", "0.69", "~1.0 A", "High-density signal layers, HDI"],
+              { type: 'highlight', data: ["1.0 oz (Standard)", "35.0", "1.37", "~1.5 A", "Default signal and plane layers"] },
+              ["2.0 oz (Heavy)", "70.0", "2.74", "~2.5 A", "Power distribution, bus bars"],
+              ["3.0 oz (Extreme)", "105.0", "4.11", "~3.5 A", "High-current switching, EV power"],
+              ["4.0 oz (Exotic)", "140.0", "5.51", "~4.5 A", "Defense, extreme power busbars"]
+            ]
+          },
+          alerts: [
+            { type: 'info', text: "Current capacity values are approximate for a 10 mil wide external trace with 10°C rise in still air. Use the IPC-2152 calculator above for precise results. Doubling copper weight increases capacity by ~1.6× (not 2×) due to non-linear thermal spreading." }
+          ]
+        },
+        {
           heading: "IPC Standards Compliance",
           content: "Specify laminates by IPC slash-sheet designators in your SSOT — never by brand name alone — to prevent unauthorized substitutions.",
           table: {
@@ -567,6 +585,51 @@ export const modulesData = [
               ["IPC-1601A", "Handling & Storage", "Mandatory bake-out (125°C) to prevent delamination"]
             ]
           }
+        },
+        {
+          heading: "Electrical Clearance & Creepage (IPC-2221B)",
+          content: "Minimum conductor spacing is determined by the working voltage difference between conductors and the operating environment. IPC-2221B Table 6-1 defines clearance (through air) while creepage (along surfaces) is governed by pollution degree per IEC 62368-1.",
+          table: {
+            headers: ["Voltage (DC/AC Peak)", "B1 — Internal (mil)", "B2 — Ext. Uncoated (mil)", "B3 — Coated (mil)", "B4 — >3050m Alt. (mil)"],
+            rows: [
+              ["0–15 V", "2.0", "4.0", "0.8", "4.0"],
+              ["16–30 V", "2.0", "4.0", "0.8", "4.0"],
+              ["31–50 V", "4.0", "8.0", "1.5", "8.0"],
+              ["51–100 V", "4.0", "8.0", "2.0", "8.0"],
+              { type: 'highlight', data: ["101–150 V", "8.0", "16.0", "4.0", "16.0"] },
+              ["151–170 V", "8.0", "20.0", "4.0", "20.0"],
+              ["171–250 V", "8.0", "30.0", "4.0", "30.0"],
+              ["251–500 V", "16.0", "60.0", "8.0", "60.0"]
+            ]
+          },
+          alerts: [
+            { type: 'warning', text: "These values are for IPC-2221B. Safety-critical products (mains, medical, automotive) MUST also comply with IEC 62368-1/60950 requirements." },
+            { type: 'info', text: "B1 = Internal. B2 = External (std). B3 = Coated. B4 = High-altitude derating (>3050m)." }
+          ]
+        },
+        {
+          heading: "Creepage vs. Clearance — Design Decision",
+          content: "Clearance and creepage address different failure modes: Air breakdown vs. Surface tracking.",
+          filletGrid: [
+            {
+              title: "Clearance (Air)",
+              color: "blue",
+              list: [
+                { label: "Definition", text: "Shortest distance through air." },
+                { label: "Failure", text: "Arc discharge / flashover." },
+                { label: "Standard", text: "IPC-2221B Table 6-1." }
+              ]
+            },
+            {
+              title: "Creepage (Surface)",
+              color: "orange",
+              list: [
+                { label: "Definition", text: "Shortest distance along surface." },
+                { label: "Failure", text: "Surface tracking." },
+                { label: "Standard", text: "IEC 62368-1." }
+              ]
+            }
+          ]
         }
       ],
       checklists: [
@@ -1794,6 +1857,25 @@ export const modulesData = [
           ]
         },
         {
+          heading: "6. Surface Finish Decision Matrix",
+          level: "intermediate",
+          content: "Surface finish selection determines shelf life, solderability, and flatness. Modern lead-free processes demand finishes that survive multiple reflow cycles without excessive oxidation.",
+          table: {
+            headers: ["Finish", "Shelf Life", "Flatness", "Cost", "Best For..."],
+            rows: [
+              ["ENIG (Gold)", "12+ Months", "Excellent", "High", "Fine-pitch BGA, Lead-free"],
+              ["HASL (Leaded)", "12 Months", "Poor", "Lowest", "Simple THT, Hand soldering"],
+              ["Lead-Free HASL", "6 Months", "Fair", "Low", "General purpose RoHS"],
+              { type: 'highlight', data: ["OSP (Organic)", "3-6 Months", "Excellent", "Low-Mid", "Consumer electronics"] },
+              ["Immersion Silver", "6 Months", "Excellent", "Medium", "High-speed links (>10 GHz)"],
+              ["ENEPIG", "12+ Months", "Excellent", "Highest", "Gold wire bonding, High-Rel"]
+            ]
+          },
+          alerts: [
+            { type: 'info', text: "Skin Effect Warning: At frequencies above 10 GHz, Immersion Silver or OSP are preferred over ENIG due to the magnetic properties of the Nickel layer, which increases insertion loss." }
+          ]
+        },
+        {
           heading: "Thermal Management & Copper Relief",
           content: "Analyze the thermal resistance of vias and the efficiency of copper pour thermal relief. Solid connections provide better thermal dissipation but create soldering risks; relief spokes balance these requirements.",
           type: "thermal-tool"
@@ -1856,7 +1938,7 @@ export const modulesData = [
               ["Single-ended (General)", "50 Ω", "±10%", "IPC-2141A"],
               ["DDR4/5 Data (DQ)", "40–50 Ω SE", "±10%", "JEDEC JESD79-5B"],
               ["DDR4/5 CLK / DQS", "100 Ω Diff", "±10%", "JEDEC JESD79-5B"],
-              ["PCIe Gen 1–5", "85 Ω Diff", "±15%", "PCI-SIG CEM Spec"],
+              ["PCIe Gen 1–5", "100 Ω Diff", "±15%", "PCI-SIG CEM Spec (85Ω at connector)"],
               ["USB 3.x / 4", "90 Ω Diff", "±15%", "USB 3.2 §6.7"],
               ["1000BASE-T (GbE)", "100 Ω Diff", "±15%", "IEEE 802.3"]
             ]
@@ -1884,6 +1966,27 @@ export const modulesData = [
           ],
           alerts: [
             { type: 'danger', text: "Never route high-speed signals across plane splits. The resulting return path detour causes massive EMI radiation and crosstalk failures." }
+          ]
+        },
+        {
+          heading: "BGA Escape & Fanout Design (IPC-7095C)",
+          level: "expert",
+          content: "Breaking out signals from fine-pitch BGAs (0.8mm to 0.4mm) is the most geometry-constrained task in layout. Strategy selection impacts layer count, via technology, and fabrication cost.",
+          table: {
+            headers: ["Feature Pitch", "Escape Strategy", "Via Technology", "Layer Impact"],
+            rows: [
+              ["1.0mm - 0.8mm", "Dog-bone fanout", "Standard Thru-hole / Blind", "Low to Medium"],
+              ["0.65mm - 0.5mm", "Via-In-Pad (VIPPO)", "Microvia / Plated Shut", "High (HDI required)"],
+              ["< 0.4mm", "Any-Layer HDI", "Stacked Microvias", "Maximum (ELIC)"]
+            ]
+          },
+          list: [
+            { label: "VIPPO", text: "Via-In-Pad Plated Over. Mandatory for <0.5mm pitch to save routing real estate. Requires flat surface for assembly (IPC-4761 Table 1, Type VII)." },
+            { label: "Differential Pair Breakout", text: "Maintain symmetry immediately after leaving the BGA ball. Avoid asymmetric via placements that introduce skew within the first 100 mils." },
+            { label: "Void Management", text: "Ensure stitching vias do not create 'Swiss-cheese' patterns in ground planes, which would choke return currents." }
+          ],
+          alerts: [
+            { type: 'warning', text: "Always confirm with your fabricator before using Via-In-Pad. Non-conductive epoxy fill and capping add 15-25% to board cost." }
           ]
         },
         {
@@ -2101,6 +2204,34 @@ export const modulesData = [
           }
         },
         {
+          heading: "Intelligent Handover: The IPC-2581 'Digital Twin'",
+          level: "expert",
+          content: "IPC-2581 (DPMX) is more than a file format; it is a standardized XML data model that represents the board's 'Digital Twin'. It bridges the gap between design CAD and factory CAM systems.",
+          filletGrid: [
+            {
+              title: "What's Inside IPC-2581?",
+              color: "blue",
+              list: [
+                { label: "Layer Stackup", text: "Material names, Dk/Df, and copper weights are explicitly defined." },
+                { label: "Netlist", text: "Full intelligent netlist for automated optical and electrical testing." },
+                { label: "BOM & PnP", text: "Component part numbers and XY coordinates for placement." }
+              ]
+            },
+            {
+              title: "Why it Beats Gerbers",
+              color: "green",
+              list: [
+                { label: "Ambiguity", text: "Zero. Gerbers are 'dumb' images; IPC-2581 is 'smart' data." },
+                { label: "Speed", text: "Reduces CAM intake time from hours to minutes." },
+                { label: "Yield", text: "Eliminates human error in layer ordering and polarity assignment." }
+              ]
+            }
+          ],
+          alerts: [
+            { type: 'info', text: "IPC-2581 Revision C is the current gold standard. It includes bidirectional support for fabrication and assembly, enabling true 'Industry 4.0' automation." }
+          ]
+        },
+        {
           heading: "5. CAD-Specific Export Workflows",
           level: "beginner",
           content: "Follow these tool-specific steps to ensure a compliant release package.",
@@ -2205,7 +2336,7 @@ export const modulesData = [
   },
   {
     id: "thermal",
-    icon: Zap,
+    icon: Thermometer,
     title: "Thermal Management",
     desc: "Calculate trace current capacity per IPC-2152 standards.",
     content: {

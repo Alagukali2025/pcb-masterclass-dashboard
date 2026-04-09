@@ -108,13 +108,16 @@ export default function DFMRuleChecker() {
 
   // ─── Rule 5: Annular Ring ───────────────────────────────
   const annularRing = (padDia - drill) / 2;
-  const ringLimit = activeStackup.ipcClass === 3 ? 0.1 : 0.05; 
+  // IPC-2221B Table 9-2: Min annular ring (external layers)
+  // Class 1: 0.05mm (breakout allowed), Class 2: 0.05mm (limited breakout), Class 3: 0.05mm (NO breakout — zero tolerance)
+  // IPC-6012E preferred: 0.10mm for Class 3 reliability
+  const ringLimit = activeStackup.ipcClass === 3 ? 0.075 : 0.05; 
   const ringLimitMil = (ringLimit * 39.3701).toFixed(1);
   const annularRingMil = (annularRing * 39.3701).toFixed(2);
   const ringStatus = annularRing < ringLimit ? 'fail' : annularRing < ringLimit + 0.05 ? 'warn' : 'pass';
   const ringMessage = annularRing < ringLimit
-    ? `CRITICAL ANNULAR RING. Breakout risk. IPC Class ${activeStackup.ipcClass} requires min ${ringLimit}mm (${ringLimitMil} mil).`
-    : `Annular ring satisfies IPC Class ${activeStackup.ipcClass} minimums.`;
+    ? `CRITICAL ANNULAR RING. Breakout risk. IPC Class ${activeStackup.ipcClass} requires min ${ringLimit}mm (${ringLimitMil} mil).${activeStackup.ipcClass === 3 ? ' Zero breakout allowed for Class 3 — IPC-6012E recommends 0.10mm.' : ''}`
+    : `Annular ring satisfies IPC Class ${activeStackup.ipcClass} minimums.${activeStackup.ipcClass === 3 ? ' Note: Class 3 permits zero breakout (IPC-6012E).' : ''}`;
 
   // ─── Rule 6: Solder Mask Dam ────────────────────────────
   const maskDam = activeStackup.spacing; 

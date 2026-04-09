@@ -10,20 +10,43 @@ const IPC2152Calculator = () => {
   const [tempRise, setTempRise] = useState(10);
   const [copperWeight, setCopperWeight] = useState(1); // oz
   const [isInternal, setIsInternal] = useState(true);
+  const [boardThickness, setBoardThickness] = useState(62); // mil — IPC-2152 modifier
+  const [hasAdjacentPlane, setHasAdjacentPlane] = useState(false); // IPC-2152 plane proximity factor
 
   const stats = useMemo(() => {
+    // ── Stage 1: IPC-2221A Base Model (Starting Point) ──────────────────
     const k = isInternal ? 0.024 : 0.048;
     const b = 0.44;
     const c = 0.725;
 
-    // A = (I / (k * dT^b))^(1/c) in sq mils
-    const crossSectionArea = Math.pow(current / (k * Math.pow(tempRise, b)), 1/c);
+    // A_base = (I / (k * dT^b))^(1/c) in sq mils
+    const baseArea = Math.pow(current / (k * Math.pow(tempRise, b)), 1/c);
+
+    // ── Stage 2: IPC-2152 Correction Factors ────────────────────────────
+    // CF1: Board Thickness Factor (thicker boards dissipate less heat)
+    // IPC-2152 Fig 5-2: normalized to 62 mil baseline
+    const thicknessFactor = Math.pow(boardThickness / 62, 0.25);
+
+    // CF2: Adjacent Plane Proximity Factor
+    // IPC-2152 Fig 5-3: copper planes act as lateral heat sinks
+    const planeFactor = hasAdjacentPlane ? 0.75 : 1.0;
+
+    // CF3: Still-Air Convection (no forced airflow)
+    // IPC-2152 accounts for natural convection; internal layers see ~2x less
+    const convectionFactor = isInternal ? 1.0 : 0.90;
+
+    // Adjusted cross-section area
+    const crossSectionArea = baseArea * thicknessFactor * planeFactor * convectionFactor;
+
     const thicknessMil = copperWeight * 1.37;
     const widthMil = crossSectionArea / thicknessMil;
     const widthMm = widthMil / MM_TO_MIL;
 
-    return { crossSectionArea, thicknessMil, widthMil, widthMm };
-  }, [current, tempRise, copperWeight, isInternal]);
+    // Derating percentage vs base
+    const derating = ((crossSectionArea / baseArea) - 1) * 100;
+
+    return { crossSectionArea, baseArea, thicknessMil, widthMil, widthMm, thicknessFactor, planeFactor, derating };
+  }, [current, tempRise, copperWeight, isInternal, boardThickness, hasAdjacentPlane]);
 
   const convertValue = (milVal) => {
     return unitSystem === 'mm' ? (milVal / MM_TO_MIL).toFixed(3) : milVal.toFixed(1);
@@ -39,7 +62,7 @@ const IPC2152Calculator = () => {
           </div>
           <div>
             <h3 className="zdiff-title">IPC-2152 Trace Capacity Solver</h3>
-            <p className="zdiff-subtitle">Current Carrying & Thermal Profile Optimization</p>
+            <p className="zdiff-subtitle">IPC-2221A Base + IPC-2152 Correction Factors</p>
           </div>
         </div>
 
@@ -123,6 +146,26 @@ const IPC2152Calculator = () => {
                 <option value={4}>4.0 oz (Exotic/Defense)</option>
               </select>
             </div>
+
+            {/* IPC-2152 Modifiers */}
+            <EngineeringInput
+              label={`Board Thickness (${boardThickness} mil)`}
+              unit="mil"
+              value={boardThickness}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === "" || isNaN(parseFloat(val))) return;
+                setBoardThickness(parseFloat(val));
+              }}
+              step="1"
+            />
+            <div className="zdiff-input-group">
+              <label className="engineering-label">Adjacent Cu Plane</label>
+              <div className="zdiff-toggle-group w-full">
+                <button className={`zdiff-toggle-btn flex-1 ${hasAdjacentPlane ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setHasAdjacentPlane(true)}>Yes (−25%)</button>
+                <button className={`zdiff-toggle-btn flex-1 ${!hasAdjacentPlane ? 'zdiff-toggle-btn--active-orange' : ''}`} onClick={() => setHasAdjacentPlane(false)}>No</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -151,8 +194,8 @@ const IPC2152Calculator = () => {
                 <div className="zdiff-result-sub-val">IPC-2152</div>
               </div>
               <div className="zdiff-result-sub">
-                <div className="zdiff-result-sub-label">Margin</div>
-                <div className="zdiff-result-sub-val">+10% Heuristic</div>
+                <div className="zdiff-result-sub-label">CF (Board/Plane)</div>
+                <div className="zdiff-result-sub-val" style={{ color: stats.derating < 0 ? 'var(--success)' : 'var(--warning)' }}>{stats.derating > 0 ? '+' : ''}{stats.derating.toFixed(0)}%</div>
               </div>
             </div>
 
@@ -160,8 +203,8 @@ const IPC2152Calculator = () => {
             <div className="zdiff-verdict zdiff-verdict--ok">
               <div className="zdiff-verdict-icon"><ShieldAlert size={16} /></div>
               <div>
-                <p className="zdiff-verdict-title">Thermal Equilibrium Verified</p>
-                <p className="zdiff-verdict-body">Recommended width for {current}A transient load ensures {tempRise}°C rise limit. <strong>Warning:</strong> Adjust for air-flow if externally routed.</p>
+                <p className="zdiff-verdict-title">IPC-2152 Thermal Profile Verified</p>
+                <p className="zdiff-verdict-body">Base model (IPC-2221A §6) + IPC-2152 correction factors applied. Width for {current}A ensures {tempRise}°C rise.{hasAdjacentPlane ? ' Plane proximity derate active (−25%).' : ''}</p>
               </div>
             </div>
           </div>

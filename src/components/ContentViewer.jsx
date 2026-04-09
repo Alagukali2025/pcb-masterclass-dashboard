@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { modulesData } from '../data/modules';
 import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator, ShieldAlert } from 'lucide-react';
 import IPCCalculator from './IPCCalculator';
@@ -29,8 +29,22 @@ import ReleaseSimulator from './OutputSystem/ReleaseSimulator';
 
 export default function ContentViewer() {
   const { id } = useParams();
+  const location = useLocation();
   const moduleData = modulesData.find(m => m.id === id);
   const [activeSection, setActiveSection] = useState(0);
+
+  // Handle auto-scroll from search
+  useEffect(() => {
+    if (location.state && location.state.scrollTo !== undefined && moduleData) {
+      const sectionIndex = location.state.scrollTo;
+      // Small delay to ensure refs are populated and DOM is ready
+      const timer = setTimeout(() => {
+        scrollToSection(sectionIndex);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [id, location.state, moduleData]);
+
   const [knowledgeLevel, setKnowledgeLevel] = useState(['beginner', 'intermediate', 'expert']);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [checkedItems, setCheckedItems] = useState({});

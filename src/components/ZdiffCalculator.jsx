@@ -463,15 +463,19 @@ export default function ZdiffCalculator() {
               </button>
               <h5 className="zdiff-popover-title">Standards Reference</h5>
               <div className="zdiff-popover-body">
-                <p className="mb-4">Calculations based on <strong>IPC-2141A Appendix A</strong> (BEM-based Transmission Line Models) for precision impedance results.</p>
+                <p className="mb-4">Calculations based on <strong>IPC-2141A</strong> Hammerstad/Wheeler Transmission Line Models for precision impedance results.</p>
                 
                 <div className="zdiff-popover-code-box">
-                  <div className="zdiff-popover-code-label">Primary Equation (Microstrip)</div>
-                  <code>Z0 = (87 / √(εr + 1.41)) * ln(5.98h / (0.8w + t))</code>
+                  <div className="zdiff-popover-code-label">Implemented Equation (Microstrip)</div>
+                  <code>Z0 = [60 / √(0.475·εr + 0.67)] × ln(5.98h / (0.8w + t))</code>
+                </div>
+                <div className="zdiff-popover-code-box" style={{ marginTop: '8px' }}>
+                  <div className="zdiff-popover-code-label">Implemented Equation (Stripline)</div>
+                  <code>Z0 = [60 / √εr] × ln(1.9·B / (0.8w + t))</code>
                 </div>
 
                 <div className="zdiff-popover-disclaimer">
-                  <span className="font-bold">Note:</span> These simplified models are accurate within ±5% for standard FR4/VLP stackups. Use a 2D Field Solver (HyperLynx/Simberian) for critical 25Gbps+ signals.
+                  <span className="font-bold">Note:</span> Hammerstad model is accurate within ±5% for standard FR4/VLP stackups. Use a 2D Field Solver (HyperLynx/Polar Si9000) for critical 25 Gbps+ channels.
                 </div>
               </div>
             </div>

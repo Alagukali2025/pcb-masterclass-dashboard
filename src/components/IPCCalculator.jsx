@@ -65,6 +65,11 @@ const IPCCalculator = () => {
     const solderMaskExpansion = 0.05; // 2 mil per side
     const pasteMaskExpansion = 0.00;  // 1:1 for standard components
 
+    // IPC-7351B §4.1 Courtyard Boundary Clearance
+    const courtyardClearance = { A: 0.50, B: 0.25, C: 0.10 }[densityLevel];
+    const courtyardX = Z + 2 * courtyardClearance;
+    const courtyardY = w + 2 * courtyardClearance;
+
     return {
       z: Z,
       g: G,
@@ -77,7 +82,10 @@ const IPCCalculator = () => {
       solderMaskX: X + (solderMaskExpansion * 2),
       solderMaskY: padLength + (solderMaskExpansion * 2),
       pasteMaskX: X + (pasteMaskExpansion * 2),
-      pasteMaskY: padLength + (pasteMaskExpansion * 2)
+      pasteMaskY: padLength + (pasteMaskExpansion * 2),
+      courtyardX,
+      courtyardY,
+      courtyardClearance
     };
   }, [inputs, packageType, densityLevel]);
 
@@ -213,6 +221,14 @@ const IPCCalculator = () => {
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Paste Mask (X/Y)</div>
                 <div className="zdiff-result-sub-val" style={{ color: 'var(--warning)' }}>{convertValue(results.pasteMaskX)} × {convertValue(results.pasteMaskY)} <small>{unitSystem}</small></div>
+              </div>
+              <div className="zdiff-result-sub">
+                <div className="zdiff-result-sub-label">Courtyard (X/Y)</div>
+                <div className="zdiff-result-sub-val" style={{ color: 'var(--accent-primary)' }}>{convertValue(results.courtyardX)} × {convertValue(results.courtyardY)} <small>{unitSystem}</small></div>
+              </div>
+              <div className="zdiff-result-sub">
+                <div className="zdiff-result-sub-label">Courtyard Margin</div>
+                <div className="zdiff-result-sub-val">+{results.courtyardClearance} <small>mm/side</small></div>
               </div>
               <div className="zdiff-result-sub">
                 <div className="zdiff-result-sub-label">Clearance (Z)</div>

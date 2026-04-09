@@ -31,7 +31,7 @@ const EMICalculator = () => {
       critical: lambda / 20, // Critical length mark
       antenna: lambda / 4,   // Peak radiation
     };
-  }, [riseTime, trUnit]);
+  }, [riseTime, trUnit, activeStackup.dk]);
 
   const convertDist = (val) => {
     return distanceUnit === 'mil' ? (val * MM_TO_MIL).toFixed(1) : val.toFixed(2);
