@@ -21,6 +21,7 @@ import ViaAdvancedCalculator from './ViaAdvancedCalculator';
 import PDNAnalyzer from './PDNAnalyzer';
 import ThermalAnalysisTool from './ThermalAnalysisTool';
 import IPC2152Calculator from './IPC2152Calculator';
+import ThermalResistanceVisualizer from './ThermalResistanceVisualizer';
 import EMIChecklist from './EMIChecklist';
 import PITargetCalculator from './PITargetCalculator';
 import ReleaseSimulator from './OutputSystem/ReleaseSimulator';
@@ -37,6 +38,13 @@ export default function ContentViewer() {
   useEffect(() => {
     if (location.state && location.state.scrollTo !== undefined && moduleData) {
       const sectionIndex = location.state.scrollTo;
+      const requiredLevel = location.state.requiredLevel;
+
+      // If the content level is not active, enable it automatically
+      if (requiredLevel && !knowledgeLevel.includes(requiredLevel)) {
+        setKnowledgeLevel(prev => [...prev, requiredLevel]);
+      }
+
       // Small delay to ensure refs are populated and DOM is ready
       const timer = setTimeout(() => {
         scrollToSection(sectionIndex);
@@ -150,6 +158,36 @@ export default function ContentViewer() {
     );
   };
 
+  const COMPONENTS = {
+    'calculator': (id) => (
+      id === 'footprint' ? <IPCCalculator /> : 
+      id === 'thermal' ? <IPC2152Calculator /> : <StackupCalculator />
+    ),
+    'visualizer': () => <StackupLayerToggle />,
+    'aspect-ratio-calc': () => <AspectRatioCalculator />,
+    'laminate-table': () => <LaminateTable />,
+    'dfm-checker': () => <DFMRuleChecker />,
+    'fiber-weave': () => <FiberWeaveSkew />,
+    'stackup-export': () => <StackupExport />,
+    'zdiff-calculator': () => <ZdiffCalculator />,
+    'diff-reference-table': () => <DiffPairReferenceTable />,
+    'ddr-timing-calculator': () => <DDRTimingCalculator />,
+    'emi-calculator': () => <EMICalculator />,
+    'emi-visualizer': () => <EMIVisualizer />,
+    'via-resonance-calc': () => <ViaResonanceCalculator />,
+    'via-advanced-calc': () => <ViaAdvancedCalculator />,
+    'pdn-analyzer': () => <PDNAnalyzer />,
+    'pi-target-calc': () => <PITargetCalculator />,
+    'thermal-tool': () => <ThermalAnalysisTool />,
+    'thermal-resistance-visual': () => <ThermalResistanceVisualizer />,
+    'ipc2152-calc': () => <IPC2152Calculator />,
+    'emi-checklist-tool': () => <EMIChecklist />,
+    'output-simulator': () => <ReleaseSimulator />
+  };
+
+  const hasLevels = moduleData.content.sections?.some(s => s.level) || 
+                    moduleData.content.checklists?.some(c => c.level);
+
   return (
     <>
       {/* Sticky Progress Bar */}
@@ -172,7 +210,7 @@ export default function ContentViewer() {
             <h1 className="content-title">{moduleData.title}</h1>
             <p className="content-intro">{content.intro}</p>
 
-            {moduleData.id === 'emi_emc' && (
+            {hasLevels && (
               <div className="module-control-panel slide-up">
                 <EMIKnowledgeToggle 
                   currentLevels={knowledgeLevel} 
@@ -184,7 +222,7 @@ export default function ContentViewer() {
 
           <div className="content-sections">
             {content.sections && content.sections.map((sec, i) => {
-              if (moduleData.id === 'emi_emc' && sec.level && !knowledgeLevel.includes(sec.level)) return null;
+              if (sec.level && !knowledgeLevel.includes(sec.level)) return null;
               return (
                 <section
                   key={i}
@@ -309,51 +347,7 @@ export default function ContentViewer() {
                     </div>
                   )}
 
-                  {sec.type === 'calculator' && (
-                    id === 'footprint' ? <IPCCalculator /> : <StackupCalculator />
-                  )}
-
-                  {sec.type === 'visualizer' && <StackupLayerToggle />}
-
-                  {sec.type === 'aspect-ratio-calc' && <AspectRatioCalculator />}
-
-                  {sec.type === 'laminate-table' && <LaminateTable />}
-
-                  {sec.type === 'dfm-checker' && <DFMRuleChecker />}
-
-                  {sec.type === 'fiber-weave' && <FiberWeaveSkew />}
-
-                  {sec.type === 'stackup-export' && <StackupExport />}
-
-                  {sec.type === 'zdiff-calculator' && <ZdiffCalculator />}
-
-                  {sec.type === 'diff-reference-table' && <DiffPairReferenceTable />}
-
-                  {sec.type === 'ddr-timing-calculator' && <DDRTimingCalculator />}
-
-                  {sec.type === 'emi-calculator' && <EMICalculator />}
-
-                  {sec.type === 'emi-visualizer' && <EMIVisualizer />}
-
-
-
-                  {sec.type === 'via-resonance-calc' && <ViaResonanceCalculator />}
-
-                  {sec.type === 'via-advanced-calc' && <ViaAdvancedCalculator />}
-
-                  {sec.type === 'pdn-analyzer' && <PDNAnalyzer />}
-
-                  {sec.type === 'pi-target-calc' && <PITargetCalculator />}
-
-                  {sec.type === 'thermal-tool' && <ThermalAnalysisTool />}
-
-                  {sec.type === 'ipc2152-calc' && <IPC2152Calculator />}
-
-                  {sec.type === 'emi-checklist-tool' && <EMIChecklist />}
-
-                  {sec.type === 'output-simulator' && <ReleaseSimulator />}
-
-
+                  {sec.type && COMPONENTS[sec.type] && COMPONENTS[sec.type](id)}
 
                   {sec.ruleCards && (
                     <div className="rule-cards-grid slide-up">
@@ -506,16 +500,8 @@ export default function ContentViewer() {
               </div>
 
               {content.checklists.map((cat, ci) => {
-                if (moduleData.id === 'emi_emc') {
-                  const hasBeginner = knowledgeLevel.includes('beginner');
-                  const hasIntermediate = knowledgeLevel.includes('intermediate');
-                  const hasExpert = knowledgeLevel.includes('expert');
-                  
-                  if (ci === 0 && !hasBeginner) return null;
-                  if (ci === 1 && !hasIntermediate) return null;
-                  if (ci === 2 && !hasExpert) return null;
-                  if (ci === 3 && !hasExpert) return null; // Tier 4 is also expert
-                }
+                if (cat.level && !knowledgeLevel.includes(cat.level)) return null;
+                
                 return (
                   <div key={ci} className="checklist-category">
                     <h3 className="category-title">{cat.category}</h3>
@@ -532,7 +518,13 @@ export default function ContentViewer() {
                             <div className="task-checkbox">
                               {isChecked && <Check size={16} />}
                             </div>
-                            <span className="task-label">{item}</span>
+                            <span className="task-label">
+                              {typeof item === 'string' ? item : (
+                                <>
+                                  <strong className="list-label">{item.label}:</strong> {item.text}
+                                </>
+                              )}
+                            </span>
                           </div>
                         );
                       })}
@@ -565,7 +557,13 @@ export default function ContentViewer() {
                       <div className="task-checkbox">
                         {isChecked && <Check size={16} />}
                       </div>
-                      <span className="task-label">{item}</span>
+                      <span className="task-label">
+                        {typeof item === 'string' ? item : (
+                          <>
+                            <strong className="list-label">{item.label}:</strong> {item.text}
+                          </>
+                        )}
+                      </span>
                     </div>
                   );
                 })}
@@ -581,8 +579,7 @@ export default function ContentViewer() {
             </div>
             <ul className="toc-list">
               {content.sections.map((sec, i) => {
-                // Filter TOC items by knowledge level for EMI/EMC module
-                if (moduleData.id === 'emi_emc' && sec.level && !knowledgeLevel.includes(sec.level)) return null;
+                if (sec.level && !knowledgeLevel.includes(sec.level)) return null;
                 
                 return (
                   <li key={i} className={`toc-item ${activeSection === i ? 'active' : ''}`}>

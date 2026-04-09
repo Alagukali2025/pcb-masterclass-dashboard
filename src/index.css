@@ -6032,12 +6032,91 @@ a:hover {
   box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
 }
 
+/* ──────────────────────────────────────────────────────────
+   KNOWLEDGE COMPLEXITY SYSTEM (GLOBAL)
+   ────────────────────────────────────────────────────────── */
+
+.module-control-panel {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-8);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-light);
+  animation: fadeIn var(--transition-normal);
+}
+
+.knowledge-complexity-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.complexity-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: right;
+  margin-right: 4px;
+}
+
+.complexity-btn-group {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+}
+
+.complexity-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-lg);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.complexity-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.complexity-btn--active-beginner {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
+
+.complexity-btn--active-intermediate {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+}
+
+.complexity-btn--active-expert {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+}
+
 @media (max-width: 640px) {
-  .toggle-group {
-    grid-template-columns: 1fr;
+  .module-control-panel {
+    justify-content: center;
   }
-  .toggle-btn {
-    padding: 14px;
+  .complexity-title {
+    text-align: center;
   }
 }
 

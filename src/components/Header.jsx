@@ -65,7 +65,8 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
               moduleId: module.id,
               moduleTitle: module.title,
               title: section.heading,
-              sectionIndex: index
+              sectionIndex: index,
+              level: section.level // Capture the required level
             });
           }
         });
@@ -80,7 +81,12 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
     if (result.type === 'module') {
       navigate(`/module/${result.id}`);
     } else {
-      navigate(`/module/${result.moduleId}`, { state: { scrollTo: result.sectionIndex } });
+      navigate(`/module/${result.moduleId}`, { 
+        state: { 
+          scrollTo: result.sectionIndex,
+          requiredLevel: result.level 
+        } 
+      });
     }
     setIsResultsVisible(false);
     setIsSearchExpanded(false);
