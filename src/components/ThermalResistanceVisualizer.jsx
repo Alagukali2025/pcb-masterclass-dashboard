@@ -179,7 +179,7 @@ const ThermalResistanceVisualizer = () => {
       <div className="zdiff-verdict zdiff-verdict--info" style={{ marginTop: 'var(--space-4)' }}>
         <div className="zdiff-verdict-icon"><ShieldAlert size={18} /></div>
         <div style={{ fontSize: '0.8rem', lineHeight: '1.5' }}>
-          <strong>Expert Insight:</strong> Reducing <strong>Rθsa</strong> (using a larger heatsink or forced airflow) is the most effective way to lower junction temperature. If Rθjc is high, no amount of heatsinking will help — you must select a component with better internal thermal conductivity.
+          <strong>Engineering Insight:</strong> Reducing <strong>Rθsa</strong> (using a larger heatsink or forced airflow) is the most effective way to lower junction temperature. If Rθjc is high, no amount of heatsinking will help — you must select a component with better internal thermal conductivity.
         </div>
       </div>
     </div>

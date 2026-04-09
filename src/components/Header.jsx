@@ -65,8 +65,7 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
               moduleId: module.id,
               moduleTitle: module.title,
               title: section.heading,
-              sectionIndex: index,
-              level: section.level // Capture the required level
+              sectionIndex: index
             });
           }
         });
@@ -83,8 +82,7 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
     } else {
       navigate(`/module/${result.moduleId}`, { 
         state: { 
-          scrollTo: result.sectionIndex,
-          requiredLevel: result.level 
+          scrollTo: result.sectionIndex
         } 
       });
     }

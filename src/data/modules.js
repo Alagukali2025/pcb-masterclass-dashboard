@@ -11,7 +11,6 @@ export const modulesData = [
       sections: [
         {
           heading: "IPC-7351 Land Pattern Methodology",
-          level: "beginner",
           content: "IPC-7351B/C defines a mathematical framework for calculating copper land patterns based on component body dimensions, lead dimensions, and assembly class. The standard introduces three density levels:",
           table: {
             headers: ["Density Level", "IPC Designation", "Environment", "Typical Application"],
@@ -27,7 +26,6 @@ export const modulesData = [
         },
         {
           heading: "Land Pattern Calculation — Core Equations",
-          level: "beginner",
           content: "IPC-7351B defines land dimensions through three dimensional extensions. All variables carry tolerance bands from the component datasheet.",
           formula: {
             title: "IPC-7351B Land Calculation Variables",
@@ -49,13 +47,11 @@ export const modulesData = [
         },
         {
           heading: "3. Interactive Land Pattern Solver",
-          level: "intermediate",
           content: "Calculate the precise land pattern dimensions for the Top, Side, and Heel fillets based on the IPC-7351C mathematical model. Select your target Density Level to see how pad size affects yield.",
           type: 'calculator'
         },
         {
           heading: "Solder Joint Reliability Principles",
-          level: "intermediate",
           content: "Solder joint reliability is directly governed by three parameters derivable from footprint geometry:",
           list: [
             { label: "Pad-to-lead ratio", text: "The copper pad must extend sufficiently beyond the lead to form a well-defined meniscus. Insufficient extension reduces fillet height and increases cold joints." },
@@ -65,7 +61,6 @@ export const modulesData = [
         },
         {
           heading: "DFM & DFA Considerations",
-          level: "intermediate",
           content: "Manufacturability and assembly constraints are baked into every footprint through systematic rules:",
           table: {
             headers: ["Constraint", "Basis", "Footprint Impact"],
@@ -80,7 +75,6 @@ export const modulesData = [
         },
         {
           heading: "Solder Joint Terminology",
-          level: "intermediate",
           content: "The three solder fillet locations — toe, heel, and side — represent the principal inspection points for quality.",
           filletGrid: [
             {
@@ -114,7 +108,6 @@ export const modulesData = [
         },
         {
           heading: "SSOT Architecture",
-          level: "intermediate",
           content: "Full traceability from production back to the originating datasheet is maintained through a structured data flow:",
           flow: [
             { step: "01", title: "Source", desc: "Component datasheet (archived PDF)" },
@@ -127,13 +120,11 @@ export const modulesData = [
         },
         {
           heading: "Version Control & Metadata",
-          level: "intermediate",
           content: "Every footprint must carry embedded metadata for audit readiness (IPC Class 3):",
           codeBlock: "FOOTPRINT_NAME:    [PACKAGE]_[STANDARD]_[DENSITY]\nCREATION_DATE:     YYYY-MM-DD\nDATASHEET_REF:     Manufacturer_PN_Datasheet_RevX.pdf\nIPC_STANDARD:      IPC-7351B, Density Level B\nFOOTPRINT_VERSION: 1.0.0\nREVIEW_STATUS:     APPROVED / PENDING\nREVIEWER_ID:       Rev_002"
         },
         {
           heading: "Critical Datasheet Sections",
-          level: "intermediate",
           content: "The component datasheet is the primary authority. All calculations must derive from these specific sections:",
           table: {
             headers: ["Dimension", "Symbol", "Usage in Footprint", "Source"],
@@ -148,7 +139,6 @@ export const modulesData = [
         },
         {
           heading: "IPC Standards Application",
-          level: "intermediate",
           content: "Where specific IPC standards govern footprint elements:",
           table: {
             headers: ["Element", "Governing Standard", "Application"],
@@ -163,7 +153,6 @@ export const modulesData = [
         },
         {
           heading: "Conflict Resolution",
-          level: "intermediate",
           content: "When datasheet recommendations conflict with IPC calculations:",
           list: [
             { label: "Step 1", text: "Document both values explicitly with full traceability." },
@@ -174,7 +163,6 @@ export const modulesData = [
         },
         {
           heading: "Manufacturability Constraints (DFM)",
-          level: "intermediate",
           content: "Standard manufacturing limits for reliable production:",
           table: {
             headers: ["Constraint", "Min Value", "Standard", "Risk"],
@@ -188,7 +176,6 @@ export const modulesData = [
         },
         {
           heading: "Assembly Tolerances (RSS)",
-          level: "intermediate",
           content: "Statistical stack-up of fabrication and placement errors:",
           table: {
             headers: ["Source", "Symbol", "Value (Density B)", "Description"],
@@ -206,7 +193,6 @@ export const modulesData = [
         },
         {
           heading: "Tool-Specific Best Practices",
-          level: "intermediate",
           twoColumnGrid: [
             {
               badge: "Altium Designer",
@@ -234,7 +220,6 @@ export const modulesData = [
         },
         {
           heading: "Step-by-Step: Altium Designer",
-          level: "intermediate",
           content: "Standard workflow for creating an SMD footprint (e.g., SOT-23):",
           list: [
             "Create New Component in .PcbLib and enter metadata.",
@@ -249,14 +234,13 @@ export const modulesData = [
         },
         {
           heading: "Step-by-Step: Cadence Allegro",
-          level: "intermediate",
           content: "Standard workflow for creating a managed footprint:",
           list: [
             "Create Padstack (.pad) in Padstack Editor first.",
             "File → New → Package Symbol (.dra) in Allegro.",
             "Layout → Pins to place pads using the created .pad files.",
             "Add → Line on Package_Geometry/Silkscreen_Top for body.",
-            "Add → Line on Package_Geometry/Assembly_Top for assembly.",
+            "Add → Line on Package_Geometry/Assembly_Top for body.",
             "Add → Rectangle on Place_Bound_Top for Courtyard.",
             "Setup → Change Drawing Origin to centroid.",
             "Check → Check Symbol to verify zero DRC violations."
@@ -264,7 +248,6 @@ export const modulesData = [
         },
         {
           heading: "IPC-A-610 Solder Joint Inspection",
-          level: "intermediate",
           content: "Acceptability of solder joints for surface mount components depends on the Class of the product (1, 2, or 3). Higher classes require greater wetting and fillet height.",
           table: {
             headers: ["Feature", "Class 1 (General)", "Class 2 (Dedicated)", "Class 3 (High Performance)"],
@@ -281,19 +264,16 @@ export const modulesData = [
         },
         {
           heading: "4. The Courtyard & Keepout (Symmetry)",
-          level: "intermediate",
           content: "A professional footprint requires a defined Courtyard — the area encompassing the component body and pads, plus a safety buffer for assembly pick-and-place tolerances."
         },
         {
           heading: "Advanced Footprint Engineering (BGA/QFN)",
-          level: "expert",
           content: "High-pin-count and exposed-pad components require specialized landing strategies. Inadequate thermal via design or stencil apertures can result in 100% rework rates."
         }
       ],
       checklists: [
         {
           category: "1. Datasheet Validation",
-          level: "beginner",
           items: [
             "Original manufacturer datasheet identified and archived (PDF).",
             "Package outline drawing reviewed and critical dimensions extracted.",
@@ -304,7 +284,6 @@ export const modulesData = [
         },
         {
           category: "2. Pad Dimensions",
-          level: "intermediate",
           items: [
             "IPC-7351B calculation worksheet completed for all variables.",
             "Pad length, width, and gap verified against IPC output (±0.01mm).",
@@ -315,7 +294,6 @@ export const modulesData = [
         },
         {
           category: "3. IPC Compliance",
-          level: "intermediate",
           items: [
             "Density level (A/B/C) confirmed to match project assembly spec.",
             "Courtyard boundary drawn at correct clearance (0.25mm (9.8 mil) default).",
@@ -326,7 +304,6 @@ export const modulesData = [
         },
         {
           category: "4. Layer Content Verification",
-          level: "intermediate",
           items: [
             "Silkscreen: Body outline present; clearance ≥ 0.10mm (3.9 mil) from pads.",
             "Assembly: Exact component body outline at datasheet dimensions.",
@@ -337,7 +314,6 @@ export const modulesData = [
         },
         {
           category: "5. Pin-1 and Polarity",
-          level: "beginner",
           items: [
             "Pin 1 identified on silkscreen (dot, chamfer, or triangle).",
             "Pin 1 marker position matches datasheet package orientation.",
@@ -347,7 +323,6 @@ export const modulesData = [
         },
         {
           category: "6. 3D Model",
-          level: "intermediate",
           items: [
             "3D model (STEP) sourced from manufacturer or IPC library.",
             "3D model body aligned to assembly outline exactly (no offset).",
@@ -357,7 +332,6 @@ export const modulesData = [
         },
         {
           category: "7. DRC / ERC",
-          level: "intermediate",
           items: [
             "Footprint-level DRC run in EDA tool; zero violations.",
             "Courtyard overlap check: footprint courtyard is non-intersecting.",
@@ -367,7 +341,6 @@ export const modulesData = [
         },
         {
           category: "8. Naming and Documentation",
-          level: "beginner",
           items: [
             "Name follows convention: [PACKAGE]_[STANDARD]_[DENSITY].",
             "All metadata fields (datasheet, standard, version, etc.) populated.",
@@ -389,7 +362,6 @@ export const modulesData = [
       sections: [
         {
           heading: "SSOT Stackup Workflow",
-          level: "beginner",
           content: "In a professional engineering environment, a single master stackup definition (the SSOT) drives every downstream process to prevent errors and unauthorized material substitutions at the fabrication house.",
           flow: [
             { step: "01", title: "Define", desc: "Master SSOT definition (Materials, Dk, Df, Cu Weight, Thickness)" },
@@ -400,7 +372,6 @@ export const modulesData = [
         },
         {
           heading: "Material Science: The Laminate",
-          level: "beginner",
           content: "Your material selection locks in the dielectric constant (Dk) and dissipation factor (Df). High-speed designs require ultra-low loss (low Df) materials to maintain signal integrity at frequencies >3 GHz.",
           filletGrid: [
             {
@@ -434,7 +405,6 @@ export const modulesData = [
         },
         {
           heading: "Laminate Benchmarks (Thermal & Dielectric)",
-          level: "intermediate",
           content: "Laminate selection must account for both electrical performance (Dk/Df) and thermal survivability (Tg/Td/CTE). High-speed materials often sacrifice mechanical robustness for lower loss tangent.",
           table: {
             headers: ["Material Class", "Example Product", "Dk (@10GHz)", "Df (@10GHz)", "Tg (°C)", "Td (°C)", "CTE-Z (ppm)"],
@@ -451,19 +421,16 @@ export const modulesData = [
         },
         {
           heading: "Advanced Material Science — Laminate Database",
-          level: "intermediate",
           content: "Searchable, IPC-4101C referenced material database covering critical high-frequency parameters. Click column headers to sort by Df, Tg, Z-CTE, or Thermal Conductivity. Hover acronym headers for plain-English definitions.",
           type: 'laminate-table'
         },
         {
           heading: "Interactive Layer Stackup Generator",
-          level: "beginner",
           content: "Toggle between 4, 6, 8, and 12-layer configurations to explore symmetric construction strategies. Visualizes solder mask, copper layers, prepreg vs. core, and drill span overlays in a real cross-section format.",
           type: 'visualizer'
         },
         {
           heading: "Standard 8-Layer PCB Construction",
-          level: "intermediate",
           content: "A standard 1.6mm (62 mil) 8-layer board requires precise material thickness control to achieve target impedances while maintaining mechanical symmetry. Below is a representative 1.6mm build-up using alternating Core and Prepreg construction.",
           table: {
             headers: ["Layer", "Function", "Material Type", "Thickness (mil)", "Thickness (mm)", "Copper (oz)"],
@@ -491,7 +458,6 @@ export const modulesData = [
         },
         {
           heading: "Routing Topologies & Impedance Control",
-          level: "intermediate",
           content: "The propagation speed and characteristic impedance (Z₀) of a signal change depending on if it is on the surface (Microstrip) or embedded between planes (Stripline).",
           twoColumnGrid: [
             {
@@ -520,13 +486,11 @@ export const modulesData = [
         },
         {
           heading: "Universal Impedance Solver",
-          level: "intermediate",
           content: "Calculate characteristic impedance (Z₀) for Single-Ended and Differential configurations across Microstrip and Stripline topologies using professional IPC-2141A models.",
           type: 'calculator'
         },
         {
           heading: "Core vs. Foil Construction",
-          level: "intermediate",
           content: "Choosing between Foil Build (industry standard) or Core Build determines the lamination sequence and final board rigidity.",
           table: {
             headers: ["Construction Type", "Process", "Primary Benefit", "Standard Application"],
@@ -538,7 +502,6 @@ export const modulesData = [
         },
         {
           heading: "Return Currents: High-Frequency Physics",
-          level: "expert",
           content: "Every signal needs a return path. At high frequencies (>1 MHz), current follows the path of least Inductance, not least Resistance.",
           list: [
             { label: "High-Frequency Physics", text: "Return current concentrates directly beneath the signal trace to minimize the loop area." },
@@ -551,7 +514,6 @@ export const modulesData = [
         },
         {
           heading: "Copper Balancing & Thieving (DFM)",
-          level: "expert",
           content: "Resin starvation occurs during the lamination press cycle if one side of the board has significantly higher copper density than the other, leading to board warpage (bow and twist).",
           list: [
             { label: "The Resin Starvation Risk", text: "Prepreg resin flows toward empty copper areas. If one layer is 'starved,' the board becomes unstable." },
@@ -561,25 +523,21 @@ export const modulesData = [
         },
         {
           heading: "Real-Time DFM Rule Checker",
-          level: "intermediate",
           content: "Enter your board parameters to validate against IPC-2221B manufacturing limits. Three live rule engines check Aspect Ratio, Copper Weight vs. Trace Width, and Copper Density Balance simultaneously.",
           type: 'dfm-checker'
         },
         {
           heading: "Via Technologies: Aspect Ratio & DFM",
-          level: "intermediate",
           content: "Vias transition signals between layers. Each type carries different parasitic inductance and fabrication costs. Always calculate your Aspect Ratio to ensure plating reliability.",
           type: 'aspect-ratio-calc'
         },
         {
           heading: "High-Speed Signal Integrity: Fiber Weave Skew",
-          level: "expert",
           content: "Glass fiber bundles in PCB laminates have a higher dielectric constant (Dk ~6.0) than the surrounding resin (~3.2). This periodic Dk variation causes differential pair traces to travel at different speeds — a phenomenon called fiber weave skew.",
           type: 'fiber-weave'
         },
         {
           heading: "SSOT Intelligence & Export Formats",
-          level: "intermediate",
           content: "Standard Gerber RS-274X is a 'dumb' format that only contains geometry. For professional stackup handovers, use intelligent formats that carry the SSOT definition.",
           table: {
             headers: ["Format", "Intelligence", "Content", "Preferred Usage"],
@@ -595,19 +553,16 @@ export const modulesData = [
         },
         {
           heading: "Stackup Export Simulation (SSOT Download)",
-          level: "expert",
           content: "Simulate a professional stackup handover. Select your target format to see what data is included. Download a mock IPC-2581 or ODB++ JSON to understand the SSOT data structure expected by modern fabrication houses.",
           type: 'stackup-export'
         },
         {
           heading: "Current Carrying Capacity (IPC-2152)",
-          level: "intermediate",
           content: "Calculate the required trace width for a target current and allowable temperature rise based on the modern IPC-2152 standards. Internal traces (stripline) and external traces (microstrip) require different widths due to thermal dissipation variables.",
           type: 'ipc2152-calc'
         },
         {
           heading: "Copper Weight Reference (IPC-4562A)",
-          level: "beginner",
           content: "Copper weight (oz/ft²) is the industry-standard unit defining copper foil thickness. This table provides the definitive SSOT mapping between weight designations, physical thickness, and nominal current capacity for standard trace geometries.",
           table: {
             headers: ["Copper Weight", "Thickness (µm)", "Thickness (mil)", "Approx. Capacity (10mil trace, +10°C)", "Typical Application"],
@@ -626,7 +581,6 @@ export const modulesData = [
         },
         {
           heading: "IPC Standards Compliance",
-          level: "beginner",
           content: "Specify laminates by IPC slash-sheet designators in your SSOT — never by brand name alone — to prevent unauthorized substitutions.",
           table: {
             headers: ["Standard", "Title", "Masterclass Application"],
@@ -642,7 +596,6 @@ export const modulesData = [
         },
         {
           heading: "Electrical Clearance & Creepage (IPC-2221B)",
-          level: "intermediate",
           content: "Minimum conductor spacing is determined by the working voltage difference between conductors and the operating environment. IPC-2221B Table 6-1 defines clearance (through air) while creepage (along surfaces) is governed by pollution degree per IEC 62368-1.",
           table: {
             headers: ["Voltage (DC/AC Peak)", "B1 — Internal (mil)", "B2 — Ext. Uncoated (mil)", "B3 — Coated (mil)", "B4 — >3050m Alt. (mil)"],
@@ -664,7 +617,6 @@ export const modulesData = [
         },
         {
           heading: "Creepage vs. Clearance — Design Decision",
-          level: "intermediate",
           content: "Clearance and creepage address different failure modes: Air breakdown vs. Surface tracking.",
           filletGrid: [
             {
@@ -691,7 +643,6 @@ export const modulesData = [
       checklists: [
         {
           category: "1. Material Selection",
-          level: "intermediate",
           items: [
             "Laminate specified by IPC-4101 slash-sheet designer.",
             "Thermal properties (Tg/Td) meet assembly heat profile.",
@@ -702,7 +653,6 @@ export const modulesData = [
         },
         {
           category: "2. Mechanical Symmetry",
-          level: "intermediate",
           items: [
             "Stackup has an EVEN number of layers (required for balance).",
             "Material types mirrored exactly about the board midplane.",
@@ -713,7 +663,6 @@ export const modulesData = [
         },
         {
           category: "3. Electrical Design",
-          level: "intermediate",
           items: [
             "Impedance targets calculated with Single-Ended and Diff models.",
             "Symmetric Stripline heights (H1=H2) maintained for consistency.",
@@ -724,7 +673,6 @@ export const modulesData = [
         },
         {
           category: "4. DFM & Fabrication Export",
-          level: "expert",
           items: [
             "Aspect Ratio (Thickness/Drill) verified to be ≤ 10:1.",
             "Layer stackup table included in the SSOT Fab Drawing.",
@@ -746,7 +694,6 @@ export const modulesData = [
       sections: [
         {
           heading: "Why Differential Signaling Dominates High-Speed",
-          level: "beginner",
           content: "In a single-ended topology, one conductor carries a signal measured relative to a shared system ground — any noise on that conductor corrupts the signal directly. In a differential topology, data is encoded as Vdiff = V(D+) − V(D−). The receiver responds only to the difference, not to the absolute voltage of either conductor.",
           filletGrid: [
             {
@@ -780,7 +727,6 @@ export const modulesData = [
         },
         {
           heading: "Geometry & Physics — Critical Trace Parameters",
-          level: "intermediate",
           content: "The differential impedance, capacitance, and coupling coefficient are entirely determined by the physical geometry. There is no tuning after fabrication — the impedance is locked in by the stackup.",
           filletGrid: [
             {
@@ -834,13 +780,11 @@ export const modulesData = [
         },
         {
           heading: "Interactive Zdiff Calculator",
-          level: "intermediate",
           content: "Calculate differential impedance for Microstrip and Stripline topologies using the IPC-2141A Wheeler/Hammerstad approximation — the same model used in professional EDA tools. Validate all results with a 2D field solver before tape-out.",
           type: "zdiff-calculator"
         },
         {
           heading: "Golden Routing Rules — 8 Non-Negotiable Constraints",
-          level: "expert",
           content: "These rules are the non-negotiable constraints for any differential pair layout. Violations directly degrade signal integrity at the receiver and increase EMI. Treat these as Design Rule Checks (DRCs), not guidelines.",
           ruleCards: [
             {
@@ -895,12 +839,10 @@ export const modulesData = [
         },
         {
           heading: "Differential Signaling SI",
-          level: "intermediate",
           content: "Differential pairs require tight skew control (intra-pair matching) to maintain common-mode rejection and reduce EMI radiation."
         },
         {
           heading: "Length Matching — Intra-pair vs. Inter-pair",
-          level: "expert",
           content: "Two distinct length-matching requirements are frequently confused. Getting this wrong is the single most common cause of high-speed routing failures.",
           table: {
             headers: ["Matching Type", "Scope", "Tolerance (Typical)", "Consequence of Violation"],
@@ -916,7 +858,6 @@ export const modulesData = [
         },
         {
           heading: "Serpentine Meander Constraints",
-          level: "expert",
           content: "When adding serpentine meanders for length matching within a pair, these constraints must be respected to avoid creating additional signal integrity problems:",
           list: [
             { label: "Meander amplitude ≤ 3H", text: "Keep meander peak-to-peak amplitude to less than 3× the dielectric height. Larger amplitudes allow meander return segments to couple to each other, creating local impedance perturbations." },
@@ -930,7 +871,6 @@ export const modulesData = [
         },
         {
           heading: "Advanced High-Speed Topics",
-          level: "expert",
           content: "At data rates above 5 Gbps, second-order effects become first-order problems. These topics require attention for PCIe Gen 3+ and any SerDes channel above 10 Gbps.",
           type: "fiber-weave",
           twoColumnGrid: [
@@ -965,13 +905,11 @@ export const modulesData = [
         },
         {
           heading: "Interface Impedance Reference Table",
-          level: "intermediate",
           content: "Electrical and layout specifications for the most widely used high-speed differential pair interfaces. All impedance values are as seen at the PCB trace. Consult the referenced specification documents for authoritative requirements.",
           type: "diff-reference-table"
         },
         {
           heading: "Glossary of Key Terms",
-          level: "beginner",
           content: "Engineering-accurate definitions for signal integrity terminology used throughout this module.",
           table: {
             headers: ["Term", "Definition", "Unit / Typical Value"],
@@ -994,7 +932,6 @@ export const modulesData = [
       checklists: [
         {
           category: "1. Geometry Setup",
-          level: "intermediate",
           items: [
             "Zdiff target confirmed for the interface standard (USB: 90Ω, PCIe/Ethernet: 100Ω, LVDS: 100Ω, HDMI: 100Ω).",
             "Trace width (W) and spacing (S) calculated via IPC-2141A formula or field solver.",
@@ -1005,7 +942,6 @@ export const modulesData = [
         },
         {
           category: "2. Routing Execution",
-          level: "expert",
           items: [
             "D+ and D− routed as a coupled pair — no section where they are un-coupled.",
             "Intra-pair length mismatch verified to be within the interface budget (e.g., <5 mil for PCIe Gen 4).",
@@ -1017,7 +953,6 @@ export const modulesData = [
         },
         {
           category: "3. Layer Transitions & Return Paths",
-          level: "expert",
           items: [
             "No differential pair crosses a gap, slot, or split in the reference plane.",
             "Each via transition uses two symmetric vias (D+ and D−) equidistant from the pair centerline.",
@@ -1028,7 +963,6 @@ export const modulesData = [
         },
         {
           category: "4. DFM & Sign-Off",
-          level: "expert",
           items: [
             "Fiber weave effect risk assessed — routing angle specified (45° recommended for >5 Gbps).",
             "Low-skew laminate specified in SSOT if operating above 10 Gbps.",
@@ -1050,7 +984,6 @@ export const modulesData = [
       sections: [
         {
           heading: "What is High-Speed PCB Design?",
-          level: "beginner",
           content: "The standard industry threshold for high-speed design is when trace length exceeds 1/6 of the signal wavelength. Below this, lumped-circuit analysis is valid. Above it, distributed transmission line effects dominate.",
           formula: {
             title: "The Critical Length Rule",
@@ -1084,7 +1017,6 @@ export const modulesData = [
         },
         {
           heading: "Transmission Line Theory",
-          level: "intermediate",
           content: "A PCB trace over a reference plane forms a distributed network of inductance (L), capacitance (C), resistance (R), and conductance (G). Matching characteristic impedance (Z₀) throughout the signal path is the single most important objective.",
           formula: {
             title: "Characteristic Impedance Z₀",
@@ -1104,7 +1036,6 @@ export const modulesData = [
         },
         {
           heading: "Impedance Control",
-          level: "intermediate",
           content: "Controlled impedance is the practice of designing trace geometry to achieve a target Z₀ within a specified tolerance (typically ±10%). This require tight coordination with the fabricator.",
           formula: {
             title: "Geometry Models",
@@ -1135,7 +1066,6 @@ export const modulesData = [
         },
         {
           heading: "Material Physics & Loss",
-          level: "expert",
           content: "At frequencies >1 GHz, the choice of substrate material becomes a primary design decision. FR-4, while economical, exhibits excessive dielectric loss (tangent delta) and inconsistent Dk across high-speed bands.",
           table: {
             headers: ["Material Family", "Dk (@10GHz)", "Df (@10GHz)", "Best For"],
@@ -1163,7 +1093,6 @@ export const modulesData = [
         },
         {
           heading: "Layer Stack-Up Design",
-          level: "intermediate",
           content: "Stack-up design determines the physical environment of every trace. It must be defined before routing begins to control impedance and minimize crosstalk.",
           list: [
             { label: "Proximity", text: "Every signal layer must have an adjacent reference plane within 5-8 mils." },
@@ -1186,7 +1115,6 @@ export const modulesData = [
         },
         {
           heading: "The Fiber Weave Effect",
-          level: "expert",
           content: "PCB cores are made of woven glass bundles. Because glass (Dk ≈ 6.0) and resin (Dk ≈ 3.0) have different dielectric constants, a signal's speed depends on where it sits relative to the weave, causing intra-pair skew.",
           mistakeList: [
             { mistake: "Routing parallel to the orthogonal weave pattern.", fix: "Route at a 10° angle relative to the panel edge." },
@@ -1198,7 +1126,6 @@ export const modulesData = [
         },
         {
           heading: "Return Paths & Ground Planes",
-          level: "intermediate",
           content: "At high frequencies, return current takes the path of least inductance, mirroring its path directly beneath the signal trace.",
           alerts: [
             { type: 'danger', text: "Never route a high-speed signal across a split in the reference plane. The return current loop area increases dramatically, causing EM failures." }
@@ -1230,13 +1157,11 @@ export const modulesData = [
         },
         {
           heading: "Power Integrity (PI) Fundamentals",
-          level: "expert",
           content: "Power Delivery Networks (PDN) serve as the return path for all signals. If the PDN impedance is too high at a given frequency, the voltage rails will collapse during high-speed switching (SSN).",
           type: "pdn-analyzer"
         },
         {
           heading: "Routing Techniques & Geometry",
-          level: "intermediate",
           content: "Trace width directly sets Z₀. Use a validated field solver for production designs. Length matching is critical for timing budgets in parallel buses.",
           formula: {
             title: "3W Spacing Rule",
@@ -1272,7 +1197,6 @@ export const modulesData = [
         },
         {
           heading: "Differential Pair Routing",
-          level: "intermediate",
           content: "Differential signaling provides inherent immunity to common-mode noise. Used in PCIe, USB, HDMI, and LVDS.",
           list: [
             { label: "Coupling", text: "Route as a coupled pair with constant separation throughout." },
@@ -1303,7 +1227,6 @@ export const modulesData = [
         },
         {
           heading: "Crosstalk Mitigation",
-          level: "intermediate",
           content: "Crosstalk is the unwanted coupling of energy from an aggressor net onto a victim net through parasitic capacitance and mutual inductance.",
           table: {
             headers: ["Type", "Location", "Polarity", "Magnitude"],
@@ -1320,7 +1243,6 @@ export const modulesData = [
         },
         {
           heading: "Termination Strategies",
-          level: "expert",
           content: "Termination is the use of resistors to match the source or load impedance to the transmission line Z₀, thereby eliminating reflections.",
           terminationGrid: [
             {
@@ -1355,19 +1277,16 @@ export const modulesData = [
         },
         {
           heading: "Via Parasitics (Advanced Modeling)",
-          level: "expert",
           content: "Vias introduce parasitic inductance and capacitance. Optimization is non-negotiable above 5 Gbps.",
           type: "via-advanced-calc"
         },
         {
           heading: "Via Stub Resonance",
-          level: "expert",
           content: "Calculate the quarter-wave resonant frequency of via stubs to identify potential signal absorption nulls.",
           type: "via-resonance-calc"
         },
         {
           heading: "EMI / EMC Compliance",
-          level: "intermediate",
           content: "PCB layout is the primary determinant of EMI performance. Loop area is the single largest contributor to radiated emissions.",
           list: [
             { label: "Loop Area", text: "Radiation ∝ Loop Area × Freq² × dI/dt. Keep return path directly beneath signal." },
@@ -1377,7 +1296,6 @@ export const modulesData = [
         },
         {
           heading: "Common Mistakes & Fixes",
-          level: "beginner",
           content: "Avoid these common high-speed pitfalls to ensure your design passes first-spin simulation and testing.",
           mistakeList: [
             { mistake: "Crossing plane splits with HS traces.", fix: "Route over continuous reference planes." },
@@ -1388,7 +1306,6 @@ export const modulesData = [
         },
         {
           heading: "Simulation & Verification",
-          level: "expert",
           content: "Simulation is not optional for designs >1 Gbps. It is cheaper than one failed prototype spin.",
           phaseList: [
             { num: "1", title: "Pre-layout", desc: "IBIS-based SPICE to verify termination and topology." },
@@ -1406,14 +1323,12 @@ export const modulesData = [
         },
         {
           heading: "Design Checklist",
-          level: "beginner",
           content: "Final pre-route and post-route verification for high-speed systems."
         }
       ],
       checklists: [
         {
           category: "Pre-Route Validation",
-          level: "beginner",
           items: [
             "Stackup field-solver validated.",
             "Impedance-controlled layers identified.",
@@ -1423,7 +1338,6 @@ export const modulesData = [
         },
         {
           category: "Post-Route Verification",
-          level: "intermediate",
           items: [
             "Return path analysis: no splits under nets.",
             "Via stub analysis: back-drilling specified.",
@@ -1433,7 +1347,6 @@ export const modulesData = [
         },
         {
           category: "Veteran DFM Review",
-          level: "expert",
           items: [
             "Surface finish: OSP or I-Ag specified for HF loss reduction.",
             "Copper thieving added to balance density and prevent plating variation.",
@@ -1454,7 +1367,6 @@ export const modulesData = [
       sections: [
         {
           heading: "DDR Generations Comparison",
-          level: "beginner",
           content: "The transition from DDR3 to DDR5 involves significant changes in voltage, signaling, and power management. Layout rules for one generation are NOT interchangeable with another.",
           table: {
             headers: ["Parameter", "DDR3", "DDR4", "DDR5", "PCB Impact"],
@@ -1470,7 +1382,6 @@ export const modulesData = [
         },
         {
           heading: "Key Signal Groups & Definitions",
-          level: "beginner",
           content: "DDR signals are logically grouped to maintain timing synchronicity. Violating the grouping rules is the most common cause of memory training failures.",
           filletGrid: [
             {
@@ -1504,7 +1415,6 @@ export const modulesData = [
         },
         {
           heading: "Controlled Impedance Specifications",
-          level: "intermediate",
           content: "All DDR traces must be treated as transmission lines. Impedance tolerance of ±10% is the JEDEC standard, though ±7% is preferred for high-reliability designs.",
           table: {
             headers: ["Signal Group", "Topology", "DDR3 Target", "DDR4/5 Target", "Tolerance"],
@@ -1522,7 +1432,6 @@ export const modulesData = [
         },
         {
           heading: "Timing Budgets & Length Matching",
-          level: "expert",
           content: "Every byte lane is an independent timing domain. While inter-lane matching is flexible, INTRA-lane matching (DQ to DQS) has zero margin for error.",
           table: {
             headers: ["Rule", "DDR3", "DDR4", "DDR5", "Impact of Violation"],
@@ -1548,7 +1457,6 @@ export const modulesData = [
         },
         {
           heading: "Routing Topology: Fly-By Design",
-          level: "intermediate",
           content: "Fly-by topology (mandatory for DDR4/5) chains signals through each DRAM in sequence. This introduces intentional skew that is corrected by the memory controller's 'Write Leveling' training.",
           ruleCards: [
             {
@@ -1576,7 +1484,6 @@ export const modulesData = [
         },
         {
           heading: "Power Integrity & Decoupling Hierarchy",
-          level: "expert",
           content: "VDDQ noise tolerance is ±22 mV for DDR5. A poorly designed PDN (Power Delivery Network) will cause intermittent memory errors that are impossible to find with standard DRCs.",
           twoColumnGrid: [
             {
@@ -1605,7 +1512,6 @@ export const modulesData = [
         },
         {
           heading: "Common Routing Mistakes",
-          level: "intermediate",
           content: "Avoid these common DDR pitfalls to ensure your design passes first-spin JEDEC compliance testing.",
           mistakeList: [
             { mistake: "DQS pair split across layers.", fix: "Always route + and - on the identical layer and proximity." },
@@ -1616,7 +1522,6 @@ export const modulesData = [
         },
         {
           heading: "Advanced BGA Fanout & Via Control",
-          level: "expert",
           content: "As data rates exceed 3200 MT/s, the via fanout becomes a major impedance discontinuity. Selecting the right breakout strategy is critical for signal integrity and manufacturability.",
           twoColumnGrid: [
             {
@@ -1645,7 +1550,6 @@ export const modulesData = [
         },
         {
           heading: "DDR5 Power & Sideband Engineering",
-          level: "expert",
           content: "DDR5 introduces the PMIC (Power Management IC) directly on the DIMM/PCB. This requires a dedicated focus on thermal management and I3C sideband signal integrity.",
           filletGrid: [
             {
@@ -1670,7 +1574,6 @@ export const modulesData = [
         },
         {
           heading: "Fiber Weave Effect Mitigation",
-          level: "expert",
           content: "For DDR4-3200 and DDR5-6400, the periodic variation in dielectric constant (Dk) caused by the glass weave can introduce deterministic skew that ruins timing margins.",
           type: "fiber-weave",
           alerts: [
@@ -1679,7 +1582,6 @@ export const modulesData = [
         },
         {
           heading: "Interactive: DDR Timing Margin Calculator",
-          level: "expert",
           content: "Quantify how much of your total timing window (UI) is consumed by physical PCB layout choices. Enter your design parameters below to see the impact.",
           type: "ddr-timing-calculator"
         }
@@ -1687,7 +1589,6 @@ export const modulesData = [
       checklists: [
         {
           category: "1. Pre-Routing Layout Setup",
-          level: "intermediate",
           items: [
             "Stackup defined with 50Ω SE and 100Ω Diff targets (SSOT).",
             "DRAMs placed in a clean line for Fly-by topology.",
@@ -1698,7 +1599,6 @@ export const modulesData = [
         },
         {
           category: "2. Routing Execution (Critical Sign-Off)",
-          level: "expert",
           items: [
             "CK/CK# routed first as master reference; 5W spacing to all nets.",
             "Intra-byte lane matching DQ-to-DQS verified within ±2 mil (Safety margin).",
@@ -1709,7 +1609,6 @@ export const modulesData = [
         },
         {
           category: "3. Manufacturing & SI/PI Verification",
-          level: "expert",
           items: [
             "Back-drilling specified for all stubs > 100 mil (DDR5).",
             "Controlled impedance coupons included on board panel (±10%).",
@@ -1731,7 +1630,6 @@ export const modulesData = [
       sections: [
         {
           heading: "1. The Regulatory Landscape: Class A vs. Class B",
-          level: "beginner",
           content: "Regulatory bodies like the FCC (USA) and CISPR (International) define strict limits based on the product's environment. Failing these tests bars your product from the market.",
           table: {
             headers: ["Standard", "Class", "Environment", "Emission Limit (Radiated)"],
@@ -1747,17 +1645,14 @@ export const modulesData = [
         },
         {
           heading: "2. Annular Ring & Drill Alignment",
-          level: "intermediate",
           content: "Annular ring is the width of the copper remaining after drilling. If the drill is slightly misaligned (Breakout), the circuit is ruined. Class 3 requires more generous rings than Class 2."
         },
         {
           heading: "3. Trace Width & Copper Weight",
-          level: "beginner",
           content: "Sourcing copper weight (e.g., 1oz vs 2oz) affects the minimum possible trace width and spacing due to the 'etch factor' — as copper gets thicker, it's harder to etch fine details."
         },
         {
           heading: "4. Antenna Theory for Traces (The λ/20 Rule)",
-          level: "intermediate",
           content: "Every trace is a potential antenna. A trace becomes an efficient radiator when its length exceeds 1/20th of the wavelength (λ) of the signal harmonics. The edge rate (Rise Time) is more dangerous than the fundamental frequency.",
           formula: {
             title: "Maximum Harmonic Frequencies",
@@ -1774,7 +1669,6 @@ export const modulesData = [
         },
         {
           heading: "5. Power Supplies: The Hot Loop Physics",
-          level: "intermediate",
           content: "Switching Power Supplies (SMPS) are the primary source of conducted and radiated noise. The 'Hot Loop' (high di/dt path) must be minimized to contain the magnetic field.",
           cards: [
             {
@@ -1789,7 +1683,6 @@ export const modulesData = [
         },
         {
           heading: "6. The Ghost of Return Current: Image Planes",
-          level: "expert",
           content: "In high-speed design, current follows the path of least **inductance**, not resistance. Above 100 kHz, the return current crowds directly beneath the signal trace to minimize loop area. Any split in this image plane creates a massive antenna.",
           alerts: [
             { type: 'danger', text: "Never route signal traces over slots or splits in ground planes. The return current detour creates a 'Slot Antenna' that can fail FCC/CISPR limits by 20dB or more." }
@@ -1797,7 +1690,6 @@ export const modulesData = [
         },
         {
           heading: "7. The Pigtail Trap: Shield Integrity",
-          level: "expert",
           content: "A cable shield is only as good as its termination. Connecting a shield via a wire 'pigtail' introduces enough inductance to ruin shielding above 100 MHz.",
           cards: [
             {
@@ -1812,7 +1704,6 @@ export const modulesData = [
         },
         {
           heading: "8. Regulatory Tiers: FCC / CISPR / IEC Standards",
-          level: "expert",
           content: "Professional engineers design for global compliance simultaneously. CISPR 32 is the industry baseline for multimedia equipment.",
           table: {
             headers: ["Test Type", "Standard", "Typical Requirement", "Pass Criteria"],
@@ -1826,21 +1717,18 @@ export const modulesData = [
         },
         {
           heading: "EMI Bandwidth & Critical Length Solver",
-          level: "intermediate",
           content: "Determine the significant frequency bandwidth and critical edge-rate propagation limits for your design.",
           type: "emi-calculator"
         },
         {
           heading: "EMI Design Compliance Checklist",
-          level: "intermediate",
           content: "A systematic, engineering-accurate checklist for ensuring electromagnetic compatibility. Based on industrial shielding, grounding, and filtering best practices.",
           type: "emi-checklist-tool"
         }
       ],
       checklists: [
         {
-          category: "Tier 1: Foundations (Beginner)",
-          level: "beginner",
+          category: "1. Baseline Design Foundations",
           items: [
             "Maintain a solid, unified ground plane across the entire board.",
             "Partition noisy power circuits from sensitive analog zones.",
@@ -1849,8 +1737,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "Tier 2: Applied Engineering (Intermediate)",
-          level: "intermediate",
+          category: "2. Engineering Implementation",
           items: [
             "Maintain minimal Hot Loop area for all SMPS stages (<1 cm²).",
             "Slow down edge rates (Rise Time) on non-critical control lines.",
@@ -1859,8 +1746,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "Tier 3: Advanced Physics (Expert)",
-          level: "expert",
+          category: "3. Advanced Regulatory Analysis",
           items: [
             "Verify all layer transitions have adjacent ground stitching vias.",
             "Shielded connectors use 360° circular metal backshells (No pigtails).",
@@ -1881,7 +1767,6 @@ export const modulesData = [
       sections: [
         {
           heading: "1. The Business Case: Yield and Rework",
-          level: "beginner",
           content: "In volume production, every 1% drop in yield significantly increases total product cost. First Pass Yield (FPY) is the primary metric of design quality.",
           table: {
             headers: ["Metric", "Standard Layout", "Professional Engineering (SSOT)"],
@@ -1897,7 +1782,6 @@ export const modulesData = [
         },
         {
           heading: "2. Fabrication Physics: Beyond the Basics",
-          level: "intermediate",
           content: "PCB fabrication is a subtractive chemical process. Layout geometry determines etching consistency and plating integrity.",
           mistakeList: [
             { mistake: "Acid Traps (Acute Angles)", fix: "Use 45° or rounded corners. Acute angles (<90°) trap etchant, leading to over-etching and open circuits." },
@@ -1915,7 +1799,6 @@ export const modulesData = [
         },
         {
           heading: "3. Assembly & Thermal Profiles (J-STD-020)",
-          level: "intermediate",
           content: "Your design must survive the heat. Assembly processes like Reflow and Wave Soldering subject the board to temperatures between 235°C and 260°C.",
           table: {
             headers: ["Process Stage", "Temperature Range", "Duration (Time Above Liquidus)"],
@@ -1942,13 +1825,11 @@ export const modulesData = [
         },
         {
           heading: "4. Thermal Relief Engineering",
-          level: "beginner",
           content: "Direct copper plane connections act as heatsinks during soldering, causing 'cold solder joints' or tombstoning. Thermal relief isolates the pad while providing a path for current.",
           type: "thermal-tool"
         },
         {
           heading: "5. DFT Architecture: ICT vs. JTAG",
-          level: "expert",
           content: "DFT ensures the board is testable after assembly. A combination of In-Circuit Testing (ICT) and Boundary Scan (JTAG) provides 100% fault coverage.",
           filletGrid: [
             {
@@ -1973,12 +1854,10 @@ export const modulesData = [
         },
         {
           heading: "6. Zero-Orientation & Centroid Data",
-          level: "expert",
           content: "Standardizing the zero-degree orientation (Pin 1) is mandatory for automated assembly. Follow the EIA-481 tape-and-reel standard to prevent components from being placed backward."
         },
         {
           heading: "7. Panelization & Fiducial Strategy",
-          level: "expert",
           content: "Individual boards are arrayed in panels for assembly. Depaneling introduces mechanical stress that must be mitigated.",
           table: {
             headers: ["Method", "Component Clearance", "Depanel Stress", "Board Shape"],
@@ -1994,7 +1873,6 @@ export const modulesData = [
         },
         {
           heading: "8. Surface Finish Decision Matrix",
-          level: "intermediate",
           content: "Surface finish selection determines shelf life, solderability, and flatness. Modern lead-free processes demand finishes that survive multiple reflow cycles without excessive oxidation.",
           table: {
             headers: ["Finish", "Shelf Life", "Flatness", "Cost", "Best For..."],
@@ -2013,15 +1891,13 @@ export const modulesData = [
         },
         {
           heading: "9. Interactive: Real-Time DFM Rule Checker",
-          level: "expert",
           content: "Validate your design parameters against the IPC-2221B and IPC-6012 industrial limits. This engine provides instant feedback on aspect ratio, annular rings, and solder mask dams.",
           type: 'dfm-checker'
         }
       ],
       checklists: [
         {
-          category: "1. Fabrication Sign-Off",
-          level: "beginner",
+          category: "Fabrication Sign-Off",
           items: [
             "Laminate selection (Tg/Td) verified for Lead-Free reflow.",
             "All PTH pads in copper pours have 4-spoke thermal relief.",
@@ -2031,8 +1907,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "2. Assembly & SMT Readiness",
-          level: "intermediate",
+          category: "Assembly & SMT Readiness",
           items: [
             "Global fiducials (3) placed non-colinearly on panel rails.",
             "Components ≥ 5-10mm from V-score edges to prevent cracking.",
@@ -2042,8 +1917,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "3. DFT & Test Readiness",
-          level: "expert",
+          category: "DFT & Test Readiness",
           items: [
             "Test points assigned to 100% of PWR, GND, and Reset nets.",
             "Test point grid ≥ 2.54mm (100mil) for standard ICT fixture.",
@@ -2065,7 +1939,6 @@ export const modulesData = [
       sections: [
         {
           heading: "1. SI Core: Transmission Line Standards",
-          level: "beginner",
           content: "Characteristic impedance (Z₀) selection is determined by the interface standard. Modern high-speed designs require tighter tolerances (±10% to ±15%) and validated field-solver results.",
           table: {
             headers: ["Interface", "Z₀ Target", "Tolerance", "Standard Reference"],
@@ -2092,7 +1965,6 @@ export const modulesData = [
         },
         {
           heading: "2. Differential Pair Routing Mastery",
-          level: "intermediate",
           content: "Differential signaling provides inherent common-mode noise rejection. Maintaining geometry symmetry is the primary task of the layout engineer.",
           list: [
             { label: "Intra-pair Spacing (S)", text: "Set to 2× Trace Width (W) to maintain target odd-mode impedance." },
@@ -2106,7 +1978,6 @@ export const modulesData = [
         },
         {
           heading: "3. BGA Escape & Fanout Design (IPC-7095C)",
-          level: "expert",
           content: "Breaking out signals from fine-pitch BGAs (0.8mm to 0.4mm) is the most geometry-constrained task in layout. Strategy selection impacts layer count, via technology, and fabrication cost.",
           table: {
             headers: ["Feature Pitch", "Escape Strategy", "Via Technology", "Layer Impact"],
@@ -2127,30 +1998,25 @@ export const modulesData = [
         },
         {
           heading: "4. Decoupling Capacitor Engineering",
-          level: "intermediate",
           content: "Calculated capacitors bridge the frequency gap where planes cannot provide enough charge. Decoupling is about current delivery, not filtering noise."
         },
         {
           heading: "5. PDN Core: Target Impedance & PDN",
-          level: "expert",
           content: "The Power Distribution Network (PDN) must maintain an impedance (Ztarget) below the threshold from DC to the bandwidth of the switching current.",
           type: 'pdn-analyzer'
         },
         {
           heading: "6. Interactive PDN Spectrum Analyzer",
-          level: "expert",
           content: "Visualize the PDN impedance curve from DC to 1GHz. See how Bulk, Local (MLCC), and Plane capacitance interact to form the total impedance landscape.",
           type: 'pdn-analyzer'
         },
         {
           heading: "7. Target Impedance Solver",
-          level: "expert",
           content: "Calculate the required Target Impedance for your PDN based on peak transient current (DI) and allowable ripple (DV).",
           type: "pi-target-calc"
         },
         {
           heading: "8. Decoupling Hierarchy & Via Physics",
-          level: "intermediate",
           content: "Capacitors are inductive above their Self-Resonant Frequency (SRF). A multi-tier strategy is required to cover the frequency spectrum.",
           filletGrid: [
             {
@@ -2184,7 +2050,6 @@ export const modulesData = [
         },
         {
           heading: "9. Lossy Line Physics (Expert Insight)",
-          level: "expert",
           content: "At frequencies >10 GHz, material physics dominates. The ideal 'lossless' model becomes invalid as Skin Effect and Dielectric Loss (Tan δ) attenuate signals.",
           cards: [
             {
@@ -2199,7 +2064,6 @@ export const modulesData = [
         },
         {
           heading: "10. Recommended 6-Layer Stackup",
-          level: "intermediate",
           content: "For high-performance designs, the 6-layer stackup provides a balanced approach to SI, PI, and cost.",
           stackVisual: [
             { layer: "L1 — Signal (Top)", spec: "High-Speed Microstrip", color: "#D4963A", note: "Referenced to L2 GND" },
@@ -2215,7 +2079,6 @@ export const modulesData = [
         },
         {
           heading: "11. Simulation & Validation Pipeline",
-          level: "expert",
           content: "Simulation tools and lab equipment required for professional-level SI/PI sign-off.",
           twoColumnGrid: [
             {
@@ -2245,8 +2108,7 @@ export const modulesData = [
       ],
       checklists: [
         {
-          category: "1. Pre-Layout SI/PI Foundations",
-          level: "intermediate",
+          category: "Pre-Layout SI/PI Foundations",
           items: [
             "Stackup defined and impedance targets (Z₀/Zdiff) calculated with fab.",
             "IC datasheets reviewed for all signal breakout/routing requirements.",
@@ -2259,8 +2121,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "2. Post-Layout Engineering Verification",
-          level: "expert",
+          category: "Post-Layout Engineering Verification",
           items: [
             "All differential pairs meet Zdiff target ±10% via post-layout extraction.",
             "Intra-pair skew verified within spec for DDR/PCIe/USB links.",
@@ -2275,8 +2136,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "3. Manufacturing & Quality Sign-Off",
-          level: "expert",
+          category: "Manufacturing & Quality Sign-Off",
           items: [
             "Impedance test coupon included on board panelization drawing.",
             "Back-drill requirements explicitly specified in fabrication notes.",
@@ -2303,7 +2163,6 @@ export const modulesData = [
       sections: [
         {
           heading: "1. Fabrication Output Files (The Photoplot)",
-          level: "beginner",
           content: "Fabrication files define the copper, mask, and drill coordinates. While Gerbers are the standard, the version and metadata you choose can determine the speed and accuracy of your CAM setup.",
           table: {
             headers: ["Layer Type", "Standard Ext.", "Critical Expert Note", "Risk Level"],
@@ -2321,7 +2180,6 @@ export const modulesData = [
         },
         {
           heading: "2. NC Drill Precision (CNC Instructions)",
-          level: "intermediate",
           content: "The Excellon drill file is a set of CNC coordinates. A single mismatch in units or zero suppression can ruin an entire production batch.",
           cards: [
             {
@@ -2337,7 +2195,6 @@ export const modulesData = [
         },
         {
           heading: "3. Assembly & Placement Engineering",
-          level: "intermediate",
           content: "Beyond the BOM, the Pick-and-Place (Centroid) and Solder Paste (Stencil) files determine the quality of your SMT process.",
           list: [
             "<strong>PnP Rotation:</strong> Ensure 0° orientation matches the tape-and-reel standard (EIA-481). Centroids must be center-of-gravity, not Pin 1.",
@@ -2347,7 +2204,6 @@ export const modulesData = [
         },
         {
           heading: "4. Advanced Formats: ODB++ & IPC-2581",
-          level: "expert",
           content: "Intelligent data formats eliminate the mess of dozens of loose files by packaging everything—stackup, netlist, and components—into a single database.",
           table: {
             headers: ["Format", "Owner", "Advantage", "Expert Verdict"],
@@ -2361,7 +2217,6 @@ export const modulesData = [
         },
         {
           heading: "Intelligent Handover: The IPC-2581 'Digital Twin'",
-          level: "expert",
           content: "IPC-2581 (DPMX) is more than a file format; it is a standardized XML data model that represents the board's 'Digital Twin'. It bridges the gap between design CAD and factory CAM systems.",
           filletGrid: [
             {
@@ -2389,7 +2244,6 @@ export const modulesData = [
         },
         {
           heading: "5. CAD-Specific Export Workflows",
-          level: "beginner",
           content: "Follow these tool-specific steps to ensure a compliant release package.",
           twoColumnGrid: [
             {
@@ -2418,7 +2272,6 @@ export const modulesData = [
         },
         {
           heading: "6. Common Manufacturing Risks",
-          level: "expert",
           content: "Seasoned engineers design to avoid these common 'gotchas' that cause yield drops.",
           mistakeList: [
             { mistake: "Acid Traps (Acute Angles)", fix: "Ensure all trace-to-trace entry angles are 90° or greater. Acute angles trap etchant and cause over-etching." },
@@ -2429,7 +2282,6 @@ export const modulesData = [
         },
         {
           heading: "7. Standard Release Package (Directory Structure)",
-          level: "intermediate",
           content: "A professional release should be structured to allow automated CAM scripts to parse the data without manual intervention.",
           codeBlock: "PROJECT_REL_v1.0/\n├── Fabrication/          ; Gerbers, Drill, Fab Drawing\n├── Assembly/             ; PnP, BOM, Asm Drawing, Stencil\n├── Test/                 ; IPC-D-356, TP Report, BSDL\n└── Documentation/        ; Schematics, Stackup, DRC Reports",
           list: [
@@ -2439,7 +2291,6 @@ export const modulesData = [
         },
         {
           heading: "8. Technical Appendix: Test & PnP Metadata",
-          level: "expert",
           content: "For engineers integrating with automated factories (Lights-out manufacturing).",
           table: {
             headers: ["Metadata Type", "Format/Record", "Precision Requirement"],
@@ -2453,15 +2304,13 @@ export const modulesData = [
         },
         {
           heading: "Interactive: Manufacturing Release Simulator",
-          level: "intermediate",
           content: "Execute a virtual production release flow that performs professional-grade DFM and metadata checks on your export package.",
           type: "output-simulator"
         }
       ],
       checklists: [
         {
-          category: "Tier 1: Junior Sign-Off (The Basics)",
-          level: "beginner",
+          category: "1. Baseline Verification (Industrial Standards)",
           items: [
             "All copper, mask, and silk layers are present.",
             "NC Drill file uses metric units and TZ suppression.",
@@ -2470,8 +2319,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "Tier 2: Senior Engineer Audit (The Physics)",
-          level: "intermediate",
+          category: "2. Engineering Integrity (Physics & Simulation)",
           items: [
             "Gerber X2/X3 used; metadata verified in a CAM viewer.",
             "IPC-D-356 Netlist matches the Gerber artwork 100%.",
@@ -2480,8 +2328,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "Tier 3: Veteran Sign-Off (The Yield)",
-          level: "expert",
+          category: "3. High-Yield Manufacturing & Reliability",
           items: [
             "Acute angle acid traps eliminated via teardrops/chamfers.",
             "Sliver check performed; min copper feature > 4 mil.",
@@ -2503,7 +2350,6 @@ export const modulesData = [
       sections: [
         {
           heading: "1. Three Pillars of Heat Transfer",
-          level: "beginner",
           content: "In a PCB environment, heat moves through three fundamental physical mechanisms. Understanding these is mandatory for both beginners and experts to design efficient cooling paths.",
           filletGrid: [
             {
@@ -2537,7 +2383,6 @@ export const modulesData = [
         },
         {
           heading: "2. The Thermal Resistance Path (Rθ)",
-          level: "intermediate",
           content: "Electrical engineers can think of heat flow like a series of resistors. Total thermal resistance (Rθja) determines the final junction temperature of your components.",
           type: "thermal-resistance-visual",
           formula: {
@@ -2559,13 +2404,11 @@ export const modulesData = [
         },
         {
           heading: "3. IPC-2152 Current Capacity Solver",
-          level: "intermediate",
           content: "IPC-2152 is the modern, standards-driven methodology for sizing traces. Unlike the legacy IPC-2221, it accounts for material thermal conductivity and nearby copper planes.",
           type: "calculator"
         },
         {
           heading: "4. Internal vs. External Traces",
-          level: "intermediate",
           content: "The environment of a trace dictates its current-carrying limits. Stripline traces (internal) are 'blanketed' by FR4, which traps heat.",
           table: {
             headers: ["Trace Type", "Thermal Density", "Cooling Efficiency", "Engineering Action"],
@@ -2580,7 +2423,6 @@ export const modulesData = [
         },
         {
           heading: "5. Via Gardening & Thermal Stitching",
-          level: "intermediate",
           content: "Vias are the 'heat pipes' of a PCB. Strategically placed arrays (gardening) can bridge heat from top-layer components to internal or bottom-layer ground planes.",
           type: "thermal-tool",
           list: [
@@ -2591,7 +2433,6 @@ export const modulesData = [
         },
         {
           heading: "6. Copper Weight & Thermal Spreading",
-          level: "beginner",
           content: "Increasing copper weight (oz) increases the cross-sectional area for current and the surface area for thermal spreading.",
           table: {
             headers: ["Copper Weight", "Thickness (mil)", "Thermal Spreading", "Typical Usage"],
@@ -2605,7 +2446,6 @@ export const modulesData = [
         },
         {
           heading: "7. Heatsink & TIM Strategy",
-          level: "expert",
           content: "When copper plane dissipation is insufficient, external heatsinks are required. The interface between the component and the heatsink is the bottleneck.",
           cards: [
             {
@@ -2620,7 +2460,6 @@ export const modulesData = [
         },
         {
           heading: "8. Expert DFM: The Soldering Paradox",
-          level: "expert",
           content: "High thermal conductivity is great for cooling, but terrible for manufacturing. Solid plane connections cause 'cold solder joints' during assembly.",
           mistakeList: [
             { mistake: "Solid connections to large planes on SMT pads.", fix: "Use 4-spoke thermal relief for all components < 1206 size." },
@@ -2630,8 +2469,7 @@ export const modulesData = [
       ],
       checklists: [
         {
-          category: "Tier 1: Basic Thermal Integrity",
-          level: "beginner",
+          category: "1. Baseline Thermal Integrity",
           items: [
             "Current requirements gathered for all power rails (Amps).",
             "Maximum allowable temperature rise established (default +10°C / +20°C).",
@@ -2640,8 +2478,7 @@ export const modulesData = [
           ]
         },
         {
-          category: "Tier 2: Expert Sign-Off",
-          level: "expert",
+          category: "2. Expert Engineering Review",
           items: [
             "Junction temperature (Tj) calculated for all components > 1W.",
             "Heatsink-to-PCB mechanical keepouts verified.",

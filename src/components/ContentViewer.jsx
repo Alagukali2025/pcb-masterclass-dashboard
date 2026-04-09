@@ -15,7 +15,6 @@ import DiffPairReferenceTable from './DiffPairReferenceTable';
 import DDRTimingCalculator from './DDRTimingCalculator';
 import EMICalculator from './EMICalculator';
 import EMIVisualizer from './EMIVisualizer';
-import EMIKnowledgeToggle from './EMIKnowledgeToggle';
 import ViaResonanceCalculator from './ViaResonanceCalculator';
 import ViaAdvancedCalculator from './ViaAdvancedCalculator';
 import PDNAnalyzer from './PDNAnalyzer';
@@ -38,12 +37,6 @@ export default function ContentViewer() {
   useEffect(() => {
     if (location.state && location.state.scrollTo !== undefined && moduleData) {
       const sectionIndex = location.state.scrollTo;
-      const requiredLevel = location.state.requiredLevel;
-
-      // If the content level is not active, enable it automatically
-      if (requiredLevel && !knowledgeLevel.includes(requiredLevel)) {
-        setKnowledgeLevel(prev => [...prev, requiredLevel]);
-      }
 
       // Small delay to ensure refs are populated and DOM is ready
       const timer = setTimeout(() => {
@@ -53,7 +46,6 @@ export default function ContentViewer() {
     }
   }, [id, location.state, moduleData]);
 
-  const [knowledgeLevel, setKnowledgeLevel] = useState(['beginner', 'intermediate', 'expert']);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [checkedItems, setCheckedItems] = useState({});
   const sectionRefs = useRef([]);
@@ -185,9 +177,6 @@ export default function ContentViewer() {
     'output-simulator': () => <ReleaseSimulator />
   };
 
-  const hasLevels = moduleData.content.sections?.some(s => s.level) || 
-                    moduleData.content.checklists?.some(c => c.level);
-
   return (
     <>
       {/* Sticky Progress Bar */}
@@ -209,20 +198,10 @@ export default function ContentViewer() {
 
             <h1 className="content-title">{moduleData.title}</h1>
             <p className="content-intro">{content.intro}</p>
-
-            {hasLevels && (
-              <div className="module-control-panel slide-up">
-                <EMIKnowledgeToggle 
-                  currentLevels={knowledgeLevel} 
-                  onLevelChange={setKnowledgeLevel} 
-                />
-              </div>
-            )}
           </header>
 
           <div className="content-sections">
             {content.sections && content.sections.map((sec, i) => {
-              if (sec.level && !knowledgeLevel.includes(sec.level)) return null;
               return (
                 <section
                   key={i}
@@ -500,8 +479,6 @@ export default function ContentViewer() {
               </div>
 
               {content.checklists.map((cat, ci) => {
-                if (cat.level && !knowledgeLevel.includes(cat.level)) return null;
-                
                 return (
                   <div key={ci} className="checklist-category">
                     <h3 className="category-title">{cat.category}</h3>
@@ -579,8 +556,6 @@ export default function ContentViewer() {
             </div>
             <ul className="toc-list">
               {content.sections.map((sec, i) => {
-                if (sec.level && !knowledgeLevel.includes(sec.level)) return null;
-                
                 return (
                   <li key={i} className={`toc-item ${activeSection === i ? 'active' : ''}`}>
                     <button

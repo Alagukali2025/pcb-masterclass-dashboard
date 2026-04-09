@@ -20,7 +20,7 @@ export default function EMIVisualizer() {
               onChange={() => setHasSlot(!hasSlot)} 
             />
             <span className={`toggle-tab ${hasSlot ? 'active-red' : 'active-green'}`}>
-              {hasSlot ? 'Slotted (Danger)' : 'Solid (Expert)'}
+              {hasSlot ? 'Slotted (Danger)' : 'Solid (Preferred)'}
             </span>
           </label>
         </div>
@@ -117,9 +117,9 @@ export default function EMIVisualizer() {
         )}
       </div>
 
-      <div className="vis-expert-tip">
+      <div className="vis-pro-tip">
         <Shield size={16} />
-        <p><strong>Expert Tip:</strong> At high frequencies {'>'}100 kHz, current flows in the path of least <em>inductance</em>. Always provide a continuous, unified ground plane for all high-speed signals.</p>
+        <p><strong>Engineering Tip:</strong> At high frequencies {'>'}100 kHz, current flows in the path of least <em>inductance</em>. Always provide a continuous, unified ground plane for all high-speed signals.</p>
       </div>
     </div>
   );

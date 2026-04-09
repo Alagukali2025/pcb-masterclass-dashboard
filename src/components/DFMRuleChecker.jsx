@@ -82,7 +82,7 @@ export default function DFMRuleChecker() {
   const arMessage = aspectRatio > arLimits.fail
     ? `CRITICAL ASPECT RATIO. IPC Class ${activeStackup.ipcClass} limit is ${arLimits.fail}:1. Plating voids likely.`
     : aspectRatio > arLimits.warn
-    ? `Marginal Aspect Ratio (${arLimits.warn}-${arLimits.fail}:1). Confirm with Tier 1 fabs.`
+    ? `Marginal Aspect Ratio (${arLimits.warn}-${arLimits.fail}:1). Confirm capabilities with fabricator.`
     : `Aspect ratio ${aspectRatio}:1 satisfies IPC Class ${activeStackup.ipcClass} standards.`;
 
   // ─── Rule 2: Trace vs Copper ─────────────────────────────
