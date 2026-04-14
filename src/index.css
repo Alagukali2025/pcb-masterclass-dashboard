@@ -923,7 +923,7 @@ a:hover {
    
 .content-layout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-12);
   max-width: 1400px;
   margin: 0 auto;
@@ -940,6 +940,7 @@ a:hover {
   width: 100%;
   margin: 0 auto;
   padding-bottom: var(--space-20);
+  min-width: 0;
 }
 
 @media (max-width: 640px) {
