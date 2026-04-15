@@ -185,7 +185,17 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
                 className={`user-avatar ${userData?.isOwner ? 'owner-avatar' : ''}`} 
                 title={`Logged in as ${userData?.name || 'Engineer'}`}
               >
-                {userData?.isOwner ? <ShieldCheck size={20} className="owner-badge-icon" /> : (userData?.initials || <User size={20} />)}
+                {userData?.picture ? (
+                  <img src={userData.picture} alt={userData.name} className="user-avatar-img" />
+                ) : (
+                  userData?.initials || <User size={20} />
+                )}
+                
+                {userData?.isOwner && (
+                  <div className="owner-badge-overlay">
+                    <ShieldCheck size={12} fill="currentColor" />
+                  </div>
+                )}
               </div>
               <button 
                 className="logout-btn-minimal" 

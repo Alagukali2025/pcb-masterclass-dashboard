@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../config/supabase';
 
 const AuthContext = createContext();
 
@@ -15,67 +16,165 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('pcb_masterclass_user');
-    if (savedUser) {
-      setIsLoggedIn(true);
-      setUserData(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
-
-  const isOwnerEmail = (email) => email?.toLowerCase() === 'kalialagu201@gmail.com';
-
-  const login = (userId) => {
-    const isOwner = isOwnerEmail(userId);
-    const user = {
-      id: userId,
-      name: isOwner ? 'Platform Owner' : userId, 
-      initials: isOwner ? 'AD' : userId.substring(0, 2).toUpperCase(),
-      loginTime: new Date().toISOString(),
-      isOwner: isOwner
-    };
-    setIsLoggedIn(true);
-    setUserData(user);
-    localStorage.setItem('pcb_masterclass_user', JSON.stringify(user));
+  const isOwnerEmail = (email) => {
+    if (!email) return false;
+    const normalized = email.toLowerCase().trim();
+    // Your exact owner email
+    return normalized === 'kalialagu201@gmail.com';
   };
 
-  const loginWithGoogle = () => {
-    const user = {
-      id: 'google_user_' + Math.floor(Math.random() * 1000),
-      name: 'Google Engineer',
-      email: 'engineer@google.com',
-      initials: 'GE',
+  const mapSupabaseUser = (supabaseUser) => {
+    if (!supabaseUser) return null;
+    
+    // Normalize email for comparison
+    const email = supabaseUser.email?.toLowerCase().trim();
+    const isOwner = isOwnerEmail(email);
+    const metadata = supabaseUser.user_metadata || {};
+    
+    // Fallback logic for names and pictures
+    const fullName = metadata.full_name || metadata.name || "";
+    const avatarUrl = metadata.avatar_url || metadata.picture;
+    
+    return {
+      id: supabaseUser.id,
+      email: email,
+      name: isOwner ? "Platform Owner" : (fullName || email),
+      initials: (fullName || email).substring(0, 2).toUpperCase(),
+      picture: avatarUrl,
       loginTime: new Date().toISOString(),
+      isOwner: isOwner,
       authMethod: 'google'
     };
-    setIsLoggedIn(true);
-    setUserData(user);
-    localStorage.setItem('pcb_masterclass_user', JSON.stringify(user));
+  };
+
+  const syncUserProfile = async (supabaseUser) => {
+    if (!supabaseUser) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: supabaseUser.id,
+          email: supabaseUser.email?.toLowerCase().trim(),
+          full_name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name,
+          avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
+          last_login: new Date().toISOString(),
+        }, { onConflict: 'id' });
+
+      if (error) console.error('Auth Sync Warning:', error.message);
+    } catch (e) {
+      console.warn('Silent sync error:', e);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function checkSession() {
+      try {
+        console.group('🔍 AUTH DIAGNOSTICS: checkSession');
+        
+        // 🚨 MANUAL SESSION INJECTION (The Nuclear Option)
+        // If Google redirected us back with a token (#access_token=...), 
+        // we manually grab it and force Supabase to log us in.
+        if (window.location.hash && window.location.hash.includes('access_token')) {
+          console.log('⚡ Detected Access Token in URL Fragment! Manually capturing...');
+          
+          // Parse the hash manually (stripping the leading #)
+          const hash = window.location.hash.substring(1);
+          const params = new URLSearchParams(hash);
+          const accessToken = params.get('access_token');
+          const refreshToken = params.get('refresh_token');
+
+          if (accessToken) {
+            console.log('💉 Injecting Session into Supabase...');
+            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken || ''
+            });
+            
+            if (sessionError) {
+              console.error('❌ Session Injection Failed:', sessionError.message);
+            } else {
+              console.log('✅ Session Injected Successfully!');
+              // Clean the URL hash so it looks professional
+              window.history.replaceState(null, '', window.location.pathname);
+            }
+          }
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Session metadata:', session ? 'SESSION_EXISTS' : 'NO_SESSION');
+        
+        if (mounted && session?.user) {
+          console.log('User detected:', session.user.email);
+          const mapped = mapSupabaseUser(session.user);
+          setIsLoggedIn(true);
+          setUserData(mapped);
+          syncUserProfile(session.user);
+        }
+        console.groupEnd();
+      } catch (error) {
+        console.error('Session check failed:', error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    checkSession();
+
+    // Listen for Auth Changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(`🔑 AUTH_EVENT: ${event}`, session ? 'SESSION_EXISTS' : 'NO_SESSION');
+      if (mounted) {
+        if (session?.user) {
+          setIsLoggedIn(true);
+          setUserData(mapSupabaseUser(session.user));
+          syncUserProfile(session.user);
+        } else {
+          setIsLoggedIn(false);
+          setUserData(null);
+        }
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const loginWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging in with Google:', error.message);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging out:', error.message);
+    }
+  };
+
+  // Legacy local login/register remains as placeholders or can be redirected to Supabase
+  const login = (userId) => {
+    console.warn('Manual login not fully implemented with Supabase. Please use Google Login.');
   };
 
   const register = (data) => {
-    const isOwner = isOwnerEmail(data.email);
-    const user = {
-      id: data.email,
-      name: isOwner ? 'Platform Owner' : data.name,
-      email: data.email,
-      phone: data.phone,
-      industry: data.industry,
-      initials: isOwner ? 'AD' : data.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2),
-      loginTime: new Date().toISOString(),
-      isOwner: isOwner
-    };
-    setIsLoggedIn(true);
-    setUserData(user);
-    localStorage.setItem('pcb_masterclass_user', JSON.stringify(user));
-  };
-
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUserData(null);
-    localStorage.removeItem('pcb_masterclass_user');
+    console.warn('Manual registration not fully implemented with Supabase. Please use Google Login.');
   };
 
   const value = {
@@ -87,8 +186,6 @@ export const AuthProvider = ({ children }) => {
     loginWithGoogle,
     logout
   };
-
-
 
   return (
     <AuthContext.Provider value={value}>

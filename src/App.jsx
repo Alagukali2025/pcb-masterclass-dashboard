@@ -6,9 +6,9 @@ import Dashboard from './components/Dashboard';
 import ContentViewer from './components/ContentViewer';
 import LoadingScreen from './components/LoadingScreen';
 import Login from './components/Login';
+import AdminDashboard from './components/AdminDashboard';
 import { DesignProvider } from './context/DesignContext';
 import { useAuth } from './context/AuthContext';
-
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -22,7 +22,7 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const { isLoggedIn, loading: authLoading } = useAuth();
+  const { isLoggedIn, userData, loading: authLoading } = useAuth();
 
 
   useEffect(() => {
@@ -81,6 +81,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+
               <Route path="/module/:id" element={<ContentViewer />} />
             </Routes>
           </main>

@@ -23,25 +23,16 @@ export default function Login() {
 
   const handleAuthSubmit = (e) => {
     e.preventDefault();
-    const from = location.state?.from?.pathname || "/";
-    
-    if (mode === 'login') {
-      if (email.trim()) {
-        login(email);
-        navigate(from, { replace: true });
-      }
-    } else {
-      if (regData.name && regData.email) {
-        register(regData);
-        navigate(from, { replace: true });
-      }
-    }
+    alert('Direct login is currently disabled for maintenance. Please use "GOOGLE ACCOUNT" to sign in securely.');
   };
 
-  const handleGoogleLogin = () => {
-    loginWithGoogle();
-    const from = location.state?.from?.pathname || "/";
-    navigate(from, { replace: true });
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      // Supabase handles the redirection to Google automatically
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (

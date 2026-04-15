@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Layers, Home, X } from 'lucide-react';
+import { Layers, Home, X, ShieldCheck } from 'lucide-react';
 import { modulesData } from '../data/modules';
+import { useAuth } from '../context/AuthContext';
 
 export default function Sidebar({ isOpen }) {
   const location = useLocation();
+  const { userData } = useAuth();
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
@@ -16,6 +18,16 @@ export default function Sidebar({ isOpen }) {
               <span>Dashboard</span>
             </Link>
           </li>
+
+          {userData?.isOwner && (
+            <li>
+              <Link to="/admin" className={`nav-link admin-nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>
+                <ShieldCheck size={20} />
+                <span>Admin Panel</span>
+              </Link>
+            </li>
+          )}
+
           <div className="nav-divider">Modules</div>
           {modulesData.map(mod => {
             const IconComponent = mod.icon;
