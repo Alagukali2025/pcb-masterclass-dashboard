@@ -10,8 +10,10 @@ import AdminDashboard from './components/AdminDashboard';
 import CreatePassword from './components/CreatePassword';
 import Profile from './components/Profile';
 import OnboardingModal from './components/OnboardingModal';
+import AIBot from './components/AIBot';
 import { DesignProvider } from './context/DesignContext';
 import { useAuth } from './context/AuthContext';
+
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -101,8 +103,11 @@ function App() {
         {isSidebarOpen && (
           <div className="sidebar-overlay" onClick={toggleSidebar}></div>
         )}
+        {/* Global AI Bot — floats on every page */}
+        <AIBot />
       </div>
     </DesignProvider>
+
   );
 }
 

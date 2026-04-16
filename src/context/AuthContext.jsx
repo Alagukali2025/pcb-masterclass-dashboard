@@ -238,6 +238,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Change password for a logged-in user (from Settings menu)
+  const changePassword = async (newPassword) => {
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      // Mark the profile as having a password set
+      if (userData?.id) {
+        await supabase
+          .from('profiles')
+          .update({ has_password: true })
+          .eq('id', userData.id);
+        setUserData(prev => ({ ...prev, hasPassword: true }));
+      }
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+
   const updateProfileData = async (newData) => {
     try {
       const { data, error } = await supabase
@@ -278,8 +298,12 @@ export const AuthProvider = ({ children }) => {
     loginWithGoogle,
     logout,
     checkEmailStatus,
-    updateProfileData
+    updateProfileData,
+    completePasswordSetup,
+    changePassword,
+    needsPasswordSetup: isLoggedIn && userData && !userData.hasPassword
   };
+
 
   return (
     <AuthContext.Provider value={value}>
