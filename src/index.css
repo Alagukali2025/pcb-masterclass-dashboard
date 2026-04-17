@@ -84,9 +84,9 @@
   --auth-warning-bg: rgba(245, 158, 11, 0.1);
   --auth-warning-border: rgba(245, 158, 11, 0.3);
 
-  --glass-bg: rgba(13, 27, 46, 0.98);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(13, 27, 46, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 500px) {
@@ -122,8 +122,8 @@
 
 :root.light-theme {
   --bg-primary: #ffffff;
-  --bg-secondary: #ffffff; /* Sync to white to remove the gray background */
-  --bg-tertiary: #f1f5f9;
+  --bg-secondary: #f1f5f9; /* Slate 50/100 for depth */
+  --bg-tertiary: #e2e8f0;
   --bg-elevated: #ffffff;
   
   --text-primary: #0d1b2e;
@@ -147,9 +147,9 @@
   --auth-input-bg: rgba(255, 255, 255, 0.5);
   --auth-divider-bg: #ffffff;
 
-  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(13, 27, 46, 0.08);
-  --glass-shadow: 0 12px 48px 0 rgba(13, 27, 46, 0.08);
+  --glass-shadow: 0 12px 48px 0 rgba(13, 27, 46, 0.05);
 }
 
 
@@ -396,7 +396,7 @@ a:hover {
 
 .sidebar-logo h2 {
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .logo-icon {
@@ -429,7 +429,7 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--text-tertiary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .nav-link {
@@ -485,7 +485,7 @@ a:hover {
   align-items: center;
   gap: var(--space-3);
   color: var(--text-primary);
-  font-weight: 800;
+  font-weight: 600;
   white-space: nowrap;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
@@ -714,7 +714,7 @@ a:hover {
 
 .zdiff-metric-label {
   font-size: 0.6rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -723,7 +723,7 @@ a:hover {
 
 .zdiff-metric-value {
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
 }
@@ -777,7 +777,7 @@ a:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--accent-hover);
@@ -834,7 +834,7 @@ a:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-tertiary);
@@ -853,7 +853,7 @@ a:hover {
   border-radius: 3px;
   padding: 1px 6px;
   font-size: 0.62rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .user-avatar {
@@ -933,7 +933,7 @@ a:hover {
 
 .dashboard-hero h1 {
   font-size: var(--font-header);
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: var(--space-4);
   background: linear-gradient(to right, #fff, #94a3b8);
   background-clip: text;
@@ -1054,7 +1054,7 @@ a:hover {
 
 .card-content h3 {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: var(--space-3);
   color: var(--text-primary);
   line-height: 1.3;
@@ -1185,7 +1185,7 @@ a:hover {
   padding: var(--space-1) var(--space-3);
   border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: var(--space-6);
@@ -1194,7 +1194,7 @@ a:hover {
 
 .content-title {
   font-size: var(--font-header);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.04em;
   margin-bottom: var(--space-6);
   color: var(--text-primary);
@@ -1232,7 +1232,7 @@ a:hover {
 
 .section-heading {
   font-size: clamp(1.4rem, 4vw, 2rem);
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -1254,7 +1254,7 @@ a:hover {
   justify-content: center;
   border-radius: var(--radius-lg);
   font-size: clamp(1rem, 3vw, 1.25rem);
-  font-weight: 800;
+  font-weight: 600;
   border: 1px solid var(--border-light);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
   flex-shrink: 0;
@@ -1307,7 +1307,7 @@ a:hover {
 
 .list-label {
   color: var(--text-primary);
-  font-weight: 700;
+  font-weight: 600;
   margin-right: var(--space-1);
 }
 
@@ -1472,7 +1472,7 @@ a:hover {
 
 .task-board-title {
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -1484,7 +1484,7 @@ a:hover {
   color: var(--success);
   padding: var(--space-2) var(--space-4);
   border-radius: 9999px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.9rem;
   border: 1px solid var(--accent-border);
 }
@@ -1582,7 +1582,7 @@ a:hover {
 
   .toc-header {
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-tertiary);
@@ -1678,7 +1678,7 @@ a:hover {
   text-align: center;
   padding: var(--space-2);
   background: var(--accent-light);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1700,7 +1700,7 @@ a:hover {
   background: rgba(255, 255, 255, 0.03);
   padding: var(--space-4) var(--space-6);
   color: var(--accent-primary);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 0.8rem;
@@ -1735,7 +1735,7 @@ a:hover {
   background: var(--bg-elevated);
   padding: var(--space-3) var(--space-6);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
@@ -1776,7 +1776,7 @@ a:hover {
 
 .var-name {
   color: var(--accent-primary);
-  font-weight: 700;
+  font-weight: 600;
   min-width: 80px;
 }
 
@@ -1787,7 +1787,7 @@ a:hover {
 
 .var-tag {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   padding: 2px 6px;
   border-radius: 4px;
   background: rgba(59, 130, 246, 0.1);
@@ -1851,7 +1851,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 600;
   flex-shrink: 0;
 }
 
@@ -1893,7 +1893,7 @@ a:hover {
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-md);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   border: 1px solid var(--border-light);
 }
 
@@ -1925,7 +1925,7 @@ a:hover {
 
 .category-title {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
@@ -1977,14 +1977,14 @@ a:hover {
 .flow-num {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-primary);
   margin-bottom: var(--space-2);
 }
 
 .flow-title {
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-2);
 }
@@ -2002,7 +2002,7 @@ a:hover {
   transform: translateY(-50%);
   color: var(--accent-primary);
   opacity: 0.5;
-  font-weight: 800;
+  font-weight: 600;
   pointer-events: none;
 }
 
@@ -2057,7 +2057,7 @@ a:hover {
 
 .tool-badge {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 3px 8px;
@@ -2107,10 +2107,10 @@ a:hover {
 }
 
 /* Enhanced Table Elements */
-.tag-ds { background: rgba(59, 130, 246, 0.12); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono); }
-.tag-ipc { background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono); }
-.tag-dfm { background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono); }
-.tag-warn { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono); }
+.tag-ds { background: rgba(59, 130, 246, 0.12); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; font-family: var(--font-mono); }
+.tag-ipc { background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; font-family: var(--font-mono); }
+.tag-dfm { background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; font-family: var(--font-mono); }
+.tag-warn { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.7rem; font-weight: 600; font-family: var(--font-mono); }
 
 .highlight-row td { background: rgba(59, 130, 246, 0.04); border-left: 3px solid var(--accent-primary); }
 .conflict-row td { background: rgba(239, 68, 68, 0.04); border-left: 3px solid var(--danger); }
@@ -2166,7 +2166,7 @@ a:hover {
   border-radius: 99px;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
@@ -2195,7 +2195,7 @@ a:hover {
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
   margin-bottom: var(--space-4);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .toggle-group {
@@ -2297,7 +2297,7 @@ a:hover {
 
 .res-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.1em;
   opacity: 0.6;
   margin-bottom: var(--space-2);
@@ -2306,7 +2306,7 @@ a:hover {
 .res-value {
   font-family: var(--font-mono);
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -2385,7 +2385,7 @@ a:hover {
   font-size: 0.7rem;
   text-transform: uppercase;
   color: var(--accent-primary);
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: var(--space-2);
 }
 
@@ -2445,7 +2445,7 @@ a:hover {
 
 .svg-dim-text.active {
   fill: var(--accent-primary);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 9px;
 }
 
@@ -2488,7 +2488,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-primary);
   text-transform: uppercase;
 }
@@ -2746,8 +2746,8 @@ a:hover {
 .text-sm { font-size: 0.875rem; }
 .text-4xl { font-size: 2.25rem; }
 .text-5xl { font-size: 3rem; }
-.font-black { font-weight: 900; }
-.font-bold { font-weight: 700; }
+.font-black { font-weight: 600; }
+.font-bold { font-weight: 600; }
 .tracking-tighter { letter-spacing: -0.05em; }
 .tracking-tight { letter-spacing: -0.025em; }
 .tracking-widest { letter-spacing: 0.1em; }
@@ -2890,7 +2890,7 @@ a:hover {
 
 .slt-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -2919,7 +2919,7 @@ a:hover {
   background: transparent;
   color: var(--text-tertiary);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   letter-spacing: 0.05em;
@@ -2950,7 +2950,7 @@ a:hover {
 
 .slt-config-name {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-primary);
 }
 
@@ -2962,7 +2962,7 @@ a:hover {
 
 .slt-config-thickness {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   background: var(--bg-secondary);
   padding: 2px 10px;
@@ -2989,7 +2989,7 @@ a:hover {
 
 .slt-control-label {
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -3099,7 +3099,7 @@ a:hover {
 
 .slt-id-badge {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--accent-primary);
   letter-spacing: 0.05em;
 }
@@ -3154,7 +3154,7 @@ a:hover {
 
 .slt-mid-label {
   font-size: 0.6rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--accent-primary);
   text-transform: uppercase;
   letter-spacing: 0.2em;
@@ -3188,7 +3188,7 @@ a:hover {
 
 .slt-weight-badge {
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #f59e0b;
   background: rgba(245,158,11,0.12);
   padding: 1px 8px;
@@ -3260,7 +3260,7 @@ a:hover {
 .slt-drill-legend-name {
   display: block;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -3290,7 +3290,7 @@ a:hover {
 
 .slt-stat-value {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -3328,7 +3328,7 @@ a:hover {
 
 .lam-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 4px;
@@ -3419,7 +3419,7 @@ a:hover {
   padding: 10px 12px;
   text-align: left;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -3478,7 +3478,7 @@ a:hover {
 
 .lam-tooltip-bubble strong {
   color: var(--accent-primary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .lam-tr {
@@ -3511,13 +3511,13 @@ a:hover {
 }
 
 .lam-td-class { color: var(--text-tertiary); font-size: 0.78rem; }
-.lam-td-product { font-weight: 700; color: var(--text-primary); white-space: nowrap; }
+.lam-td-product { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .lam-td-num { text-align: right; font-family: monospace; color: var(--text-secondary); }
 .lam-td-slash { font-size: 0.76rem; color: var(--text-tertiary); white-space: nowrap; }
 
 .lam-row-star { color: #f59e0b; display: inline; margin-right: 4px; vertical-align: middle; }
 
-.lam-df-cell { font-weight: 700; }
+.lam-df-cell { font-weight: 600; }
 .lam-cell-excellent { color: #06b6d4; }
 .lam-cell-good      { color: #10b981; }
 .lam-cell-ok        { color: #f59e0b; }
@@ -3527,7 +3527,7 @@ a:hover {
 
 .lam-app-tag {
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-primary);
   background: var(--accent-light);
   padding: 2px 10px;
@@ -3586,7 +3586,7 @@ a:hover {
 
 .dfm-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -3656,13 +3656,13 @@ a:hover {
 
 .dfm-rule-title {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .dfm-rule-result-value {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   font-family: monospace;
 }
@@ -3680,7 +3680,7 @@ a:hover {
   align-items: center;
   gap: 5px;
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 3px 10px;
@@ -3708,7 +3708,7 @@ a:hover {
 
 .dfm-input-label {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -3726,7 +3726,7 @@ a:hover {
   padding: 10px 40px 10px 12px;
   color: var(--text-primary);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   outline: none;
   transition: border-color var(--transition-fast);
   font-family: monospace;
@@ -3740,7 +3740,7 @@ a:hover {
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
 }
@@ -3810,7 +3810,7 @@ a:hover {
   background: var(--bg-secondary);
   color: var(--text-tertiary);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -3846,7 +3846,7 @@ a:hover {
   background: rgba(245,158,11,0.05);
 }
 
-.dfm-etch-oz { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
+.dfm-etch-oz { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
 .dfm-etch-min { font-size: 0.7rem; color: var(--text-tertiary); }
 
 /* Balance slider */
@@ -3903,7 +3903,7 @@ a:hover {
 
 .dfm-summary-label {
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
@@ -3953,7 +3953,7 @@ a:hover {
 
 .fws-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -3989,9 +3989,9 @@ a:hover {
   display: block;
 }
 
-.fws-svg-zone-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.fws-svg-zone-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; }
 .fws-svg-zone-sub   { font-size: 9px;  font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
-.fws-svg-trace-label { font-size: 10px; font-weight: 800; }
+.fws-svg-trace-label { font-size: 10px; font-weight: 600; }
 
 .fws-alert {
   display: flex;
@@ -4020,7 +4020,7 @@ a:hover {
   align-items: center;
   gap: var(--space-2);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -4044,7 +4044,7 @@ a:hover {
   background: var(--bg-primary);
   color: var(--text-tertiary);
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   font-family: monospace;
@@ -4088,12 +4088,12 @@ a:hover {
 
 .fws-detail-item { display: flex; flex-direction: column; gap: 4px; }
 .fws-detail-full { grid-column: 1 / -1; }
-.fws-detail-label { font-size: 0.68rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
-.fws-detail-value { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+.fws-detail-label { font-size: 0.68rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
+.fws-detail-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
 
 .fws-risk-badge {
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 2px 10px;
   border-radius: 999px;
   border: 1px solid;
@@ -4119,7 +4119,7 @@ a:hover {
   align-items: center;
   gap: var(--space-2);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 4px 12px;
   border-radius: var(--radius-md);
   border: 1px solid;
@@ -4146,7 +4146,7 @@ a:hover {
   padding: 10px 12px;
   text-align: left;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -4159,7 +4159,7 @@ a:hover {
 .fws-tr-rec:hover { background: rgba(16,185,129,0.08) !important; }
 
 .fws-table td { padding: 10px 12px; color: var(--text-secondary); }
-.fws-td-style { font-weight: 800; font-family: monospace; color: var(--text-primary); white-space: nowrap; }
+.fws-td-style { font-weight: 600; font-family: monospace; color: var(--text-primary); white-space: nowrap; }
 .fws-td-rec-dot {
   display: inline-block;
   width: 6px;
@@ -4210,7 +4210,7 @@ a:hover {
 
 .exp-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -4270,7 +4270,7 @@ a:hover {
 
 .exp-badge {
   font-size: 0.62rem;
-  font-weight: 800;
+  font-weight: 600;
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid;
@@ -4284,7 +4284,7 @@ a:hover {
 .exp-badge-std    { color: #a855f7; background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.3); }
 .exp-badge-legacy { color: #64748b; background: rgba(100,116,139,0.1); border-color: rgba(100,116,139,0.3); }
 
-.exp-fmt-name { font-size: 1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; font-family: monospace; }
+.exp-fmt-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; font-family: monospace; }
 .exp-fmt-intel { font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: var(--space-2); }
 .exp-fmt-intel strong { color: var(--text-secondary); }
 .exp-fmt-content { font-size: 0.75rem; color: var(--text-tertiary); line-height: 1.4; }
@@ -4338,7 +4338,7 @@ a:hover {
 
 .exp-compare-header {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -4362,7 +4362,7 @@ a:hover {
   padding: 10px 14px;
   text-align: left;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border-bottom: 1px solid var(--border-light);
@@ -4379,7 +4379,7 @@ a:hover {
 .exp-compare-val {
   padding: 9px 14px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.9rem;
 }
 
@@ -4410,7 +4410,7 @@ a:hover {
   align-items: center;
   gap: var(--space-2);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
@@ -4429,7 +4429,7 @@ a:hover {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -4520,7 +4520,7 @@ a:hover {
   padding: 8px 24px;
   border-radius: var(--radius-lg);
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   transition: all var(--transition-fast);
@@ -4673,7 +4673,7 @@ a:hover {
 
 .zdiff-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 6px;
@@ -4704,7 +4704,7 @@ a:hover {
   border: none;
   cursor: pointer;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   background: transparent;
   transition: all var(--transition-fast);
@@ -4792,7 +4792,7 @@ a:hover {
 .zdiff-diagram-label {
   display: block;
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -4826,7 +4826,7 @@ a:hover {
 
 .zdiff-label {
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -4865,7 +4865,7 @@ a:hover {
   border-radius: var(--radius-lg);
   color: var(--accent-primary);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -4891,7 +4891,7 @@ a:hover {
 
 .zdiff-result-label {
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -4907,7 +4907,7 @@ a:hover {
 
 .zdiff-result-num {
   font-size: clamp(1.5rem, 8vw, 3.2rem);
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.04em;
   line-height: 1;
@@ -4915,7 +4915,7 @@ a:hover {
 
 .zdiff-result-unit {
   font-size: clamp(0.7rem, 3vw, 1.1rem);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-secondary);
   white-space: nowrap;
 }
@@ -4956,7 +4956,7 @@ a:hover {
 
 .zdiff-result-sub-label {
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -4966,7 +4966,7 @@ a:hover {
 
 .zdiff-result-sub-val {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   font-family: monospace;
   white-space: nowrap;
@@ -5011,7 +5011,7 @@ a:hover {
 
 .zdiff-verdict-title {
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 2px;
@@ -5035,7 +5035,7 @@ a:hover {
 
 .zdiff-presets-title {
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -5081,7 +5081,7 @@ a:hover {
 
 .zdiff-preset-name {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   display: block;
 }
@@ -5156,7 +5156,7 @@ a:hover {
 
 .zdiff-popover-title {
   font-size: 0.85rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--accent-primary);
   margin-bottom: var(--space-4);
   text-transform: uppercase;
@@ -5179,7 +5179,7 @@ a:hover {
 
 .zdiff-popover-code-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   margin-bottom: 4px;
@@ -5188,7 +5188,7 @@ a:hover {
 .zdiff-popover-code-box code {
   color: var(--accent-primary);
   font-family: var(--font-mono);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.8rem;
   display: block;
   overflow-x: auto;
@@ -5272,7 +5272,7 @@ a:hover {
 
 .zdiff-modal-title {
   font-size: 1.4rem;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 1.5rem;
   letter-spacing: -0.03em;
@@ -5306,7 +5306,7 @@ a:hover {
 
 .zdiff-modal-code-label {
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -5319,7 +5319,7 @@ a:hover {
   font-size: 0.95rem;
   color: #3b82f6;
   font-family: 'Fira Code', var(--font-mono);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.4;
 }
 
@@ -5390,7 +5390,7 @@ a:hover {
   height: 36px;
   border-radius: var(--radius-lg);
   font-size: 0.8rem;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.02em;
   flex-shrink: 0;
   font-family: monospace;
@@ -5424,7 +5424,7 @@ a:hover {
 
 .rule-card-title {
   font-size: 0.92rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;
 }
@@ -5434,7 +5434,7 @@ a:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 2px 8px;
@@ -5543,7 +5543,7 @@ a:hover {
   align-items: center;
   gap: var(--space-4);
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -5654,7 +5654,7 @@ a:hover {
 
 .mis-label {
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: 99px;
@@ -5707,14 +5707,14 @@ a:hover {
 
 .term-name {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .term-tag {
   display: inline-block;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   padding: 2px 8px;
   border-radius: 99px;
   align-self: flex-start;
@@ -5817,7 +5817,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -5832,7 +5832,7 @@ a:hover {
   align-items: center;
   gap: 4px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   padding: 1px 6px;
   border-radius: 4px;
@@ -5869,13 +5869,13 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .calc-badge {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   background: var(--accent-light);
   color: var(--accent-hover);
@@ -5911,7 +5911,7 @@ a:hover {
   padding: 10px 14px;
   color: var(--text-primary);
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
   outline: none;
 }
 
@@ -5952,7 +5952,7 @@ a:hover {
 
 .res-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -5960,7 +5960,7 @@ a:hover {
 
 .res-value {
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -6022,7 +6022,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -6032,7 +6032,7 @@ a:hover {
   gap: 12px;
   cursor: pointer;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
 }
 
@@ -6215,7 +6215,7 @@ input[type=number] {
 .engineering-label {
   display: block;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -6259,7 +6259,7 @@ input[type=number] {
 .zdiff-switch {
   padding: 6px 14px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -6344,7 +6344,7 @@ input[type=number] {
 .zdiff-toggle-btn {
   padding: 8px 24px;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-tertiary);
   border-radius: var(--radius-lg);
   border: 1px solid transparent;
@@ -6753,7 +6753,7 @@ input[type=number] {
 .auth-step-title {
   color: white;
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 32px;
   letter-spacing: 0.05em;
@@ -6768,7 +6768,7 @@ input[type=number] {
 .form-group label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #94a3b8;
   margin-bottom: 12px;
   letter-spacing: 0.05em;
@@ -6827,7 +6827,7 @@ input[type=number] {
 
 .forgot-password a {
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #64748b;
   text-decoration: none;
   letter-spacing: 0.05em;
@@ -6839,7 +6839,7 @@ input[type=number] {
   border: none;
   border-radius: 24px;
   padding: 18px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -6878,7 +6878,7 @@ input[type=number] {
   padding: 0 16px;
   color: #64748b;
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.1em;
 }
 
@@ -6888,7 +6888,7 @@ input[type=number] {
   border: none;
   border-radius: 24px;
   padding: 16px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
@@ -6919,7 +6919,7 @@ input[type=number] {
 .footer-message {
   font-size: 0.75rem;
   color: #64748b;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
@@ -6927,7 +6927,7 @@ input[type=number] {
   background: none;
   border: none;
   color: #3b82f6;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.75rem;
   cursor: pointer;
   letter-spacing: 0.05em;
@@ -6962,7 +6962,7 @@ input[type=number] {
   background: none;
   border: none;
   color: var(--text-tertiary);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -7006,7 +7006,7 @@ input[type=number] {
 .auth-step-title {
   color: var(--text-primary);
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   text-align: center;
   margin-bottom: var(--space-8);
   letter-spacing: 0.05em;
@@ -7055,7 +7055,7 @@ input[type=number] {
 
 .login-title {
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.05em;
   margin-top: var(--space-4);
   color: var(--text-primary);
@@ -7063,7 +7063,7 @@ input[type=number] {
 
 .login-subtitle {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.2em;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -7072,7 +7072,7 @@ input[type=number] {
 .form-group label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 12px;
   letter-spacing: 0.05em;
@@ -7132,7 +7132,7 @@ input[type=number] {
 
 .forgot-password a {
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #64748b;
   text-decoration: none;
   letter-spacing: 0.05em;
@@ -7144,7 +7144,7 @@ input[type=number] {
   border: none;
   border-radius: var(--radius-xl);
   padding: 18px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -7183,7 +7183,7 @@ input[type=number] {
   padding: 0 16px;
   color: var(--text-secondary);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.1em;
 }
 
@@ -7193,7 +7193,7 @@ input[type=number] {
   border: none;
   border-radius: var(--radius-xl);
   padding: 16px;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
@@ -7224,7 +7224,7 @@ input[type=number] {
 .footer-message {
   font-size: 0.75rem;
   color: #64748b;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
@@ -7232,7 +7232,7 @@ input[type=number] {
   background: none;
   border: none;
   color: var(--accent-primary);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.75rem;
   cursor: pointer;
   letter-spacing: 0.05em;
@@ -7342,7 +7342,7 @@ input[type=number] {
 
 .lock-text h3 {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 8px;
   letter-spacing: 0.05em;
   color: var(--text-primary);
@@ -7360,7 +7360,7 @@ input[type=number] {
   border: none;
   padding: 12px 24px;
   border-radius: var(--radius-lg);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -7391,7 +7391,7 @@ input[type=number] {
   gap: 8px;
   color: var(--text-tertiary);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
@@ -7448,7 +7448,7 @@ input[type=number] {
 
 .admin-title-group h1 {
   font-size: 2.2rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-primary);
   margin-top: 8px;
   margin-bottom: 4px;
@@ -7468,7 +7468,7 @@ input[type=number] {
   padding: 4px 12px;
   border-radius: 99px;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.1em;
   border: 1px solid rgba(245, 158, 11, 0.2);
 }
@@ -7503,7 +7503,7 @@ input[type=number] {
 .stat-label {
   display: block;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   letter-spacing: 0.05em;
 }
@@ -7511,7 +7511,7 @@ input[type=number] {
 .stat-value {
   display: block;
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -7554,7 +7554,7 @@ input[type=number] {
   gap: 8px;
   padding: 10px 16px;
   border-radius: 10px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -7587,7 +7587,7 @@ input[type=number] {
   background: rgba(255, 255, 255, 0.03);
   padding: 16px 24px;
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -7622,7 +7622,7 @@ input[type=number] {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.75rem;
   overflow: hidden;
   border: 1px solid var(--border-light);
@@ -7636,7 +7636,7 @@ input[type=number] {
 
 .admin-user-name {
   display: block;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 0.95rem;
 }
@@ -7687,7 +7687,7 @@ input[type=number] {
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .status-pill.active {
@@ -7770,7 +7770,7 @@ input[type=number] {
 
 .notice-text h3 {
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #f59e0b;
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
@@ -7802,7 +7802,7 @@ input[type=number] {
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.05em;
   margin-top: 4px;
 }
@@ -7849,7 +7849,7 @@ input[type=number] {
 
 .engineer-rank-tag {
   font-size: 0.6rem;
-  font-weight: 800;
+  font-weight: 600;
   padding: 2px 6px;
   background: var(--accent-light);
   color: var(--accent-primary);
@@ -7867,7 +7867,7 @@ input[type=number] {
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 0.55rem;
-  font-weight: 800;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 3px;
@@ -7889,7 +7889,7 @@ input[type=number] {
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.2rem;
   border: 2px solid var(--bg-primary);
   flex-shrink: 0;
@@ -7902,7 +7902,7 @@ input[type=number] {
 }
 
 .menu-user-name {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   font-size: 0.95rem;
   white-space: nowrap;
@@ -7924,7 +7924,7 @@ input[type=number] {
 
 .menu-group-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -8014,7 +8014,7 @@ input[type=number] {
 
 .menu-sub-header h3 {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -8160,7 +8160,7 @@ input[type=number] {
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 600;
   color: white;
   position: relative;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -8183,7 +8183,7 @@ input[type=number] {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -8215,7 +8215,7 @@ input[type=number] {
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
@@ -8250,7 +8250,7 @@ input[type=number] {
 
 .section-header h2 {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
@@ -8260,7 +8260,7 @@ input[type=number] {
   color: var(--accent-primary);
   padding: 6px 16px;
   border-radius: 6px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -8270,7 +8270,7 @@ input[type=number] {
   border: none;
   padding: 6px 16px;
   border-radius: 6px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -8295,7 +8295,7 @@ input[type=number] {
 .form-item label {
   display: block;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   margin-bottom: 8px;
   letter-spacing: 0.1em;
@@ -8383,7 +8383,7 @@ input[type=number] {
   color: var(--text-secondary);
   padding: 14px;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -8416,7 +8416,7 @@ input[type=number] {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -8489,7 +8489,7 @@ input[type=number] {
 
 .onboarding-header h1 {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
@@ -8554,7 +8554,7 @@ input[type=number] {
 
 .sector-info h3 {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 
@@ -8607,7 +8607,7 @@ input[type=number] {
   border: none;
   padding: 14px 40px;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -8644,7 +8644,7 @@ input[type=number] {
 .pw-label {
   display: block;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -8706,7 +8706,7 @@ input[type=number] {
 }
 .pw-strength-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   width: 40px;
@@ -8762,7 +8762,7 @@ input[type=number] {
   border-radius: var(--radius-md);
   padding: 10px;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   margin-top: 0.25rem;
@@ -8789,7 +8789,7 @@ input[type=number] {
   text-align: center;
 }
 .pw-success-icon { color: #10b981; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-.pw-success-text { font-weight: 700; color: var(--text-primary); font-size: 1rem; }
+.pw-success-text { font-weight: 600; color: var(--text-primary); font-size: 1rem; }
 .pw-success-sub { font-size: 0.75rem; color: var(--text-tertiary); }
 
 @keyframes popIn {
@@ -8933,7 +8933,7 @@ input[type=number] {
 }
 .aibot-title {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: white;
   margin: 0;
 }
@@ -8989,7 +8989,7 @@ input[type=number] {
   background: var(--accent-light);
   color: var(--accent-primary);
   font-size: 0.62rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 3px 8px;
@@ -9056,7 +9056,7 @@ input[type=number] {
 /* Markdown rendering */
 .bot-msg-text { display: flex; flex-direction: column; gap: 2px; }
 .bot-msg-line { margin: 0; line-height: 1.55; }
-.bot-msg-line strong { color: var(--accent-hover); font-weight: 700; }
+.bot-msg-line strong { color: var(--accent-hover); font-weight: 600; }
 
 .aibot-action-card {
   margin-top: 10px;
@@ -9086,7 +9086,7 @@ input[type=number] {
 }
 .action-card-label {
   font-size: 0.6rem;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   color: var(--accent-hover);
   letter-spacing: 0.05em;

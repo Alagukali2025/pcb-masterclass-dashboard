@@ -1,18 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import ContentViewer from './components/ContentViewer';
 import LoadingScreen from './components/LoadingScreen';
-import Login from './components/Login';
-import AdminDashboard from './components/AdminDashboard';
-import CreatePassword from './components/CreatePassword';
-import Profile from './components/Profile';
 import OnboardingModal from './components/OnboardingModal';
 import AIBot from './components/AIBot';
 import { DesignProvider } from './context/DesignContext';
 import { useAuth } from './context/AuthContext';
+
+// Lazy load route components
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const ContentViewer = lazy(() => import('./components/ContentViewer'));
+const Login = lazy(() => import('./components/Login'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const CreatePassword = lazy(() => import('./components/CreatePassword'));
+const Profile = lazy(() => import('./components/Profile'));
+
+// Simple fallback for route suspension
+const RouteFallback = () => (
+  <div style={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    height: '60vh',
+    color: 'var(--text-tertiary)',
+    fontSize: '0.9rem',
+    fontWeight: 500
+  }}>
+    <div className="loading-dots">Initializing Module<span>.</span><span>.</span><span>.</span></div>
+  </div>
+);
 
 
 function App() {
@@ -88,15 +105,17 @@ function App() {
             isSidebarOpen={isSidebarOpen}
           />
           <main className="page-content">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/create-password" element={<CreatePassword />} />
-              <Route path="/profile" element={<Profile />} />
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/create-password" element={<CreatePassword />} />
+                <Route path="/profile" element={<Profile />} />
 
-              <Route path="/module/:id" element={<ContentViewer />} />
-            </Routes>
+                <Route path="/module/:id" element={<ContentViewer />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
         {/* Mobile Overlay */}

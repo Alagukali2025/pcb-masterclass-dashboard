@@ -1,32 +1,56 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { modulesData } from '../data/modules';
 import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ToolLock from './ToolLock';
-import IPCCalculator from './IPCCalculator';
 
-import StackupCalculator from './StackupCalculator';
-import StackupLayerToggle from './StackupLayerToggle';
-import AspectRatioCalculator from './AspectRatioCalculator';
-import LaminateTable from './LaminateTable';
-import DFMRuleChecker from './DFMRuleChecker';
-import FiberWeaveSkew from './FiberWeaveSkew';
-import StackupExport from './StackupExport';
-import ZdiffCalculator from './ZdiffCalculator';
-import DiffPairReferenceTable from './DiffPairReferenceTable';
-import DDRTimingCalculator from './DDRTimingCalculator';
-import EMICalculator from './EMICalculator';
-import EMIVisualizer from './EMIVisualizer';
-import ViaResonanceCalculator from './ViaResonanceCalculator';
-import ViaAdvancedCalculator from './ViaAdvancedCalculator';
-import PDNAnalyzer from './PDNAnalyzer';
-import ThermalAnalysisTool from './ThermalAnalysisTool';
-import IPC2152Calculator from './IPC2152Calculator';
-import ThermalResistanceVisualizer from './ThermalResistanceVisualizer';
-import EMIChecklist from './EMIChecklist';
-import PITargetCalculator from './PITargetCalculator';
-import ReleaseSimulator from './OutputSystem/ReleaseSimulator';
+// Lazy load tools
+const IPCCalculator = lazy(() => import('./IPCCalculator'));
+const StackupCalculator = lazy(() => import('./StackupCalculator'));
+const StackupLayerToggle = lazy(() => import('./StackupLayerToggle'));
+const AspectRatioCalculator = lazy(() => import('./AspectRatioCalculator'));
+const LaminateTable = lazy(() => import('./LaminateTable'));
+const DFMRuleChecker = lazy(() => import('./DFMRuleChecker'));
+const FiberWeaveSkew = lazy(() => import('./FiberWeaveSkew'));
+const StackupExport = lazy(() => import('./StackupExport'));
+const ZdiffCalculator = lazy(() => import('./ZdiffCalculator'));
+const DiffPairReferenceTable = lazy(() => import('./DiffPairReferenceTable'));
+const DDRTimingCalculator = lazy(() => import('./DDRTimingCalculator'));
+const EMICalculator = lazy(() => import('./EMICalculator'));
+const EMIVisualizer = lazy(() => import('./EMIVisualizer'));
+const ViaResonanceCalculator = lazy(() => import('./ViaResonanceCalculator'));
+const ViaAdvancedCalculator = lazy(() => import('./ViaAdvancedCalculator'));
+const PDNAnalyzer = lazy(() => import('./PDNAnalyzer'));
+const ThermalAnalysisTool = lazy(() => import('./ThermalAnalysisTool'));
+const IPC2152Calculator = lazy(() => import('./IPC2152Calculator'));
+const ThermalResistanceVisualizer = lazy(() => import('./ThermalResistanceVisualizer'));
+const EMIChecklist = lazy(() => import('./EMIChecklist'));
+const PITargetCalculator = lazy(() => import('./PITargetCalculator'));
+const ReleaseSimulator = lazy(() => import('./OutputSystem/ReleaseSimulator'));
+
+// Tool Loading Fallback (Sleek placeholder)
+const ToolFallback = ({ name }) => (
+  <div className="tool-loading-placeholder slide-up" style={{
+    padding: '2rem',
+    background: 'var(--bg-secondary)',
+    border: '1px solid var(--glass-border)',
+    borderRadius: 'var(--radius-xl)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '1rem',
+    margin: '1rem 0'
+  }}>
+    <div className="pulse-icon" style={{ color: 'var(--accent-primary)' }}>
+      <Zap size={32} className="animate-pulse" />
+    </div>
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.25rem' }}>Loading {name}...</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>Optimizing engine parameters</div>
+    </div>
+  </div>
+);
 
 
 
@@ -36,11 +60,39 @@ export default function ContentViewer() {
   const { isLoggedIn } = useAuth();
   const moduleData = modulesData.find(m => m.id === id);
 
+  const [content, setContent] = useState(null);
+  const [isLoadingContent, setIsLoadingContent] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
+
+  // Handle content loading
+  useEffect(() => {
+    let isMounted = true;
+    
+    if (moduleData && moduleData.loadContent) {
+      setIsLoadingContent(true);
+      moduleData.loadContent()
+        .then(data => {
+          if (isMounted) {
+            setContent(data.content || data);
+            setIsLoadingContent(false);
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load module content:", err);
+          if (isMounted) setIsLoadingContent(false);
+        });
+    } else if (moduleData && moduleData.content) {
+      // Fallback for static content if any remains
+      setContent(moduleData.content);
+      setIsLoadingContent(false);
+    }
+
+    return () => { isMounted = false; };
+  }, [id, moduleData]);
 
   // Handle auto-scroll from search
   useEffect(() => {
-    if (location.state && location.state.scrollTo !== undefined && moduleData) {
+    if (location.state && location.state.scrollTo !== undefined && moduleData && content) {
       const sectionIndex = location.state.scrollTo;
 
       // Small delay to ensure refs are populated and DOM is ready
@@ -49,7 +101,7 @@ export default function ContentViewer() {
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [id, location.state, moduleData]);
+  }, [id, location.state, moduleData, content]);
 
   const [scrollProgress, setScrollProgress] = useState(0);
   const [checkedItems, setCheckedItems] = useState({});
@@ -79,6 +131,8 @@ export default function ContentViewer() {
 
   // Handle Intersection Observer for TOC
   useEffect(() => {
+    if (!content) return;
+
     const observer = new IntersectionObserver((entries) => {
       let activeIndex = -1;
       entries.forEach((entry) => {
@@ -101,7 +155,7 @@ export default function ContentViewer() {
     });
 
     return () => observer.disconnect();
-  }, [id]); // Re-run when module changes
+  }, [id, content]); // Re-run when module or content changes
 
   // Reset checklist and scroll when module changes
   useEffect(() => {
@@ -123,7 +177,27 @@ export default function ContentViewer() {
     );
   }
 
-  const { content } = moduleData;
+  if (isLoadingContent || !content) {
+    return (
+      <div className="content-loading-state fade-in" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh',
+        gap: '1.5rem'
+      }}>
+        <div className="loading-spinner-large">
+          <Zap size={48} className="animate-pulse" style={{ color: 'var(--accent-primary)' }} />
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Loading Module Data</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>Retrieving engineering specifications for {moduleData.title}</p>
+        </div>
+      </div>
+    );
+  }
+
   const HeroIcon = moduleData.icon || Zap;
 
   const toggleChecklist = (index) => {
@@ -332,7 +406,11 @@ export default function ContentViewer() {
                   )}
 
                   {sec.type && COMPONENTS[sec.type] && (
-                    isLoggedIn ? COMPONENTS[sec.type](id) : <ToolLock toolName={sec.heading} />
+                    isLoggedIn ? (
+                      <Suspense fallback={<ToolFallback name={sec.heading || 'Engineering Tool'} />}>
+                        {COMPONENTS[sec.type](id)}
+                      </Suspense>
+                    ) : <ToolLock toolName={sec.heading} />
                   )}
 
                   {/* Cross-Reference Card — replaces duplicate tool with a navigation link */}

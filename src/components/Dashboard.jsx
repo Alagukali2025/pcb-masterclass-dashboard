@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { modulesData } from '../data/modules';
 import { ChevronRight, BookOpen } from 'lucide-react';
@@ -13,6 +13,20 @@ const moduleTitleMap = modulesData.reduce((acc, m) => {
 
 export default function Dashboard() {
   const { activePhase, setActivePhase } = useDesign();
+  const [shouldAnimate, setShouldAnimate] = useState(() => {
+    return !sessionStorage.getItem('dashboard_animated');
+  });
+
+  useEffect(() => {
+    if (shouldAnimate) {
+      const timer = setTimeout(() => {
+        sessionStorage.setItem('dashboard_animated', 'true');
+        // We don't necessarily need to set shouldAnimate to false here
+        // as the component will re-render or the user will navigate.
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldAnimate]);
 
   // Mapping flow phase to module IDs
   const phaseToModules = {
@@ -43,7 +57,12 @@ export default function Dashboard() {
             const Icon = mod.icon;
             const prereqs = mod.prerequisites || [];
             return (
-              <Link to={`/module/${mod.id}`} key={mod.id} className="module-card slide-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <Link 
+                to={`/module/${mod.id}`} 
+                key={mod.id} 
+                className={`module-card ${shouldAnimate ? 'slide-up' : ''}`} 
+                style={shouldAnimate ? { animationDelay: `${i * 50}ms` } : {}}
+              >
                 <div className="card-top">
                   <div className="icon-wrapper">
                     <Icon size={24} />

@@ -66,15 +66,15 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
       }
 
       // Match Section Headings
-      if (module.content && module.content.sections) {
-        module.content.sections.forEach((section, index) => {
-          if (section.heading.toLowerCase().includes(lowerQuery)) {
+      if (module.sections) {
+        module.sections.forEach((section, index) => {
+          if (section.toLowerCase().includes(lowerQuery)) {
             results.push({
               type: 'topic',
               id: module.id,
               moduleId: module.id,
               moduleTitle: module.title,
-              title: section.heading,
+              title: section,
               sectionIndex: index
             });
           }
@@ -113,7 +113,7 @@ export default function Header({ theme, toggleTheme, toggleSidebar, isSidebarOpe
         </button>
         
         <Link to="/" className="header-logo">
-          <img src="/logo.png" alt="PCB Design Hub Logo" className="logo-img" />
+          <img src="/logo.webp" alt="PCB Design Hub Logo" className="logo-img" />
           <span className="logo-text">PCB Design Hub</span>
         </Link>
         
