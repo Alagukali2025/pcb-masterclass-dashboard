@@ -57,7 +57,14 @@ export const AuthProvider = ({ children }) => {
       const hasPassword = supabaseUser.identities?.some(id => id.provider === 'email') || false;
       const provider = supabaseUser.app_metadata?.provider || 'email';
       
-      // Upsert to ensure record exists
+      // 1. First, fetch existing profile to avoid overwriting industry/phone
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('industry, phone')
+        .eq('id', supabaseUser.id)
+        .single();
+
+      // 2. Perform the upsert with session-related info
       const { data: upsertedData, error: upsertError } = await supabase
         .from('profiles')
         .upsert({
@@ -67,7 +74,10 @@ export const AuthProvider = ({ children }) => {
           avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
           last_login: new Date().toISOString(),
           auth_method: provider,
-          has_password: hasPassword
+          has_password: hasPassword,
+          // Preserve existing if they exist
+          industry: existingProfile?.industry || null,
+          phone: existingProfile?.phone || null
         }, { onConflict: 'id' })
         .select()
         .single();
@@ -272,7 +282,12 @@ export const AuthProvider = ({ children }) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase Profile Update Failed:', error);
+        throw error;
+      }
+
+      console.log('✅ Profile Update Successful:', data);
 
       // Sync local state
       setUserData(prev => ({
@@ -284,7 +299,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
-      console.error('Profile update error:', error.message);
+      console.error('🔴 Profile update error caught in try/catch:', error.message);
       return { success: false, error: error.message };
     }
   };

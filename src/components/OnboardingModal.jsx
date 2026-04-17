@@ -25,6 +25,7 @@ export default function OnboardingModal() {
   const { userData, updateProfileData } = useAuth();
   const [selected, setSelected] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   // Don't show if not logged in or owner (Owner exclusion is handled in App.jsx but this is a fail-safe)
   if (!userData || userData.isOwner || userData.industry) return null;
@@ -32,12 +33,24 @@ export default function OnboardingModal() {
   const handleComplete = async () => {
     if (!selected) return;
     setIsSaving(true);
-    await updateProfileData({
-      ...userData,
-      full_name: userData.name,
-      industry: selected
-    });
-    setIsSaving(false);
+    setError(null);
+    
+    try {
+      const result = await updateProfileData({
+        ...userData,
+        full_name: userData.name,
+        industry: selected
+      });
+      
+      if (!result.success) {
+        setError(result.error || "Failed to initialize workspace. Please try again.");
+      }
+    } catch (err) {
+      console.error("Onboarding crash:", err);
+      setError("An unexpected error occurred. Please check your connection.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -79,6 +92,13 @@ export default function OnboardingModal() {
             );
           })}
         </div>
+
+        {error && (
+          <div className="onboarding-error slide-up">
+            <ShieldCheck size={16} className="error-icon" />
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className="onboarding-footer">
           <button 
