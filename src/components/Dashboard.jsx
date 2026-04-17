@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { modulesData } from '../data/modules';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, BookOpen } from 'lucide-react';
 import RoadMap from './RoadMap';
 import { useDesign } from '../context/DesignContext';
+
+// Build a title lookup map for prerequisites display
+const moduleTitleMap = modulesData.reduce((acc, m) => {
+  acc[m.id] = m.title;
+  return acc;
+}, {});
 
 export default function Dashboard() {
   const { activePhase, setActivePhase } = useDesign();
@@ -35,6 +41,7 @@ export default function Dashboard() {
         {filteredModules.length > 0 ? (
           filteredModules.map((mod, i) => {
             const Icon = mod.icon;
+            const prereqs = mod.prerequisites || [];
             return (
               <Link to={`/module/${mod.id}`} key={mod.id} className="module-card slide-up" style={{ animationDelay: `${i * 50}ms` }}>
                 <div className="card-top">
@@ -48,6 +55,17 @@ export default function Dashboard() {
                 <div className="card-content">
                   <h3>{mod.title}</h3>
                   <p>{mod.desc}</p>
+                  {prereqs.length > 0 && (
+                    <div className="module-prereq">
+                      <BookOpen size={10} className="prereq-label" />
+                      <span className="prereq-label">Requires:</span>
+                      {prereqs.map(pid => (
+                        <span key={pid} className="prereq-tag">
+                          {moduleTitleMap[pid] || pid}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Link>
             );

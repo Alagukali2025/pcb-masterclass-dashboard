@@ -728,6 +728,134 @@ a:hover {
   font-family: 'Inter', sans-serif;
 }
 
+/* ── Cross-Reference Card (Phase 2) ─────────────────────────────────────── */
+.cross-ref-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  background: linear-gradient(135deg, rgba(26, 107, 58, 0.08) 0%, rgba(26, 107, 58, 0.04) 100%);
+  border: 1px solid var(--accent-border);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-5);
+  margin-top: var(--space-4);
+  transition: all var(--transition-normal);
+}
+
+.cross-ref-card:hover {
+  background: linear-gradient(135deg, rgba(26, 107, 58, 0.13) 0%, rgba(26, 107, 58, 0.07) 100%);
+  border-color: var(--accent-hover);
+  box-shadow: 0 4px 24px rgba(26, 107, 58, 0.12);
+  transform: translateY(-1px);
+}
+
+.cross-ref-icon-wrap {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(26, 107, 58, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-border);
+}
+
+.cross-ref-icon {
+  color: var(--accent-hover);
+}
+
+.cross-ref-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cross-ref-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-hover);
+  background: rgba(26, 107, 58, 0.12);
+  border: 1px solid rgba(26, 107, 58, 0.25);
+  border-radius: 4px;
+  padding: 2px 8px;
+  width: fit-content;
+}
+
+.cross-ref-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.cross-ref-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-hover);
+  background: rgba(26, 107, 58, 0.1);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  text-decoration: none;
+  width: fit-content;
+  transition: all var(--transition-fast);
+  margin-top: var(--space-1);
+}
+
+.cross-ref-btn:hover {
+  background: rgba(26, 107, 58, 0.2);
+  border-color: var(--accent-hover);
+  color: var(--accent-hover);
+  transform: translateX(2px);
+}
+
+/* Light theme cross-ref */
+:root.light-theme .cross-ref-card {
+  background: linear-gradient(135deg, rgba(26, 107, 58, 0.06) 0%, rgba(26, 107, 58, 0.02) 100%);
+}
+
+:root.light-theme .cross-ref-badge {
+  background: rgba(26, 107, 58, 0.08);
+}
+
+/* ── Module Prerequisite Badge (Phase 3) ─────────────────────────────────── */
+.module-prereq {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.prereq-label {
+  color: var(--text-tertiary);
+}
+
+.prereq-tag {
+  background: rgba(200, 117, 51, 0.12);
+  border: 1px solid rgba(200, 117, 51, 0.25);
+  color: var(--accent-secondary);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
 .user-avatar {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%);
   color: white;

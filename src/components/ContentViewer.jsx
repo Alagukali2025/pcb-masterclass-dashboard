@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { modulesData } from '../data/modules';
-import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, Info, List, Clock, Zap, Calculator, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ToolLock from './ToolLock';
 import IPCCalculator from './IPCCalculator';
@@ -334,6 +334,26 @@ export default function ContentViewer() {
                   {sec.type && COMPONENTS[sec.type] && (
                     isLoggedIn ? COMPONENTS[sec.type](id) : <ToolLock toolName={sec.heading} />
                   )}
+
+                  {/* Cross-Reference Card — replaces duplicate tool with a navigation link */}
+                  {sec.type === 'cross-ref' && (() => {
+                    const refMod = modulesData.find(m => m.id === sec.refModuleId);
+                    const RefIcon = refMod?.icon;
+                    return (
+                      <div className="cross-ref-card slide-up">
+                        <div className="cross-ref-icon-wrap">
+                          {RefIcon && <RefIcon size={20} className="cross-ref-icon" />}
+                        </div>
+                        <div className="cross-ref-body">
+                          <span className="cross-ref-badge">Related Module</span>
+                          <p className="cross-ref-desc">{sec.refDesc}</p>
+                          <Link to={`/module/${sec.refModuleId}`} className="cross-ref-btn">
+                            {sec.refLabel} <ArrowRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {sec.ruleCards && (
                     <div className="rule-cards-grid slide-up">

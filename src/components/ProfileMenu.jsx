@@ -97,7 +97,6 @@ export default function ProfileMenu({ userData, logout, theme, toggleTheme, onCl
         <div className="menu-user-info">
           <div className="menu-user-row">
             <span className="menu-user-name">{userData.name}</span>
-            <span className="engineer-rank-tag">SI/PI Expert</span>
           </div>
           <span className="menu-user-email">{userData.email}</span>
         </div>

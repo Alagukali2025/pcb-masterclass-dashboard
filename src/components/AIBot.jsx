@@ -191,7 +191,7 @@ export default function AIBot() {
               <div>
                 <p className="aibot-title">PCB AI Assistant</p>
                 <p className="aibot-subtitle">
-                  <span className="aibot-dot" />Online · SI/PI Expert
+                  <span className="aibot-dot" />Online
                 </p>
               </div>
             </div>

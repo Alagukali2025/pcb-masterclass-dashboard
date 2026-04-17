@@ -1,11 +1,14 @@
 import { Cpu, Layers, Merge, Zap, MemoryStick, ShieldAlert, Factory, Activity, Terminal, ShieldCheck, FileSpreadsheet, Thermometer } from 'lucide-react';
 
+// ── Module order defines sidebar + dashboard order ──────────────────────────
+
 export const modulesData = [
   { 
     id: "footprint",  
     icon: Cpu,      
     title: "Footprint Creation",        
     desc: "Master IPC-7351 standards and land patterns.",
+    prerequisites: [],
     content: {
       intro: "A standards-driven, evidence-based professional guide for PCB library engineers. All values and methodologies sourced strictly from component datasheets and IPC-7351 standards.",
       sections: [
@@ -357,6 +360,7 @@ export const modulesData = [
     icon: Layers,     
     title: "Stackup Design",            
     desc: "Understand materials, prepreg, and cores.",
+    prerequisites: ['footprint'],
     content: {
       intro: "A PCB stackup is the foundation of high-speed digital design, acting as the 'floors' in a high-performance building. Following the Single Source of Truth (SSOT) methodology ensures parity between simulation, layout, and fabrication, preventing costly impedance mismatches and fabrication failures through centralized material definitions.",
       sections: [
@@ -513,18 +517,29 @@ export const modulesData = [
           ]
         },
         {
-          heading: "Copper Balancing & Thieving (DFM)",
+          heading: "Copper Balancing for Lamination Quality",
           content: "Resin starvation occurs during the lamination press cycle if one side of the board has significantly higher copper density than the other, leading to board warpage (bow and twist).",
           list: [
             { label: "The Resin Starvation Risk", text: "Prepreg resin flows toward empty copper areas. If one layer is 'starved,' the board becomes unstable." },
             { label: "Copper Thieving", text: "Adding 'dead' copper pads or pours in open board areas to equalize the copper density and resin flow." },
-            { label: "Lamination Balance", text: "Maintain a symmetric copper density (±10%) about the board's vertical center plane." }
+            { label: "Lamination Balance", text: "Maintain a symmetric copper density (\u00b110%) about the board's vertical center plane." }
+          ],
+          alerts: [
+            { type: 'info', text: "Copper density balance (target \u00b110%) is one of the rules validated in the DFM Rule Checker. Run the full DFM verification in the DFM/DFT Mastery module after stackup is finalized." }
           ]
         },
         {
-          heading: "Real-Time DFM Rule Checker",
-          content: "Enter your board parameters to validate against IPC-2221B manufacturing limits. Three live rule engines check Aspect Ratio, Copper Weight vs. Trace Width, and Copper Density Balance simultaneously.",
-          type: 'dfm-checker'
+          heading: "DFM Validation — Key Stackup Rules",
+          content: "Before finalizing your stackup, verify these three critical IPC-2221B manufacturing limits that are directly driven by stackup geometry decisions:",
+          list: [
+            { label: "Aspect Ratio (IPC-2221B)", text: "Board Thickness \u00f7 Smallest Drill Diameter must be \u2264 10:1 for standard fab, \u2264 12:1 maximum. A 1.6mm board with a 0.2mm drill = 8:1 \u2014 acceptable. With 0.1mm drill = 16:1 \u2014 will cause plating failures." },
+            { label: "Copper-to-Drill Clearance", text: "Minimum 0.125mm (5 mil) from drill edge to nearest copper on adjacent layers. Verify after all via assignments are defined in the stackup." },
+            { label: "Copper Density Balance", text: "Copper coverage on symmetric layer pairs (L1/L8, L2/L7, etc.) should be within \u00b110%. Use the Copper Thieving pattern from the section above to equalize." }
+          ],
+          type: 'cross-ref',
+          refModuleId: 'dfm_dft',
+          refLabel: 'Run Full Interactive DFM Rule Checker \u2192 DFM / DFT Mastery',
+          refDesc: 'The interactive DFM Rule Checker validates all three rules above in real time against IPC-2221B and IPC-6012 limits. It is the canonical DFM verification tool, located in the DFM / DFT Mastery module.'
         },
         {
           heading: "Via Technologies: Aspect Ratio & DFM",
@@ -689,6 +704,7 @@ export const modulesData = [
     icon: Merge,      
     title: "Differential Pair Routing", 
     desc: "Signal integrity engineering for high-speed interfaces.",
+    prerequisites: ['stackup'],
     content: {
       intro: "As clock rates moved into the multi-gigahertz regime, single-ended signaling hit fundamental physical limits: susceptibility to ground-referenced noise, radiated emissions, and impedance discontinuities. Differential signaling overcomes these constraints by encoding data as the voltage difference between two complementary conductors — making it the backbone of USB, PCIe, HDMI, DisplayPort, LVDS, and every modern high-speed interface standard.",
       sections: [
@@ -872,7 +888,6 @@ export const modulesData = [
         {
           heading: "Advanced High-Speed Topics",
           content: "At data rates above 5 Gbps, second-order effects become first-order problems. These topics require attention for PCIe Gen 3+ and any SerDes channel above 10 Gbps.",
-          type: "fiber-weave",
           twoColumnGrid: [
             {
               badge: "Via Stubs & Backdrilling",
@@ -979,6 +994,7 @@ export const modulesData = [
     icon: Zap,            
     title: "High-Speed Routing",        
     desc: "Complete technical guide to SI, impedance, and routing.",
+    prerequisites: ['stackup', 'diff_pair'],
     content: {
       intro: "A signal is considered high-speed not because of its clock frequency, but because its electrical wavelength — or its rise/fall time — is short enough relative to the trace length that the trace must be treated as a transmission line. This guide provides a standards-driven single-source-of-truth for high-speed digital design.",
       sections: [
@@ -1115,14 +1131,18 @@ export const modulesData = [
         },
         {
           heading: "The Fiber Weave Effect",
-          content: "PCB cores are made of woven glass bundles. Because glass (Dk ≈ 6.0) and resin (Dk ≈ 3.0) have different dielectric constants, a signal's speed depends on where it sits relative to the weave, causing intra-pair skew.",
+          content: "PCB cores are made of woven glass bundles. Because glass (Dk \u2248 6.0) and resin (Dk \u2248 3.0) have different dielectric constants, a signal's speed depends on where it sits relative to the weave, causing intra-pair skew.",
           mistakeList: [
-            { mistake: "Routing parallel to the orthogonal weave pattern.", fix: "Route at a 10° angle relative to the panel edge." },
+            { mistake: "Routing parallel to the orthogonal weave pattern.", fix: "Route at a 10\u00b0 angle relative to the panel edge." },
             { mistake: "Assuming uniform dielectric constant (Dk).", fix: "Use spread-glass (e.g., 1080/1067) rather than open-weave (7628)." }
           ],
           alerts: [
             { type: 'info', text: "For differential pairs >10 Gbps, zig-zag routing or rotating the entire design by 10 degrees is mandatory to ensure both D+ and D- see the same 'average' Dk." }
-          ]
+          ],
+          type: 'cross-ref',
+          refModuleId: 'stackup',
+          refLabel: 'Open Interactive Fiber Weave Analyzer \u2192 Stackup Design',
+          refDesc: 'The full interactive Fiber Weave Skew tool with glass weave pattern simulation and Dk variation calculator is canonically located in the Stackup Design module under \u201cHigh-Speed Signal Integrity: Fiber Weave Skew\u201d.'
         },
         {
           heading: "Return Paths & Ground Planes",
@@ -1197,33 +1217,11 @@ export const modulesData = [
         },
         {
           heading: "Differential Pair Routing",
-          content: "Differential signaling provides inherent immunity to common-mode noise. Used in PCIe, USB, HDMI, and LVDS.",
-          list: [
-            { label: "Coupling", text: "Route as a coupled pair with constant separation throughout." },
-            { label: "Symmetry", text: "Maintain identical geometry, same layer, and same dielectric." },
-            { label: "Intra-pair Skew", text: "Match D+ and D- length within ±5 mil for high data rates." }
-          ],
-          formula: {
-            title: "Differential Impedance Zdiff",
-            equations: [
-              "Zdiff = 2 × Z₀ × (1 − 0.347 × e^(−2.9 × S/H))"
-            ],
-            variables: [
-              { name: "Zdiff", desc: "Differential impedance", tag: "OUTPUT" },
-              { name: "S", desc: "Intra-pair spacing", tag: "INPUT" },
-              { name: "H", desc: "Dielectric height", tag: "INPUT" }
-            ]
-          },
-          filletGrid: [
-            {
-              title: "Tight vs Loose Coupling",
-              color: "cyan",
-              list: [
-                { label: "Tight", text: "Better noise rejection but extremely sensitive to width tolerances." },
-                { label: "Loose", text: "Provides higher impedance stability across layers and lower crosstalk." }
-              ]
-            }
-          ]
+          content: "Differential signaling provides inherent immunity to common-mode noise and is the backbone of PCIe, USB, HDMI, and LVDS. Key rules: route as a coupled pair at constant spacing throughout, and match D+ and D\u2212 length within \u00b15 mil for USB 3.x / PCIe Gen 4. The complete engineering reference \u2014 8 Golden Rules, interactive Zdiff Calculator, serpentine constraints, fiber weave mitigation, and full interface reference table \u2014 is in the dedicated module.",
+          type: 'cross-ref',
+          refModuleId: 'diff_pair',
+          refLabel: 'Open Differential Pair Routing Module \u2192',
+          refDesc: 'The Differential Pair Routing module covers all 8 Non-Negotiable Routing Rules, the interactive Zdiff Calculator, length matching constraints, fiber weave mitigation, via placement symmetry, and a complete interface impedance reference table for USB, PCIe, HDMI, LVDS, and more.'
         },
         {
           heading: "Crosstalk Mitigation",
@@ -1362,6 +1360,7 @@ export const modulesData = [
     icon: MemoryStick,          
     title: "DDR Routing",               
     desc: "JEDEC-compliant Fly-by topology and byte lane engineering.",
+    prerequisites: ['stackup', 'high_speed'],
     content: {
       intro: "DDR (Double Data Rate) SDRAM is the performance bottleneck of modern computing. Routing it requires more than just connecting dots — it requires managing nanosecond timing windows, controlled-impedance transmission lines, and complex power delivery networks. This guide serves as the Single Source of Truth for DDR3, DDR4, and DDR5 layout engineering.",
       sections: [
@@ -1625,6 +1624,7 @@ export const modulesData = [
     icon: ShieldAlert,      
     title: "EMI / EMC Compliance", 
     desc: "Master regulatory standards and suppression techniques.",
+    prerequisites: ['high_speed'],
     content: {
       intro: "A professional-grade engineering guide to electromagnetic compatibility. Success in the EMC lab begins with physics-driven PCB layout, focusing on loop area containment, spectrum management, and strategic grounding based on IPC-2141A, CISPR 32, and FCC Part 15 standards.",
       sections: [
@@ -1644,15 +1644,7 @@ export const modulesData = [
           ]
         },
         {
-          heading: "2. Annular Ring & Drill Alignment",
-          content: "Annular ring is the width of the copper remaining after drilling. If the drill is slightly misaligned (Breakout), the circuit is ruined. Class 3 requires more generous rings than Class 2."
-        },
-        {
-          heading: "3. Trace Width & Copper Weight",
-          content: "Sourcing copper weight (e.g., 1oz vs 2oz) affects the minimum possible trace width and spacing due to the 'etch factor' — as copper gets thicker, it's harder to etch fine details."
-        },
-        {
-          heading: "4. Antenna Theory for Traces (The λ/20 Rule)",
+          heading: "2. Antenna Theory for Traces (The λ/20 Rule)",
           content: "Every trace is a potential antenna. A trace becomes an efficient radiator when its length exceeds 1/20th of the wavelength (λ) of the signal harmonics. The edge rate (Rise Time) is more dangerous than the fundamental frequency.",
           formula: {
             title: "Maximum Harmonic Frequencies",
@@ -1668,7 +1660,7 @@ export const modulesData = [
           }
         },
         {
-          heading: "5. Power Supplies: The Hot Loop Physics",
+          heading: "3. Power Supplies: The Hot Loop Physics",
           content: "Switching Power Supplies (SMPS) are the primary source of conducted and radiated noise. The 'Hot Loop' (high di/dt path) must be minimized to contain the magnetic field.",
           cards: [
             {
@@ -1682,14 +1674,14 @@ export const modulesData = [
           ]
         },
         {
-          heading: "6. The Ghost of Return Current: Image Planes",
+          heading: "4. The Ghost of Return Current: Image Planes",
           content: "In high-speed design, current follows the path of least **inductance**, not resistance. Above 100 kHz, the return current crowds directly beneath the signal trace to minimize loop area. Any split in this image plane creates a massive antenna.",
           alerts: [
             { type: 'danger', text: "Never route signal traces over slots or splits in ground planes. The return current detour creates a 'Slot Antenna' that can fail FCC/CISPR limits by 20dB or more." }
           ]
         },
         {
-          heading: "7. The Pigtail Trap: Shield Integrity",
+          heading: "5. The Pigtail Trap: Shield Integrity",
           content: "A cable shield is only as good as its termination. Connecting a shield via a wire 'pigtail' introduces enough inductance to ruin shielding above 100 MHz.",
           cards: [
             {
@@ -1703,7 +1695,7 @@ export const modulesData = [
           ]
         },
         {
-          heading: "8. Regulatory Tiers: FCC / CISPR / IEC Standards",
+          heading: "6. Regulatory Tiers: FCC / CISPR / IEC Standards",
           content: "Professional engineers design for global compliance simultaneously. CISPR 32 is the industry baseline for multimedia equipment.",
           table: {
             headers: ["Test Type", "Standard", "Typical Requirement", "Pass Criteria"],
@@ -1762,6 +1754,7 @@ export const modulesData = [
     icon: Factory,        
     title: "DFM / DFT Mastery",                 
     desc: "Achieve industrial-grade yields and 100% test coverage.",
+    prerequisites: ['stackup'],
     content: {
       intro: "Design for Manufacturing (DFM) and Design for Testing (DFT) are the twin pillars of professional PCB engineering. DFM ensures your board can be built reliably and repeatably at target cost, while DFT ensures every critical net is verifiable. Grounded in IPC-A-610, IPC-2221B, and J-STD-020, this module serves as the authoritative Single Source of Truth (SSOT) for industrial-grade production.",
       sections: [
@@ -1934,6 +1927,7 @@ export const modulesData = [
     icon: Activity,     
     title: "Advanced Signal & Power Integrity (SI/PI)",         
     desc: "Industrial-grade engineering for high-speed channel compliance and PDN stability.",
+    prerequisites: ['high_speed', 'ddr', 'diff_pair'],
     content: {
       intro: "When a DDR5 memory interface fails at validation, the root cause is almost never the chip — it is the PCB. Signal Integrity (SI) and Power Integrity (PI) are the two disciplines that determine whether electrons arrive at the right place, at the right time, with the right voltage. This module is the authoritative SI/PI engineering reference, anchored in IPC-2141A, JEDEC JESD79-5B, PCI-SIG CEM Spec, and IEEE 802.3. Master these principles to design boards that pass compliance testing on the first spin.",
       sections: [
@@ -2401,6 +2395,7 @@ export const modulesData = [
     icon: Factory,
     title: "Manufacturing Release System",
     desc: "The definitive engineering guide for Fabrication, Assembly, and Test release packages.",
+    prerequisites: ['dfm_dft'],
     content: {
       intro: "A professional PCB design is only as good as its release package. This system provides a Single Source of Truth for manufacturing outputs, bridging the gap between CAD design intent and physical production reality. From legacy Gerber RS-274X to modern IPC-2581 digital twins, this module ensures zero-defect handoffs to fab and assembly houses.",
       sections: [
@@ -2588,6 +2583,7 @@ export const modulesData = [
     icon: Thermometer,
     title: "Thermal Management",
     desc: "Calculate trace current capacity and design internal thermal paths.",
+    prerequisites: [],
     content: {
       intro: "Thermal management is the most overlooked phase of high-power PCB design. Modern high-density boards must be sized not just for resistance, but for steady-state temperature rise (ΔT) limits to ensure dielectric reliability and prevent catastrophic delamination. This module provides a standards-driven single source of truth for thermal engineering, anchored in IPC-2152 and industrial heat transfer physics.",
       sections: [
