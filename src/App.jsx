@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -106,6 +107,7 @@ function App() {
         {/* Global AI Bot — floats on every page */}
         <AIBot />
       </div>
+      <Analytics />
     </DesignProvider>
 
   );
