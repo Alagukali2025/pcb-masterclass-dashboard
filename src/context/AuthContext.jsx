@@ -275,8 +275,7 @@ export const AuthProvider = ({ children }) => {
         .update({
           full_name: newData.full_name,
           phone: newData.phone,
-          industry: newData.industry,
-          updated_at: new Date()
+          industry: newData.industry
         })
         .eq('id', userData.id)
         .select()
