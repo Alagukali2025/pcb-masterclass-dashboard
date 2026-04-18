@@ -2,7 +2,7 @@ export const content = {
   intro: "Design for Manufacturing (DFM) and Design for Testing (DFT) are the twin pillars of professional PCB engineering. DFM ensures your board can be built reliably and repeatably at target cost, while DFT ensures every critical net is verifiable. Grounded in IPC-A-610, IPC-2221B, and J-STD-020, this module serves as the authoritative Single Source of Truth (SSOT) for industrial-grade production.",
   sections: [
     {
-      heading: "1. The Business Case: Yield and Rework",
+      heading: "The Business Case: Yield and Rework",
       content: "In volume production, every 1% drop in yield significantly increases total product cost. First Pass Yield (FPY) is the primary metric of design quality.",
       table: {
         headers: ["Metric", "Standard Layout", "Professional Engineering (SSOT)"],
@@ -17,7 +17,7 @@ export const content = {
       ]
     },
     {
-      heading: "2. Fabrication Physics: Beyond the Basics",
+      heading: "Fabrication Physics: Beyond the Basics",
       content: "PCB fabrication is a subtractive chemical process. Layout geometry determines etching consistency and plating integrity.",
       mistakeList: [
         { mistake: "Acid Traps (Acute Angles)", fix: "Use 45° or rounded corners. Acute angles (<90°) trap etchant, leading to over-etching and open circuits." },
@@ -34,7 +34,7 @@ export const content = {
       }
     },
     {
-      heading: "3. Assembly & Thermal Profiles (J-STD-020)",
+      heading: "Assembly & Thermal Profiles (J-STD-020)",
       content: "Your design must survive the heat. Assembly processes like Reflow and Wave Soldering subject the board to temperatures between 235°C and 260°C.",
       table: {
         headers: ["Process Stage", "Temperature Range", "Duration (Time Above Liquidus)"],
@@ -60,12 +60,12 @@ export const content = {
       ]
     },
     {
-      heading: "4. Thermal Relief Engineering",
+      heading: "Thermal Relief Engineering",
       content: "Direct copper plane connections act as heatsinks during soldering, causing 'cold solder joints' or tombstoning. Thermal relief isolates the pad while providing a path for current.",
       type: "thermal-tool"
     },
     {
-      heading: "5. DFT Architecture: ICT vs. JTAG",
+      heading: "DFT Architecture: ICT vs. JTAG",
       content: "DFT ensures the board is testable after assembly. A combination of In-Circuit Testing (ICT) and Boundary Scan (JTAG) provides 100% fault coverage.",
       filletGrid: [
         {
@@ -89,11 +89,11 @@ export const content = {
       ]
     },
     {
-      heading: "6. Zero-Orientation & Centroid Data",
+      heading: "Zero-Orientation & Centroid Data",
       content: "Standardizing the zero-degree orientation (Pin 1) is mandatory for automated assembly. Follow the EIA-481 tape-and-reel standard to prevent components from being placed backward."
     },
     {
-      heading: "7. Panelization & Fiducial Strategy",
+      heading: "Panelization & Fiducial Strategy",
       content: "Individual boards are arrayed in panels for assembly. Depaneling introduces mechanical stress that must be mitigated.",
       table: {
         headers: ["Method", "Component Clearance", "Depanel Stress", "Board Shape"],
@@ -108,7 +108,7 @@ export const content = {
       ]
     },
     {
-      heading: "8. Surface Finish Decision Matrix",
+      heading: "Surface Finish Decision Matrix",
       content: "Surface finish selection determines shelf life, solderability, and flatness. Modern lead-free processes demand finishes that survive multiple reflow cycles without excessive oxidation.",
       table: {
         headers: ["Finish", "Shelf Life", "Flatness", "Cost", "Best For..."],
@@ -126,7 +126,7 @@ export const content = {
       ]
     },
     {
-      heading: "9. Interactive: Real-Time DFM Rule Checker",
+      heading: "Interactive: Real-Time DFM Rule Checker",
       content: "Validate your design parameters against the IPC-2221B and IPC-6012 industrial limits. This engine provides instant feedback on aspect ratio, annular rings, and solder mask dams.",
       type: 'dfm-checker'
     }

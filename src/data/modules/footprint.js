@@ -38,7 +38,7 @@ export const content = {
       }
     },
     {
-      heading: "3. Interactive Land Pattern Solver",
+      heading: "Interactive Land Pattern Solver",
       content: "Calculate the precise land pattern dimensions for the Top, Side, and Heel fillets based on the IPC-7351C mathematical model. Select your target Density Level to see how pad size affects yield.",
       type: 'calculator'
     },
@@ -255,7 +255,7 @@ export const content = {
       ]
     },
     {
-      heading: "4. The Courtyard & Keepout (Symmetry)",
+      heading: "The Courtyard & Keepout (Symmetry)",
       content: "A professional footprint requires a defined Courtyard — the area encompassing the component body and pads, plus a safety buffer for assembly pick-and-place tolerances."
     },
     {

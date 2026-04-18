@@ -2,7 +2,7 @@ export const content = {
   intro: "A professional-grade engineering guide to electromagnetic compatibility. Success in the EMC lab begins with physics-driven PCB layout, focusing on loop area containment, spectrum management, and strategic grounding based on IPC-2141A, CISPR 32, and FCC Part 15 standards.",
   sections: [
     {
-      heading: "1. The Regulatory Landscape: Class A vs. Class B",
+      heading: "The Regulatory Landscape: Class A vs. Class B",
       content: "Regulatory bodies like the FCC (USA) and CISPR (International) define strict limits based on the product's environment. Failing these tests bars your product from the market.",
       table: {
         headers: ["Standard", "Class", "Environment", "Emission Limit (Radiated)"],
@@ -17,7 +17,7 @@ export const content = {
       ]
     },
     {
-      heading: "2. Antenna Theory for Traces (The λ/20 Rule)",
+      heading: "Antenna Theory for Traces (The λ/20 Rule)",
       content: "Every trace is a potential antenna. A trace becomes an efficient radiator when its length exceeds 1/20th of the wavelength (λ) of the signal harmonics. The edge rate (Rise Time) is more dangerous than the fundamental frequency.",
       formula: {
         title: "Maximum Harmonic Frequencies",
@@ -33,7 +33,7 @@ export const content = {
       }
     },
     {
-      heading: "3. Power Supplies: The Hot Loop Physics",
+      heading: "Power Supplies: The Hot Loop Physics",
       content: "Switching Power Supplies (SMPS) are the primary source of conducted and radiated noise. The 'Hot Loop' (high di/dt path) must be minimized to contain the magnetic field.",
       cards: [
         {
@@ -47,14 +47,14 @@ export const content = {
       ]
     },
     {
-      heading: "4. The Ghost of Return Current: Image Planes",
+      heading: "The Ghost of Return Current: Image Planes",
       content: "In high-speed design, current follows the path of least **inductance**, not resistance. Above 100 kHz, the return current crowds directly beneath the signal trace to minimize loop area. Any split in this image plane creates a massive antenna.",
       alerts: [
         { type: 'danger', text: "Never route signal traces over slots or splits in ground planes. The return current detour creates a 'Slot Antenna' that can fail FCC/CISPR limits by 20dB or more." }
       ]
     },
     {
-      heading: "5. The Pigtail Trap: Shield Integrity",
+      heading: "The Pigtail Trap: Shield Integrity",
       content: "A cable shield is only as good as its termination. Connecting a shield via a wire 'pigtail' introduces enough inductance to ruin shielding above 100 MHz.",
       cards: [
         {
@@ -68,7 +68,7 @@ export const content = {
       ]
     },
     {
-      heading: "6. Regulatory Tiers: FCC / CISPR / IEC Standards",
+      heading: "Regulatory Tiers: FCC / CISPR / IEC Standards",
       content: "Professional engineers design for global compliance simultaneously. CISPR 32 is the industry baseline for multimedia equipment.",
       table: {
         headers: ["Test Type", "Standard", "Typical Requirement", "Pass Criteria"],

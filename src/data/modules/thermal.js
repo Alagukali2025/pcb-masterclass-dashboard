@@ -2,7 +2,7 @@ export const content = {
   intro: "Thermal management is the most overlooked phase of high-power PCB design. Modern high-density boards must be sized not just for resistance, but for steady-state temperature rise (ΔT) limits to ensure dielectric reliability and prevent catastrophic delamination. This module provides a standards-driven single source of truth for thermal engineering, anchored in IPC-2152 and industrial heat transfer physics.",
   sections: [
     {
-      heading: "1. Three Pillars of Heat Transfer",
+      heading: "Three Pillars of Heat Transfer",
       content: "In a PCB environment, heat moves through three fundamental physical mechanisms. Understanding these is mandatory for both beginners and experts to design efficient cooling paths.",
       filletGrid: [
         {
@@ -35,7 +35,7 @@ export const content = {
       ]
     },
     {
-      heading: "2. The Thermal Resistance Path (Rθ)",
+      heading: "The Thermal Resistance Path (Rθ)",
       content: "Electrical engineers can think of heat flow like a series of resistors. Total thermal resistance (Rθja) determines the final junction temperature of your components.",
       type: "thermal-resistance-visual",
       formula: {
@@ -56,12 +56,12 @@ export const content = {
       ]
     },
     {
-      heading: "3. IPC-2152 Current Capacity Solver",
+      heading: "IPC-2152 Current Capacity Solver",
       content: "IPC-2152 is the modern, standards-driven methodology for sizing traces. Unlike the legacy IPC-2221, it accounts for material thermal conductivity and nearby copper planes.",
       type: "calculator"
     },
     {
-      heading: "4. Internal vs. External Traces",
+      heading: "Internal vs. External Traces",
       content: "The environment of a trace dictates its current-carrying limits. Stripline traces (internal) are 'blanketed' by FR4, which traps heat.",
       table: {
         headers: ["Trace Type", "Thermal Density", "Cooling Efficiency", "Engineering Action"],
@@ -75,7 +75,7 @@ export const content = {
       ]
     },
     {
-      heading: "5. Via Gardening & Thermal Stitching",
+      heading: "Via Gardening & Thermal Stitching",
       content: "Vias are the 'heat pipes' of a PCB. Strategically placed arrays (gardening) can bridge heat from top-layer components to internal or bottom-layer ground planes.",
       type: "thermal-tool",
       list: [
@@ -85,7 +85,7 @@ export const content = {
       ]
     },
     {
-      heading: "6. Copper Weight & Thermal Spreading",
+      heading: "Copper Weight & Thermal Spreading",
       content: "Increasing copper weight (oz) increases the cross-sectional area for current and the surface area for thermal spreading.",
       table: {
         headers: ["Copper Weight", "Thickness (mil)", "Thermal Spreading", "Typical Usage"],
@@ -98,7 +98,7 @@ export const content = {
       }
     },
     {
-      heading: "7. Heatsink & TIM Strategy",
+      heading: "Heatsink & TIM Strategy",
       content: "When copper plane dissipation is insufficient, external heatsinks are required. The interface between the component and the heatsink is the bottleneck.",
       cards: [
         {
@@ -112,7 +112,7 @@ export const content = {
       ]
     },
     {
-      heading: "8. Expert DFM: The Soldering Paradox",
+      heading: "Expert DFM: The Soldering Paradox",
       content: "High thermal conductivity is great for cooling, but terrible for manufacturing. Solid plane connections cause 'cold solder joints' during assembly.",
       mistakeList: [
         { mistake: "Solid connections to large planes on SMT pads.", fix: "Use 4-spoke thermal relief for all components < 1206 size." },

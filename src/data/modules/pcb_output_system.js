@@ -2,7 +2,7 @@ export const content = {
   intro: "A professional PCB design is only as good as its release package. This system provides a Single Source of Truth for manufacturing outputs, bridging the gap between CAD design intent and physical production reality. From legacy Gerber RS-274X to modern IPC-2581 digital twins, this module ensures zero-defect handoffs to fab and assembly houses.",
   sections: [
     {
-      heading: "1. Fabrication Output Files (The Photoplot)",
+      heading: "Fabrication Output Files (The Photoplot)",
       content: "Fabrication files define the copper, mask, and drill coordinates. While Gerbers are the standard, the version and metadata you choose can determine the speed and accuracy of your CAM setup.",
       table: {
         headers: ["Layer Type", "Standard Ext.", "Critical Expert Note", "Risk Level"],
@@ -19,7 +19,7 @@ export const content = {
       ]
     },
     {
-      heading: "2. NC Drill Precision (CNC Instructions)",
+      heading: "NC Drill Precision (CNC Instructions)",
       content: "The Excellon drill file is a set of CNC coordinates. A single mismatch in units or zero suppression can ruin an entire production batch.",
       cards: [
         {
@@ -34,7 +34,7 @@ export const content = {
       codeBlock: "M48\nMETRIC,TZ\nT01C0.300\nT02C1.000\n%\nG05\nT01\nX025400Y018300\nX026500Y019200\nMODIFIED EXCELLON HEADER EXAMPLE"
     },
     {
-      heading: "3. Assembly & Placement Engineering",
+      heading: "Assembly & Placement Engineering",
       content: "Beyond the BOM, the Pick-and-Place (Centroid) and Solder Paste (Stencil) files determine the quality of your SMT process.",
       list: [
         "<strong>PnP Rotation:</strong> Ensure 0° orientation matches the tape-and-reel standard (EIA-481). Centroids must be center-of-gravity, not Pin 1.",
@@ -43,7 +43,7 @@ export const content = {
       ]
     },
     {
-      heading: "4. Advanced Formats: ODB++ & IPC-2581",
+      heading: "Advanced Formats: ODB++ & IPC-2581",
       content: "Intelligent data formats eliminate the mess of dozens of loose files by packaging everything—stackup, netlist, and components—into a single database.",
       table: {
         headers: ["Format", "Owner", "Advantage", "Expert Verdict"],
@@ -83,7 +83,7 @@ export const content = {
       ]
     },
     {
-      heading: "5. CAD-Specific Export Workflows",
+      heading: "CAD-Specific Export Workflows",
       content: "Follow these tool-specific steps to ensure a compliant release package.",
       twoColumnGrid: [
         {
@@ -111,7 +111,7 @@ export const content = {
       ]
     },
     {
-      heading: "6. Common Manufacturing Risks",
+      heading: "Common Manufacturing Risks",
       content: "Seasoned engineers design to avoid these common 'gotchas' that cause yield drops.",
       mistakeList: [
         { mistake: "Acid Traps (Acute Angles)", fix: "Ensure all trace-to-trace entry angles are 90° or greater. Acute angles trap etchant and cause over-etching." },
@@ -121,7 +121,7 @@ export const content = {
       ]
     },
     {
-      heading: "7. Standard Release Package (Directory Structure)",
+      heading: "Standard Release Package (Directory Structure)",
       content: "A professional release should be structured to allow automated CAM scripts to parse the data without manual intervention.",
       codeBlock: "PROJECT_REL_v1.0/\n├── Fabrication/          ; Gerbers, Drill, Fab Drawing\n├── Assembly/             ; PnP, BOM, Asm Drawing, Stencil\n├── Test/                 ; IPC-D-356, TP Report, BSDL\n└── Documentation/        ; Schematics, Stackup, DRC Reports",
       list: [
@@ -130,7 +130,7 @@ export const content = {
       ]
     },
     {
-      heading: "8. Technical Appendix: Test & PnP Metadata",
+      heading: "Technical Appendix: Test & PnP Metadata",
       content: "For engineers integrating with automated factories (Lights-out manufacturing).",
       table: {
         headers: ["Metadata Type", "Format/Record", "Precision Requirement"],

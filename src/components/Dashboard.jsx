@@ -61,15 +61,14 @@ export default function Dashboard() {
                 style={shouldAnimate ? { animationDelay: `${i * 50}ms` } : {}}
               >
                 <div className="card-top">
-                  <div className="icon-wrapper">
-                    <Icon size={24} />
-                  </div>
-                  <div className="arrow-wrapper">
-                    <ChevronRight size={20} />
+                  <div className="card-title-group">
+                    <div className="icon-wrapper">
+                      <Icon size={20} />
+                    </div>
+                    <h3>{mod.title}</h3>
                   </div>
                 </div>
                 <div className="card-content">
-                  <h3>{mod.title}</h3>
                   <p>{mod.desc}</p>
                   {prereqs.length > 0 && (
                     <div className="module-prereq">
