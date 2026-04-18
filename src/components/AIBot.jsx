@@ -127,14 +127,6 @@ const PCB_KB = [
   }
 ];
 
-const PROACTIVE_MESSAGES = {
-  'Library': "Entering **Footprint Creation**? 🏢 Don't forget to check the IPC-7351B land pattern calculator for your footprints.",
-  'Stackup': "Designing your **Stackup**? 🥞 Keep your material Dk and thickness symmetric about the center to avoid board warpage.",
-  'Routing': "Active in **Routing**? 🏎\ufe0f For differential pairs, ensure your trace lengths match within 10 mil for high-speed signals.",
-  'DFM': "Running **DFM Rules**? 🛠\ufe0f Ensure your drill-to-copper clearance is at least 0.125mm (5 mil) to satisfy most fab houses.",
-  'Output': "Finalizing **Output Systems**? 📦 Consider using IPC-2581 to embed your stackup intelligence during handover."
-};
-
 // ── NLP Logic ────────────────────────────────────────────────────────────────
 
 function processQuery(query, context) {
@@ -233,21 +225,11 @@ export default function AIBot() {
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [hasNew, setHasNew] = useState(false);
-  const lastPhase = useRef(activePhase);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    if (activePhase !== lastPhase.current) {
-      const msgText = PROACTIVE_MESSAGES[activePhase];
-      if (msgText) {
-        setMessages(prev => [...prev, { id: Date.now(), from: 'bot', text: msgText }]);
-        setHasNew(true);
-        setIsOpen(true);
-      }
-      lastPhase.current = activePhase;
-    }
-  }, [activePhase]);
+
 
   useEffect(() => {
     if (isOpen) {
