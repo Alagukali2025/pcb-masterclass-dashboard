@@ -147,7 +147,7 @@ export const modulesData = [
     icon: ShieldAlert,      
     title: "EMI / EMC Compliance", 
     desc: "Master regulatory standards and suppression techniques.",
-    prerequisites: ['high_speed'],
+    prerequisites: ['stackup'],
     sections: [
       "1. The Regulatory Landscape: Class A vs. Class B",
       "2. Antenna Theory for Traces (The λ/20 Rule)",
@@ -165,7 +165,7 @@ export const modulesData = [
     icon: Factory,        
     title: "DFM / DFT Mastery",                 
     desc: "Achieve industrial-grade yields and 100% test coverage.",
-    prerequisites: ['stackup'],
+    prerequisites: ['high_speed'],
     sections: [
       "1. The Business Case: Yield and Rework",
       "2. Fabrication Physics: Beyond the Basics",
