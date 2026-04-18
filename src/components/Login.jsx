@@ -14,6 +14,7 @@ export default function Login() {
     name: '',
     email: '',
     phone: '',
+    password: '',
     industry: 'Aerospace'
   });
 
@@ -34,7 +35,35 @@ export default function Login() {
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    alert('Direct login (Email/Password) is currently disabled for maintenance. Please use "GOOGLE ACCOUNT" to sign in securely.');
+    setErrorMessage('');
+    setAuthStatus('checking');
+
+    try {
+      if (mode === 'login') {
+        const result = await login(email, password);
+        if (!result.success) {
+          setErrorMessage(result.error || 'Invalid credentials');
+          setAuthStatus('ready');
+        } else {
+          // Success: AuthContext listener handles the redirect
+          navigate('/');
+        }
+      } else {
+        const result = await register(regData);
+        if (!result.success) {
+          setErrorMessage(result.error || 'Registration failed');
+          setAuthStatus('ready');
+        } else {
+          // Success
+          alert('Registration successful! Please check your email for verification if required.');
+          setMode('login');
+          setAuthStatus('ready');
+        }
+      }
+    } catch (error) {
+      setErrorMessage('An unexpected error occurred. Please try again.');
+      setAuthStatus('ready');
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -76,6 +105,13 @@ export default function Login() {
             <h2 className="auth-step-title">
               {mode === 'login' ? 'ENGINEER SIGN IN' : 'CREATE PROFESSIONAL PROFILE'}
             </h2>
+
+            {errorMessage && (
+              <div className="auth-error-alert slide-up" style={{ color: '#ff4d4d', backgroundColor: 'rgba(255, 77, 77, 0.1)', padding: '10px', borderRadius: '4px', marginBottom: '15px', border: '1px solid rgba(255, 77, 77, 0.2)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldCheck size={16} />
+                <span>{errorMessage}</span>
+              </div>
+            )}
 
             <form className="auth-form" onSubmit={handleAuthSubmit}>
               {mode === 'login' ? (
@@ -174,6 +210,28 @@ export default function Login() {
                         onChange={(e) => setRegData({...regData, phone: e.target.value})}
                         required
                       />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>SECURITY PASSWORD</label>
+                    <div className="input-field">
+                      <Lock size={18} className="field-icon" />
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create strong password"
+                        value={regData.password}
+                        onChange={(e) => setRegData({...regData, password: e.target.value})}
+                        required
+                        minLength={6}
+                      />
+                      <button 
+                        type="button" 
+                        className="toggle-password"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
                     </div>
                   </div>
 

@@ -202,13 +202,43 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Legacy local login/register remains as placeholders or can be redirected to Supabase
-  const login = (userId) => {
-    console.warn('Manual login not fully implemented with Supabase. Please use Google Login.');
+  // Implementation of email/password login
+  const login = async (email, password) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password: password
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error.message);
+      return { success: false, error: error.message };
+    }
   };
 
-  const register = (data) => {
-    console.warn('Manual registration not fully implemented with Supabase. Please use Google Login.');
+  // Implementation of email/password registration with metadata
+  const register = async (regData) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: regData.email.toLowerCase().trim(),
+        password: regData.password,
+        options: {
+          data: {
+            full_name: regData.name,
+            phone: regData.phone,
+            industry: regData.industry
+          }
+        }
+      });
+      if (error) throw error;
+      
+      // If registration is successful, state will be updated via onAuthStateChange listener
+      return { success: true, user: data.user };
+    } catch (error) {
+      console.error('Registration error:', error.message);
+      return { success: false, error: error.message };
+    }
   };
 
   const checkEmailStatus = async (email) => {
