@@ -32,8 +32,8 @@ export default function Dashboard() {
   const phaseToModules = {
     'Library': ['footprint'],
     'Stackup': ['stackup', 'thermal'],
-    'Routing': ['diff_pair', 'high_speed', 'ddr', 'si_pi'],
-    'DFM': ['dfm_dft', 'emi_emc'],
+    'Routing': ['high_speed', 'diff_pair', 'ddr', 'si_pi'],
+    'DFM': ['emi_emc', 'dfm_dft'],
     'Output': ['pcb_output_system']
   };
 
@@ -44,10 +44,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container fade-in">
-      <div className="dashboard-header">
-        <h1>PCB Design Hub</h1>
-        <p>Footprints • Stackup • Layout • Standards</p>
-      </div>
+
 
       <RoadMap activePhase={activePhase} onPhaseClick={setActivePhase} />
 

@@ -46,23 +46,23 @@ export const modulesData = [
     ],
     loadContent: () => import('./modules/stackup.js')
   },
-  { 
-    id: "diff_pair",  
-    icon: Zap,         
-    title: "Differential Pair Routing", 
-    desc: "Achieve the 8 golden rules of differential signaling.",
-    prerequisites: ['high_speed'],
+  {
+    id: "thermal",
+    icon: Thermometer,
+    title: "Thermal Management",
+    desc: "Calculate trace current capacity and design internal thermal paths.",
+    prerequisites: [],
     sections: [
-      "1. Differential Signaling Physics",
-      "2. The Golden Rules of Diff Pairs",
-      "3. Interface Impedance Targets",
-      "4. Skew Matching & Meandering",
-      "5. The Reference Plane Penalty",
-      "6. Broadside vs. Edge Coupling",
-      "7. Diff Pair Termination Strategies",
-      "Interactive: Zdiff Differential Solver"
+      "1. Three Pillars of Heat Transfer",
+      "2. The Thermal Resistance Path (Rθ)",
+      "3. IPC-2152 Current Capacity Solver",
+      "4. Internal vs. External Traces",
+      "5. Via Gardening & Thermal Stitching",
+      "6. Copper Weight & Thermal Spreading",
+      "7. Heatsink & TIM Strategy",
+      "8. Expert DFM: The Soldering Paradox"
     ],
-    loadContent: () => import('./modules/diff_pair.js')
+    loadContent: () => import('./modules/thermal.js')
   },
   { 
     id: "high_speed", 
@@ -83,6 +83,24 @@ export const modulesData = [
     loadContent: () => import('./modules/high_speed.js')
   },
   { 
+    id: "diff_pair",  
+    icon: Zap,         
+    title: "Differential Pair Routing", 
+    desc: "Achieve the 8 golden rules of differential signaling.",
+    prerequisites: ['high_speed'],
+    sections: [
+      "1. Differential Signaling Physics",
+      "2. The Golden Rules of Diff Pairs",
+      "3. Interface Impedance Targets",
+      "4. Skew Matching & Meandering",
+      "5. The Reference Plane Penalty",
+      "6. Broadside vs. Edge Coupling",
+      "7. Diff Pair Termination Strategies",
+      "Interactive: Zdiff Differential Solver"
+    ],
+    loadContent: () => import('./modules/diff_pair.js')
+  },
+  { 
     id: "ddr",        
     icon: Cpu,         
     title: "DDR Routing",          
@@ -99,6 +117,30 @@ export const modulesData = [
       "Interactive: DDR Dynamic Skew Matcher"
     ],
     loadContent: () => import('./modules/ddr.js')
+  },
+  { 
+    id: "si_pi",      
+    icon: Activity,     
+    title: "Advanced Signal & Power Integrity (SI/PI)",         
+    desc: "Industrial-grade engineering for high-speed channel compliance and PDN stability.",
+    prerequisites: ['high_speed', 'ddr', 'diff_pair'],
+    sections: [
+      "SI Core: Transmission Line Standards",
+      "Differential Pair Routing Mastery",
+      "BGA Escape & Fanout Design (IPC-7095C)",
+      "Decoupling Capacitor Engineering",
+      "PDN Target Impedance — Theory & Formula",
+      "PDN Target Impedance Solver (Interactive)",
+      "Decoupling Hierarchy & Via Physics",
+      "Via Stub Resonance & Back-Drilling",
+      "Crosstalk — NEXT & FEXT Fundamentals",
+      "S-Parameters & Frequency-Domain Compliance",
+      "Eye Diagram, Jitter & Bathtub Curves",
+      "Lossy Line Physics (Expert Insight)",
+      "Recommended 6-Layer Stackup for SI/PI",
+      "Simulation & Validation Pipeline"
+    ],
+    loadContent: () => import('./modules/si_pi.js')
   },
   { 
     id: "emi_emc",    
@@ -137,30 +179,6 @@ export const modulesData = [
     ],
     loadContent: () => import('./modules/dfm_dft.js')
   },
-  { 
-    id: "si_pi",      
-    icon: Activity,     
-    title: "Advanced Signal & Power Integrity (SI/PI)",         
-    desc: "Industrial-grade engineering for high-speed channel compliance and PDN stability.",
-    prerequisites: ['high_speed', 'ddr', 'diff_pair'],
-    sections: [
-      "SI Core: Transmission Line Standards",
-      "Differential Pair Routing Mastery",
-      "BGA Escape & Fanout Design (IPC-7095C)",
-      "Decoupling Capacitor Engineering",
-      "PDN Target Impedance — Theory & Formula",
-      "PDN Target Impedance Solver (Interactive)",
-      "Decoupling Hierarchy & Via Physics",
-      "Via Stub Resonance & Back-Drilling",
-      "Crosstalk — NEXT & FEXT Fundamentals",
-      "S-Parameters & Frequency-Domain Compliance",
-      "Eye Diagram, Jitter & Bathtub Curves",
-      "Lossy Line Physics (Expert Insight)",
-      "Recommended 6-Layer Stackup for SI/PI",
-      "Simulation & Validation Pipeline"
-    ],
-    loadContent: () => import('./modules/si_pi.js')
-  },
   {
     id: "pcb_output_system",
     icon: Factory,
@@ -180,23 +198,5 @@ export const modulesData = [
       "Interactive: Manufacturing Release Simulator"
     ],
     loadContent: () => import('./modules/pcb_output_system.js')
-  },
-  {
-    id: "thermal",
-    icon: Thermometer,
-    title: "Thermal Management",
-    desc: "Calculate trace current capacity and design internal thermal paths.",
-    prerequisites: [],
-    sections: [
-      "1. Three Pillars of Heat Transfer",
-      "2. The Thermal Resistance Path (Rθ)",
-      "3. IPC-2152 Current Capacity Solver",
-      "4. Internal vs. External Traces",
-      "5. Via Gardening & Thermal Stitching",
-      "6. Copper Weight & Thermal Spreading",
-      "7. Heatsink & TIM Strategy",
-      "8. Expert DFM: The Soldering Paradox"
-    ],
-    loadContent: () => import('./modules/thermal.js')
   }
 ];

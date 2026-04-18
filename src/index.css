@@ -6447,9 +6447,7 @@ input[type=number] {
     gap: var(--space-4) !important;
   }
 
-  .dashboard-header h1 {
-    font-size: 1.8rem !important;
-  }
+
 }
 
 /* Aggressive Mobile-First Refactor (320px - 412px) */
